@@ -1,0 +1,55 @@
+name: Publish 🐍 package 📦 to PyPI
+
+on:
+  workflow_dispatch:
+  release:
+    types:
+      - "published"
+
+jobs:
+  wheel:
+    name: Package 📦 wheel and upload to PyPI
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Clone repo
+      uses: actions/checkout@v4
+
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11.x"
+
+    - name: Install pypa/build
+      run: >-
+        python -m
+        pip install
+        build
+        --user
+
+    - name: Build a wheel and a source tarball
+      run: >-
+        python -m
+        build
+        --sdist
+        --wheel
+        --outdir dist/
+
+    - name: "Upload wheel as workflow artifact"
+      uses: actions/upload-artifact@v4
+      with:
+        name: wheel
+        path: ./dist/*.whl
+
+    - name: Upload wheel as release artifact
+      uses: softprops/action-gh-release@v2
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      with:
+        files: "./dist/*.whl"
+
+    - name: Publish distribution 📦 to PyPI
+      if: github.event_name == 'release' && github.event.action == 'published'
+      uses: pypa/gh-action-pypi-publish@v1.12.4
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
