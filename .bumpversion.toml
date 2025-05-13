@@ -1,0 +1,11 @@
+[tool.bumpversion]
+current_version = "0.1.0"
+
+[[tool.bumpversion.files]]
+filename = "src/screenValidator/version.py"
+
+
+[[tool.bumpversion.files]]
+filename = "README.md"
+search = "screenValidator v{current_version}"
+replace = "screenValidator v{new_version}"

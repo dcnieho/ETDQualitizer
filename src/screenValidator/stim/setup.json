@@ -1,0 +1,47 @@
+{
+    "screen": {
+        "which_monitor": 0,
+        "width": 52.8,
+        "viewing_distance": 63.0,
+        "refresh_rate": 60,
+        "resolution": [1920, 1080],
+        "background_color": "grey"
+    },
+
+    "instruction_text": {
+        "height": 30,
+        "color": "black"
+    },
+
+    "validation": {
+        "n_repetitions": 1,
+
+        "targets": {
+            "file": "targetPositions.csv",
+            "duration": 1.0,
+            "placeholder": {
+                "color": "white",
+                "diameter": 40
+            },
+            "cue": {
+                "color": "red",
+                "diameter": 20
+            },
+            "move": {
+                "duration": 2.5,
+                "diameter": 40,
+                "min_duration": 1.0,
+                "move_with_acceleration": true
+            },
+            "shrink": {
+                "duration": 0.4
+            },
+            "look": {
+                "diameter_min": 20,
+                "diameter_max": 40,
+                "outer_color": "black",
+                "inner_color": "white"
+            }
+        }
+    }
+}
