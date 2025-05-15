@@ -94,7 +94,7 @@ class DataQuality:
 
     def data_loss_percentage(self):
         missing = np.logical_or(np.isnan(self.x), np.isnan(self.y))
-        return np.sum(missing)/missing.shape[0]
+        return np.sum(missing)/missing.shape[0]*100
 
     def effective_frequency(self):
         N_valid = np.sum(np.logical_not(np.logical_or(np.isnan(self.x), np.isnan(self.y))))

@@ -107,7 +107,7 @@ classdef DataQuality
 
         function loss_percentage = data_loss_percentage(obj)
             missing         = isnan(obj.x) | isnan(obj.y);
-            loss_percentage = sum(missing)/length(missing);
+            loss_percentage = sum(missing)/length(missing)*100;
         end
 
         function freq = effective_frequency(obj)
