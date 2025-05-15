@@ -19,7 +19,7 @@ for f in (pathlib.Path(__file__).parent / 'data').glob('*.tsv'):
     gaze = pd.read_csv(f, sep='\t', dtype=defaultdict(lambda: float, {'target_id': int, 'tar_x': int, 'tar_y': int}))
 
     dq_df = screenValidator.compute_data_quality_from_validation(gaze, 'pixels', screen, True)    # include_data_loss for testing, this is probably *not* what you want
-    print(dq_df.to_string())
+    print(dq_df.to_string(float_format='%.4f'))
 
     # and RMS S2S calculated in two ways over the whole datafile
     dq = screenValidator.DataQuality(gaze['left_x'].to_numpy(),gaze['left_y'].to_numpy(),gaze['timestamp'].to_numpy()/1000,'pixels',screen)  # timestamps are in ms in the file
