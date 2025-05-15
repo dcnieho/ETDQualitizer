@@ -116,7 +116,10 @@ classdef DataQuality
         function freq = effective_frequency(obj)
             % rate of valid samples
             valid   = ~(isnan(obj.x) | isnan(obj.y));
-            freq    = sum(valid)/(obj.timestamps(end)-obj.timestamps(1));
+            % to get duration right, we need to include duration of last
+            % sample
+            isi     = median(diff(obj.timestamps));
+            freq    = sum(valid)/(obj.timestamps(end)-obj.timestamps(1)+isi);
         end
     end
 end
