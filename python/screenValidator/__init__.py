@@ -150,7 +150,7 @@ def compute_data_quality_from_validation(gaze               : pd.DataFrame,
     rows = []
     for i,t_id in enumerate(targets):
         is_target = gaze['target_id'].values==t_id
-        dq = DataQuality(gaze['left_x'][is_target], gaze['left_y'][is_target], gaze['timestamp'][is_target]/1000, unit, screen)
+        dq = DataQuality(gaze['left_x'][is_target], gaze['left_y'][is_target], gaze['timestamp'][is_target]/1000, unit, screen) # timestamps are in ms in the file
         row = {'target_id': t_id}
         for k,v in zip(('offset','offset_x','offset_y'),dq.accuracy(*target_locations[i])):
             row[k] = v
@@ -158,7 +158,7 @@ def compute_data_quality_from_validation(gaze               : pd.DataFrame,
             row[k] = v
         for k,v in zip(('std','std_x','std_y'),dq.precision_STD()):
             row[k] = v
-        for k,v in zip(('bcea','bcea_orientation','bcea_ax1','bcea_ax2','bcea_aspect_ratio'),dq.precision_STD()):
+        for k,v in zip(('bcea','bcea_orientation','bcea_ax1','bcea_ax2','bcea_aspect_ratio'),dq.precision_BCEA()):
             row[k] = v
         if include_data_loss:
             row['data_loss'] = dq.data_loss_percentage()
