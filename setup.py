@@ -1,7 +1,7 @@
 import setuptools
 import runpy
 
-info = runpy.run_path("src/screenValidator/version.py")
+info = runpy.run_path("python/screenValidator/version.py")
 
 with open('README.md') as f:
     readme = f.read()
@@ -36,8 +36,8 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     license=license,
-    package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src"),
+    package_dir={"": "python"},
+    packages=setuptools.find_packages(where="python"),
     include_package_data=True,
     python_requires=">=3.10",
     install_requires=required
