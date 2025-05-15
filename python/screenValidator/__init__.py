@@ -100,7 +100,9 @@ class DataQuality:
 
     def effective_frequency(self):
         N_valid = np.sum(np.logical_not(np.logical_or(np.isnan(self.x), np.isnan(self.y))))
-        return N_valid/(self.timestamps[-1]-self.timestamps[0])
+        # to get duration right, we need to include duration of last sample
+        isi     = np.median(np.diff(self.timestamps))
+        return N_valid/(self.timestamps[-1]-self.timestamps[0]+isi)
 
 
     def precision_using_moving_window(self, window_length, metric, aggregation_fun=np.nanmedian, **kwargs) -> float:
