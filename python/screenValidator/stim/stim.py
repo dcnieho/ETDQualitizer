@@ -37,7 +37,7 @@ class TobiiEyeTracker(EyeTrackerBase):
     def send_message(self, msg:str):
         self.tracker.send_message(msg)
     def stop_recording(self):
-        self.stop_ts = self.tracker.get_system_time_stamp() 
+        self.stop_ts = self.tracker.get_system_time_stamp()
         self.tracker.stop_recording(gaze=True)
     def save_data(self, file_stem: str, mon: monitors.Monitor) -> str:
         samples = self.tracker.buffer.peek_time_range('gaze', self.start_ts, self.stop_ts)
