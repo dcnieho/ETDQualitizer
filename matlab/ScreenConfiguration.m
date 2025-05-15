@@ -36,8 +36,8 @@ classdef ScreenConfiguration
 
         function [x_deg, y_deg] = mm_to_deg(obj, x, y)
             % N.B.: output is in Fick angles
-            x_deg = np.atan2(x,obj.viewing_distance_mm)*180/pi;             % azimuth
-            y_deg = np.atan2(y,np.hypot(obj.viewing_distance_mm,x))*180/pi; % elevation
+            x_deg = atan2(x,obj.viewing_distance_mm)*180/pi;            % azimuth
+            y_deg = atan2(y,hypot(obj.viewing_distance_mm,x))*180/pi;   % elevation
         end
     end
 end
