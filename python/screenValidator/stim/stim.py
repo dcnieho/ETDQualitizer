@@ -45,7 +45,7 @@ class TobiiEyeTracker(EyeTrackerBase):
 
         # parse target info
         msgs = [(m[0],pm) for m in messages if (pm:=parse_target_msg(m[1])) is not None]
-        
+
         # collect and organize data
         to_include = np.logical_and(samples['system_time_stamp']>=msgs[0][0], samples['system_time_stamp']<=msgs[-1][0])
         # output: [timestamp, left_x, left_y, right_x, right_y, target_id, tar_x, tar_y] (timestamp in ms)
@@ -53,8 +53,8 @@ class TobiiEyeTracker(EyeTrackerBase):
         n_samp = sum(to_include)
         data = np.full((n_samp,5),np.nan)
         px,py = mon.currentCalib['sizePix']
-        for i,(field,fac) in enumerate((('system_time_stamp',0.001),('left_gaze_point_on_display_area_x',px),('left_gaze_point_on_display_area_y',py),('right_gaze_point_on_display_area_x',px),('right_gaze_point_on_display_area_y',py))):
-            data[:,i] = samples[field][to_include]*fac
+        for i,(field,fac,sub) in enumerate((('system_time_stamp',0.001,0.),('left_gaze_point_on_display_area_x',px,px/2),('left_gaze_point_on_display_area_y',py,py/2),('right_gaze_point_on_display_area_x',px,px/2),('right_gaze_point_on_display_area_y',py,py/2))):
+            data[:,i] = samples[field][to_include]*fac-sub
         # turn into dataframe
         data = pd.DataFrame(data,columns=['timestamp', 'left_x', 'left_y', 'right_x', 'right_y'])
         # add target ID
@@ -63,6 +63,7 @@ class TobiiEyeTracker(EyeTrackerBase):
         for ti in range(0,len(msgs),2):
             is_target = np.logical_and(ts>=msgs[ti][0], ts<=msgs[ti+1][0])
             target_ids_pos[is_target,:] = msgs[ti][1][2:]
+        target_ids_pos[:,2] = -target_ids_pos[:,2]  # positive y direction should be downward, not upwards like only PsychoPy does
         data[['target_id','tar_x','tar_y']] = target_ids_pos
 
         # done, now store to file. First get filename
