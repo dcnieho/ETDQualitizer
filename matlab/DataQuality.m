@@ -21,12 +21,12 @@ classdef DataQuality
                 unit        (1,:) char {mustBeMember(unit,{'pixels','degrees'})}
                 screen      (1,1) {mustBeA(screen,'ScreenConfiguration')}
             end
-            obj.timestamps  = timestamps;
+            obj.timestamps = timestamps;
             if strcmp(unit, 'pixels')
                 [x,y] = screen.pix_to_deg(x, y);
             end
-            obj.x           = x;
-            obj.y           = y;
+            obj.x = x;
+            obj.y = y;
         end
 
 
