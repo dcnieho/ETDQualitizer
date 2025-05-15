@@ -128,8 +128,43 @@ class DataQuality:
         return precision
 
 
-def compute_data_quality_for_validation(gaze: pd.DataFrame, include_data_loss:bool = False):
-    pass
+def compute_data_quality_from_validation(gaze               : pd.DataFrame,
+                                         unit               : str,
+                                         screen             : ScreenConfiguration|None = None,
+                                         include_data_loss  : bool = False) -> pd.DataFrame:
+    # get all targets
+    targets         = sorted([t for t in gaze['target_id'].unique() if t!=-1])
+    target_locations= np.array([gaze.loc[gaze.index[(gaze['target_id'].values==t).argmax()], ['tar_x','tar_y']] for t in targets])
+
+    # ensure we have target locations in degrees
+    if unit=='pixels':
+        if screen is None:
+            raise ValueError('If unit is "pixels", a screen configuration must be supplied')
+        target_locations[:,0], target_locations[:,1] = screen.pix_to_deg(target_locations[:,0], target_locations[:,1])
+    elif unit!='degrees':
+        raise ValueError('unit should be "pixels" or "degrees"')
+
+    # now, per target, compute data quality metrics
+    rows = []
+    for i,t_id in enumerate(targets):
+        is_target = gaze['target_id'].values==t_id
+        dq = DataQuality(gaze['left_x'][is_target], gaze['left_y'][is_target], gaze['timestamp'][is_target]/1000, unit, screen)
+        row = {'target_id': t_id}
+        for k,v in zip(('offset','offset_x','offset_y'),dq.accuracy(*target_locations[i])):
+            row[k] = v
+        for k,v in zip(('rms_s2s','rms_s2s_x','rms_s2s_y'),dq.precision_RMS_S2S()):
+            row[k] = v
+        for k,v in zip(('std','std_x','std_y'),dq.precision_STD()):
+            row[k] = v
+        for k,v in zip(('bcea','bcea_orientation','bcea_ax1','bcea_ax2','bcea_aspect_ratio'),dq.precision_STD()):
+            row[k] = v
+        if include_data_loss:
+            row['data_loss'] = dq.data_loss_percentage()
+            row['effective_frequency'] = dq.effective_frequency()
+        rows.append(row)
+
+    return pd.DataFrame.from_records(rows).set_index('target_id')
+
 
 
 def _RMS_S2S_impl(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
