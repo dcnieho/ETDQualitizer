@@ -19,10 +19,13 @@ classdef DataQuality
                 y           (:,1) {mustBeNumeric}
                 timestamps  (:,1) {mustBeNumeric}
                 unit        (1,:) char {mustBeMember(unit,{'pixels','degrees'})}
-                screen      (1,1) {mustBeA(screen,'ScreenConfiguration')}
+                screen      {mustBeScalarOrEmpty,mustBeA(screen,{'ScreenConfiguration','double'})} = []
             end
             obj.timestamps = timestamps;
             if strcmp(unit, 'pixels')
+                if isempty(screen)
+                    error('If unit is "pixels", a screen configuration must be supplied')
+                end
                 [x,y] = screen.pix_to_deg(x, y);
             end
             obj.x = x;
