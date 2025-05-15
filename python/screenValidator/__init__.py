@@ -57,8 +57,10 @@ class DataQuality:
                  timestamps : np.ndarray[tuple[N], np.dtype[np.float64]],
                  unit       : str,
                  screen     : ScreenConfiguration|None = None):
-        self.timestamps = timestamps
+        self.timestamps = np.array(timestamps)
 
+        gaze_x = np.array(gaze_x)
+        gaze_y = np.array(gaze_y)
         if unit=='pixels':
             if screen is None:
                 raise ValueError('If unit is "pixels", a screen configuration must be supplied')
