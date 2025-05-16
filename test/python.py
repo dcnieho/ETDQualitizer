@@ -1,10 +1,8 @@
-import sys
 import pathlib
 import numpy as np
 import pandas as pd
 from collections import defaultdict
 
-sys.path.append(str(pathlib.Path(__file__).parent / '..' / 'python'))
 import screenValidator
 
 screen = screenValidator.ScreenConfiguration(
@@ -14,12 +12,14 @@ screen = screenValidator.ScreenConfiguration(
 )
 
 # per data file, run the analysis
+all_dfs: dict[str,pd.DataFrame] = {}
 for f in (pathlib.Path(__file__).parent / 'data').glob('*.tsv'):
     print(f'----------\n{f.name}')
     gaze = pd.read_csv(f, sep='\t', dtype=defaultdict(lambda: float, {'target_id': int, 'tar_x': int, 'tar_y': int}))
 
     dq_df = screenValidator.compute_data_quality_from_validation(gaze, 'pixels', screen, advanced=False, include_data_loss=True)    # include_data_loss for testing, this is probably *not* what you want
     print(dq_df.to_string(float_format='%.4f'))
+    all_dfs[f.name] = dq_df
 
     for e in ('left','right'):
         if f'{e}_x' not in gaze.columns:
@@ -36,3 +36,7 @@ for f in (pathlib.Path(__file__).parent / 'data').glob('*.tsv'):
         # data loss and effective frequency
         print(f'Data loss ({e} eye): {dq.data_loss_percentage():.1f}%')
         print(f'Effective frequency ({e} eye): {dq.effective_frequency():.1f} Hz')
+
+print('--------\nAll:')
+all_df = pd.concat(all_dfs, names=['file'])
+print(all_df.to_string(float_format='%.4f'))
