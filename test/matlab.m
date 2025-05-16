@@ -9,11 +9,13 @@ files= dir(fold);
 files= files(~[files.isdir]);
 files= files(arrayfun(@(x) endsWith(x.name,'.tsv'),files));
 
+all_dq = {};
 for f=1:length(files)
     fprintf('----------\n%s\n',files(f).name);
     gaze = readtable(fullfile(fold,files(f).name),'FileType','text','Delimiter','\t');
 
     dq = compute_data_quality_from_validation(gaze, 'pixels', screen, false, true)     % include_data_loss for testing, this is probably *not* what you want
+    all_dq{end+1,1} = addvars(dq, repmat(string(files(f).name),size(dq,1),1), 'Before', 1, 'NewVariableNames',{'file'});
 
     eyes = {'left','right'};
     for e=1:length(eyes)
@@ -34,3 +36,4 @@ for f=1:length(files)
         fprintf('Effective frequency (%s eye): %.1f Hz\n', eyes{e}, dq_calc.effective_frequency())
     end
 end
+all_dq = vertcat(all_dq{:});
