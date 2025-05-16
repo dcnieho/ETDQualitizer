@@ -27,22 +27,30 @@ elseif ~strcmp(unit, 'degrees')
 end
 
 % now, per target, compute data quality metrics
-vars = {'target_id','offset','offset_x','offset_y','rms_s2s','rms_s2s_x','rms_s2s_y','std','std_x','std_y','bcea','bcea_orientation','bcea_ax1','bcea_ax2','bcea_aspect_ratio'};
+vars = {'eye','target_id','offset','offset_x','offset_y','rms_s2s','rms_s2s_x','rms_s2s_y','std','std_x','std_y','bcea','bcea_orientation','bcea_ax1','bcea_ax2','bcea_aspect_ratio'};
 if include_data_loss
     vars = [vars {'data_loss','effective_frequency'}];
 end
-dq = table('Size',[length(targets),length(vars)], 'VariableTypes', repmat({'double'},1,length(vars)), 'VariableNames', vars);
-for t=1:length(targets)
-    is_target = gaze.target_id==targets(t);
-    dq_calc = DataQuality(gaze.left_x(is_target), gaze.left_y(is_target), gaze.timestamp(is_target)/1000, unit, screen);    % timestamps are in ms in the file
+dq = table('Size',[length(targets),length(vars)], 'VariableTypes', [{'char'} repmat({'double'},1,length(vars)-1)], 'VariableNames', vars);
+eyes = {'left','right'};
+for e=1:length(eyes)
+    if ~any(strcmp([eyes{e} '_x'],gaze.Properties.VariableNames))
+        continue
+    end
+    for t=1:length(targets)
+        oi = (e-1)*length(targets)+t;
+        is_target = gaze.target_id==targets(t);
+        dq_calc = DataQuality(gaze.([eyes{e} '_x'])(is_target), gaze.([eyes{e} '_y'])(is_target), gaze.timestamp(is_target)/1000, unit, screen);    % timestamps are in ms in the file
 
-    dq.target_id(t) = targets(t);
-    [dq.offset(t),dq.offset_x(t),dq.offset_y(t)]    = dq_calc.accuracy(target_locations(t,1), target_locations(t,2));
-    [dq.rms_s2s(t),dq.rms_s2s_x(t),dq.rms_s2s_y(t)] = dq_calc.precision_RMS_S2S();
-    [dq.std(t),dq.std_x(t),dq.std_y(t)] = dq_calc.precision_STD();
-    [dq.bcea(t),dq.bcea_orientation(t),dq.bcea_ax1(t),dq.bcea_ax2(t),dq.bcea_aspect_ratio(t)] = dq_calc.precision_BCEA();
-    if include_data_loss
-        dq.data_loss(t) = dq_calc.data_loss_percentage();
-        dq.effective_frequency(t) = dq_calc.effective_frequency();
+        dq.eye(oi) = eyes(e);
+        dq.target_id(oi) = targets(t);
+        [dq.offset(oi),dq.offset_x(oi),dq.offset_y(oi)]    = dq_calc.accuracy(target_locations(t,1), target_locations(t,2));
+        [dq.rms_s2s(oi),dq.rms_s2s_x(oi),dq.rms_s2s_y(oi)] = dq_calc.precision_RMS_S2S();
+        [dq.std(oi),dq.std_x(oi),dq.std_y(oi)] = dq_calc.precision_STD();
+        [dq.bcea(oi),dq.bcea_orientation(oi),dq.bcea_ax1(oi),dq.bcea_ax2(oi),dq.bcea_aspect_ratio(oi)] = dq_calc.precision_BCEA();
+        if include_data_loss
+            dq.data_loss(oi) = dq_calc.data_loss_percentage();
+            dq.effective_frequency(oi) = dq_calc.effective_frequency();
+        end
     end
 end

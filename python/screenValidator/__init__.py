@@ -148,22 +148,25 @@ def compute_data_quality_from_validation(gaze               : pd.DataFrame,
 
     # now, per target, compute data quality metrics
     rows = []
-    for i,t_id in enumerate(targets):
-        is_target = gaze['target_id'].values==t_id
-        dq = DataQuality(gaze['left_x'][is_target], gaze['left_y'][is_target], gaze['timestamp'][is_target]/1000, unit, screen) # timestamps are in ms in the file
-        row = {'target_id': t_id}
-        for k,v in zip(('offset','offset_x','offset_y'),dq.accuracy(*target_locations[i])):
-            row[k] = v
-        for k,v in zip(('rms_s2s','rms_s2s_x','rms_s2s_y'),dq.precision_RMS_S2S()):
-            row[k] = v
-        for k,v in zip(('std','std_x','std_y'),dq.precision_STD()):
-            row[k] = v
-        for k,v in zip(('bcea','bcea_orientation','bcea_ax1','bcea_ax2','bcea_aspect_ratio'),dq.precision_BCEA()):
-            row[k] = v
-        if include_data_loss:
-            row['data_loss'] = dq.data_loss_percentage()
-            row['effective_frequency'] = dq.effective_frequency()
-        rows.append(row)
+    for e in ('left','right'):
+        if f'{e}_x' not in gaze.columns:
+            continue
+        for i,t_id in enumerate(targets):
+            is_target = gaze['target_id'].values==t_id
+            dq = DataQuality(gaze[f'{e}_x'][is_target], gaze[f'{e}_y'][is_target], gaze['timestamp'][is_target]/1000, unit, screen) # timestamps are in ms in the file
+            row = {'eye': e, 'target_id': t_id}
+            for k,v in zip(('offset','offset_x','offset_y'),dq.accuracy(*target_locations[i])):
+                row[k] = v
+            for k,v in zip(('rms_s2s','rms_s2s_x','rms_s2s_y'),dq.precision_RMS_S2S()):
+                row[k] = v
+            for k,v in zip(('std','std_x','std_y'),dq.precision_STD()):
+                row[k] = v
+            for k,v in zip(('bcea','bcea_orientation','bcea_ax1','bcea_ax2','bcea_aspect_ratio'),dq.precision_BCEA()):
+                row[k] = v
+            if include_data_loss:
+                row['data_loss'] = dq.data_loss_percentage()
+                row['effective_frequency'] = dq.effective_frequency()
+            rows.append(row)
 
     return pd.DataFrame.from_records(rows).set_index('target_id')
 
