@@ -2,7 +2,7 @@
 current_version = "0.1.0"
 
 [[tool.bumpversion.files]]
-filename = "src/screenValidator/version.py"
+filename = "python/screenValidator/version.py"
 
 
 [[tool.bumpversion.files]]
