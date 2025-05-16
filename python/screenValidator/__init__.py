@@ -75,7 +75,7 @@ class DataQuality:
         g_x,g_y,g_z = _Fick_to_cartesian(  self.x,       self.y)
         t_x,t_y,t_z = _Fick_to_cartesian(target_x_deg, target_y_deg)
         # calculate angular offset for each sample using dot product
-        offsets     = np.arccos(np.vecdot(np.vstack((g_x,g_y,g_z)).T, np.array([t_x,t_y,t_z])))
+        offsets     = np.arccos(np.dot(np.vstack((g_x,g_y,g_z)).T, np.array([t_x,t_y,t_z])))
         # calculate on-screen orientation so we can decompose offset into x and y
         direction   = np.arctan2(g_y/g_z-t_y/t_z, g_x/g_z-t_x/t_z)  # compute direction on tangent screen (divide by z to project to screen at 1m)
         offsets_2D  = np.degrees(offsets.reshape((-1,1))*np.array([np.cos(direction), np.sin(direction)]).T)
