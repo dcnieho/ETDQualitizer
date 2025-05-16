@@ -169,7 +169,7 @@ def compute_data_quality_from_validation(gaze               : pd.DataFrame,
                 row['effective_frequency'] = dq.effective_frequency()
             rows.append(row)
 
-    dq_df = pd.DataFrame.from_records(rows).set_index('target_id')
+    dq_df = pd.DataFrame.from_records(rows).set_index(['eye','target_id'])
     if not advanced:
         dq_df = dq_df.drop(columns=[c for c in dq_df.columns if c not in ('eye', 'target_id', 'offset', 'rms_s2s', 'std', 'bcea', 'data_loss', 'effective_frequency')])
     return dq_df
