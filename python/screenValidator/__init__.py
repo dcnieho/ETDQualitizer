@@ -27,8 +27,8 @@ class ScreenConfiguration:
 
     def mm_to_deg(self, x: float, y: float) -> tuple[float,float]:
         # N.B.: output is in Fick angles
-        azi = np.atan2(x,self.viewing_distance_mm)
-        ele = np.atan2(y,np.hypot(self.viewing_distance_mm,x))
+        azi = np.arctan2(x,self.viewing_distance_mm)
+        ele = np.arctan2(y,np.hypot(self.viewing_distance_mm,x))
         return np.degrees(azi), np.degrees(ele)
 
 
@@ -75,9 +75,9 @@ class DataQuality:
         g_x,g_y,g_z = _Fick_to_cartesian(  self.x,       self.y)
         t_x,t_y,t_z = _Fick_to_cartesian(target_x_deg, target_y_deg)
         # calculate angular offset for each sample using dot product
-        offsets = np.acos(np.vecdot(np.vstack((g_x,g_y,g_z)).T, np.array([t_x,t_y,t_z])))
+        offsets     = np.arccos(np.vecdot(np.vstack((g_x,g_y,g_z)).T, np.array([t_x,t_y,t_z])))
         # calculate on-screen orientation so we can decompose offset into x and y
-        direction   = np.atan2(g_y/g_z-t_y/t_z, g_x/g_z-t_x/t_z)  # compute direction on tangent screen (divide by z to project to screen at 1m)
+        direction   = np.arctan2(g_y/g_z-t_y/t_z, g_x/g_z-t_x/t_z)  # compute direction on tangent screen (divide by z to project to screen at 1m)
         offsets_2D  = np.degrees(offsets.reshape((-1,1))*np.array([np.cos(direction), np.sin(direction)]).T)
         # calculate mean horizontal and vertical offset
         offset_x    = central_tendency_fun(offsets_2D[:,0])
@@ -202,7 +202,7 @@ def _BCEA_impl(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tupl
     # compute major and minor axis radii, and orientation, of the BCEA ellipse
     d,v = np.linalg.eig(np.cov(x,y))
     i = np.argmax(d)
-    orientation = np.degrees(np.atan2(v[1,i], v[0,i]))
+    orientation = np.degrees(np.arctan2(v[1,i], v[0,i]))
     ax1 = np.sqrt(k*d[i])
     ax2 = np.sqrt(k*d[1-i])
     aspect_ratio = max([ax1, ax2])/min([ax1, ax2])
