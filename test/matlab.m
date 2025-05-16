@@ -13,7 +13,7 @@ for f=1:length(files)
     fprintf('----------\n%s\n',files(f).name);
     gaze = readtable(fullfile(fold,files(f).name),'FileType','text','Delimiter','\t');
 
-    dq = compute_data_quality_from_validation(gaze, 'pixels', screen, true)     % include_data_loss for testing, this is probably *not* what you want
+    dq = compute_data_quality_from_validation(gaze, 'pixels', screen, false, true)     % include_data_loss for testing, this is probably *not* what you want
 
     eyes = {'left','right'};
     for e=1:length(eyes)

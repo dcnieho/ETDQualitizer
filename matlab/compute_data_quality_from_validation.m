@@ -1,8 +1,9 @@
-function dq = compute_data_quality_from_validation(gaze, unit, screen, include_data_loss)
+function dq = compute_data_quality_from_validation(gaze, unit, screen, advanced, include_data_loss)
 arguments
     gaze                           {mustBeA(gaze,'table')}
     unit                (1,:) char {mustBeMember(unit,{'pixels','degrees'})}
     screen                         {mustBeScalarOrEmpty,mustBeA(screen,{'ScreenConfiguration','double'})} = []
+    advanced            (1,1)      {mustBeA(advanced         ,'logical')} = false
     include_data_loss   (1,1)      {mustBeA(include_data_loss,'logical')} = false
 end
 
@@ -53,4 +54,9 @@ for e=1:length(eyes)
             dq.effective_frequency(oi) = dq_calc.effective_frequency();
         end
     end
+end
+
+if ~advanced
+    to_drop = ~ismember(dq.Properties.VariableNames,{'eye', 'target_id', 'offset', 'rms_s2s', 'std', 'bcea', 'data_loss', 'effective_frequency'});
+    dq = removevars(dq,dq.Properties.VariableNames(to_drop));
 end

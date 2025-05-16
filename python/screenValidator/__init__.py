@@ -133,6 +133,7 @@ class DataQuality:
 def compute_data_quality_from_validation(gaze               : pd.DataFrame,
                                          unit               : str,
                                          screen             : ScreenConfiguration|None = None,
+                                         advanced           : bool = False, # if True, report all metrics. If False, only simple subset
                                          include_data_loss  : bool = False) -> pd.DataFrame:
     # get all targets
     targets         = sorted([t for t in gaze['target_id'].unique() if t!=-1])
@@ -168,7 +169,10 @@ def compute_data_quality_from_validation(gaze               : pd.DataFrame,
                 row['effective_frequency'] = dq.effective_frequency()
             rows.append(row)
 
-    return pd.DataFrame.from_records(rows).set_index('target_id')
+    dq_df = pd.DataFrame.from_records(rows).set_index('target_id')
+    if not advanced:
+        dq_df = dq_df.drop(columns=[c for c in dq_df.columns if c not in ('eye', 'target_id', 'offset', 'rms_s2s', 'std', 'bcea', 'data_loss', 'effective_frequency')])
+    return dq_df
 
 
 

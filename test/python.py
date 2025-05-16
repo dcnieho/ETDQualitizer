@@ -18,7 +18,7 @@ for f in (pathlib.Path(__file__).parent / 'data').glob('*.tsv'):
     print(f'----------\n{f.name}')
     gaze = pd.read_csv(f, sep='\t', dtype=defaultdict(lambda: float, {'target_id': int, 'tar_x': int, 'tar_y': int}))
 
-    dq_df = screenValidator.compute_data_quality_from_validation(gaze, 'pixels', screen, True)    # include_data_loss for testing, this is probably *not* what you want
+    dq_df = screenValidator.compute_data_quality_from_validation(gaze, 'pixels', screen, advanced=False, include_data_loss=True)    # include_data_loss for testing, this is probably *not* what you want
     print(dq_df.to_string(float_format='%.4f'))
 
     for e in ('left','right'):
