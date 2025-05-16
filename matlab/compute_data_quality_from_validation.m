@@ -28,12 +28,20 @@ elseif ~strcmp(unit, 'degrees')
 end
 
 % now, per target, compute data quality metrics
+% see what eyes we have
+eyes = {'left','right'};
+have_eye = false(size(eyes));
+for e=1:length(eyes)
+    have_eye(e) = any(strcmp([eyes{e} '_x'],gaze.Properties.VariableNames));
+end
+eyes = eyes(have_eye);
+% create table we'll fill
 vars = {'eye','target_id','offset','offset_x','offset_y','rms_s2s','rms_s2s_x','rms_s2s_y','std','std_x','std_y','bcea','bcea_orientation','bcea_ax1','bcea_ax2','bcea_aspect_ratio'};
 if include_data_loss
     vars = [vars {'data_loss','effective_frequency'}];
 end
-dq = table('Size',[length(targets),length(vars)], 'VariableTypes', [{'char'} repmat({'double'},1,length(vars)-1)], 'VariableNames', vars);
-eyes = {'left','right'};
+dq = table('Size',[length(targets)*length(eyes),length(vars)], 'VariableTypes', [{'string'} repmat({'double'},1,length(vars)-1)], 'VariableNames', vars);
+% run per eye, per point
 for e=1:length(eyes)
     if ~any(strcmp([eyes{e} '_x'],gaze.Properties.VariableNames))
         continue
@@ -43,7 +51,7 @@ for e=1:length(eyes)
         is_target = gaze.target_id==targets(t);
         dq_calc = DataQuality(gaze.([eyes{e} '_x'])(is_target), gaze.([eyes{e} '_y'])(is_target), gaze.timestamp(is_target)/1000, unit, screen);    % timestamps are in ms in the file
 
-        dq.eye(oi) = eyes(e);
+        dq.eye(oi) = eyes{e};
         dq.target_id(oi) = targets(t);
         [dq.offset(oi),dq.offset_x(oi),dq.offset_y(oi)]    = dq_calc.accuracy(target_locations(t,1), target_locations(t,2));
         [dq.rms_s2s(oi),dq.rms_s2s_x(oi),dq.rms_s2s_y(oi)] = dq_calc.precision_RMS_S2S();
