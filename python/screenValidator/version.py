@@ -1,4 +1,4 @@
-__version__ = "0.1.0"
+__version__ = "0.5.0"
 
 __title__ = "screenValidator"
 __description__ = "Automated eye tracking data quality determination for screen-based eye trackers."
