@@ -25,11 +25,11 @@ jobs:
     - name: "Prep MATLAB release"
       run: |
         mkdir ./dist/
-        cp ./matlab/*/ ./dist/
+        cp ./matlab/* ./dist/
         mkdir ./dist/test
         cp ./test/matlab.m ./dist/test.m
         mkdir ./dist/test/data
-        cp ./test/data/*/ ./dist/test/data
+        cp ./test/data/* ./dist/test/data
 
     - name: "Zip artifact"
       run: |
