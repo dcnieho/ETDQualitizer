@@ -7,6 +7,40 @@ on:
       - "published"
 
 jobs:
+  matlab_dist:
+    name: Make matlab package 📦 and attach to release
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Clone repo
+      uses: actions/checkout@v4
+
+    - name: "Prep MATLAB release"
+      run: |
+        mkdir ./dist/
+        cp ./matlab/*/ ./dist/
+        mkdir ./dist/test
+        cp ./test/matlab.m ./dist/test.m
+        mkdir ./dist/test/data
+        cp ./test/data/*/ ./dist/test/data
+
+    - name: "Zip artifact"
+      run: |
+        7z a -r ./matlab.zip ./dist/*
+
+    - name: "Upload wheel as workflow artifact"
+      uses: actions/upload-artifact@v4
+      with:
+        name: matlab
+        path: ./dist/*.zip
+
+    - name: Upload zip as release artifact
+      uses: softprops/action-gh-release@v2
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      with:
+        files: "./dist/*.zip"
+
   wheel:
     name: Package 📦 wheel and upload to PyPI
     runs-on: ubuntu-latest
