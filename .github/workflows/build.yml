@@ -1,4 +1,4 @@
-name: Publish 🐍 package 📦 to PyPI
+name: Publish 🐍 package 📦 to PyPI, build MATLAB release zip
 
 on:
   workflow_dispatch:
