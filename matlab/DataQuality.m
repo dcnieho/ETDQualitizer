@@ -147,9 +147,11 @@ arguments
 end
     x_diff  = diff(x).^2;
     y_diff  = diff(y).^2;
-    rms     = sqrt(central_tendency_fun(x_diff + y_diff));
     rms_x   = sqrt(central_tendency_fun(x_diff));
     rms_y   = sqrt(central_tendency_fun(y_diff));
+    % N.B.: cannot simplify to hypot(rms_x, rms_y)
+    % as that is only equivalent when mean() is used as central tendency estimator
+    rms     = sqrt(central_tendency_fun(x_diff + y_diff));
 end
 
 function [std_, std_x, std_y] = STD_impl(x, y)

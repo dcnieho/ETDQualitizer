@@ -179,6 +179,8 @@ def compute_data_quality_from_validation(gaze               : pd.DataFrame,
 def _RMS_S2S_impl(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
     x_diff = np.diff(x)**2
     y_diff = np.diff(y)**2
+    # N.B.: cannot simplify to np.hypot(rms_x, rms_y)
+    # as that is only equivalent when mean() is used as central tendency estimator
     return float(np.sqrt(central_tendency_fun(x_diff + y_diff))), \
            float(np.sqrt(central_tendency_fun(x_diff))), \
            float(np.sqrt(central_tendency_fun(y_diff)))
