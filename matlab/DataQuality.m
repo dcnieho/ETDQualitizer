@@ -159,7 +159,7 @@ arguments
 end
     std_x   = std(x,1,'omitnan');
     std_y   = std(y,1,'omitnan');
-    std_    = sqrt(hypot(std_x.^2, std_y.^2));
+    std_    = hypot(std_x, std_y);
 end
 
 function [area, orientation, ax1, ax2, aspect_ratio] = BCEA_impl(x, y, P)

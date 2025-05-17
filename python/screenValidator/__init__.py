@@ -186,7 +186,7 @@ def _RMS_S2S_impl(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[t
 def _STD_impl(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]]) -> tuple[float,float,float]:
     std_x = np.nanstd(x, ddof=0)
     std_y = np.nanstd(y, ddof=0)
-    return float(np.sqrt(np.hypot(std_x**2, std_y**2))), \
+    return float(np.hypot(std_x, std_y)), \
            float(std_x), \
            float(std_y)
 
