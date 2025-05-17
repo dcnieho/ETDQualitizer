@@ -19,10 +19,9 @@ jobs:
       run: |
         mkdir ./dist/
         cp ./matlab/* ./dist/
-        mkdir ./dist/test
         cp ./test/matlab.m ./dist/test.m
-        mkdir ./dist/test/data
-        cp ./test/data/* ./dist/test/data
+        mkdir ./dist/data
+        cp ./test/data/* ./dist/data
 
     - name: "Zip artifact"
       run: |
