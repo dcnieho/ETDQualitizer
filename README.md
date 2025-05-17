@@ -2,4 +2,4 @@
 [![PyPI Latest Release](https://img.shields.io/pypi/v/screenValidator.svg)](https://pypi.org/project/screenValidator/)
 [![image](https://img.shields.io/pypi/pyversions/screenValidator.svg)](https://pypi.org/project/screenValidator/)
 
-# screenValidator v0.5.1
+# screenValidator v0.5.2
