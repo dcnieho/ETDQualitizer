@@ -2,4 +2,4 @@
 [![PyPI Latest Release](https://img.shields.io/pypi/v/ETDQualitizer.svg)](https://pypi.org/project/ETDQualitizer/)
 [![image](https://img.shields.io/pypi/pyversions/ETDQualitizer.svg)](https://pypi.org/project/ETDQualitizer/)
 
-# ETDQualitizer v0.6.0
+# ETDQualitizer v0.6.1

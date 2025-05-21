@@ -1,4 +1,4 @@
-__version__ = "0.6.0"
+__version__ = "0.6.1"
 
 __title__ = "ETDQualitizer"
 __description__ = "Automated eye tracking data quality determination for screen-based eye trackers."
