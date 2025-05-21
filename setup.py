@@ -1,7 +1,7 @@
 import setuptools
 import runpy
 
-info = runpy.run_path("python/screenValidator/version.py")
+info = runpy.run_path("python/ETDQualitizer/version.py")
 
 with open('README.md') as f:
     readme = f.read()

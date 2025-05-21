@@ -2,10 +2,10 @@
 current_version = "0.5.2"
 
 [[tool.bumpversion.files]]
-filename = "python/screenValidator/version.py"
+filename = "python/ETDQualitizer/version.py"
 
 
 [[tool.bumpversion.files]]
 filename = "README.md"
-search = "screenValidator v{current_version}"
-replace = "screenValidator v{new_version}"
+search = "ETDQualitizer v{current_version}"
+replace = "ETDQualitizer v{new_version}"

@@ -68,7 +68,7 @@ class TobiiEyeTracker(EyeTrackerBase):
 
         # done, now store to file. First get filename
         if file_stem is None:
-            file_stem = 'screenValidator'
+            file_stem = 'ETDQualitizer'
         file_name = get_filename(file_stem,'.tsv')
         # store to file
         data.to_csv(file_name, '\t', na_rep='nan', index=False, float_format='%.8f')

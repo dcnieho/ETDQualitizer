@@ -1,5 +1,5 @@
-[![Downloads](https://static.pepy.tech/badge/screenValidator)](https://pepy.tech/project/screenValidator)
-[![PyPI Latest Release](https://img.shields.io/pypi/v/screenValidator.svg)](https://pypi.org/project/screenValidator/)
-[![image](https://img.shields.io/pypi/pyversions/screenValidator.svg)](https://pypi.org/project/screenValidator/)
+[![Downloads](https://static.pepy.tech/badge/ETDQualitizer)](https://pepy.tech/project/ETDQualitizer)
+[![PyPI Latest Release](https://img.shields.io/pypi/v/ETDQualitizer.svg)](https://pypi.org/project/ETDQualitizer/)
+[![image](https://img.shields.io/pypi/pyversions/ETDQualitizer.svg)](https://pypi.org/project/ETDQualitizer/)
 
-# screenValidator v0.5.2
+# ETDQualitizer v0.5.2
