@@ -4,6 +4,7 @@ import pandas as pd
 from collections import defaultdict
 
 import ETDQualitizer
+print(f'Using ETDQualitizer version {ETDQualitizer.__version__}')
 
 screen = ETDQualitizer.ScreenConfiguration(
     screen_size_x_mm = 528.0, screen_size_y_mm = 296.9997253417969,

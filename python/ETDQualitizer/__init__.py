@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import typing
 
+from .version import __version__, __url__, __author__, __email__, __description__
+
 N = typing.TypeVar("N", bound=int)
 
 class ScreenConfiguration:
