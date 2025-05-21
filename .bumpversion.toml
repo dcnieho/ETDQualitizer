@@ -1,5 +1,5 @@
 [tool.bumpversion]
-current_version = "0.5.2"
+current_version = "0.6.0"
 
 [[tool.bumpversion.files]]
 filename = "python/ETDQualitizer/version.py"
