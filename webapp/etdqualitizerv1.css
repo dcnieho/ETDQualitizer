@@ -1,0 +1,53 @@
+table {
+  border: 2px solid #FFFFFF;
+  width: 600px;
+  text-align: center;
+  border-collapse: collapse;
+}
+
+table td, th {
+  border: 1px solid #FFFFFF;
+  padding: 3px 4px;
+}
+
+table tbody td {
+  font-size: 13px;
+}
+
+table thead {
+  background: #FFFFFF;
+  border-bottom: 4px solid #333333;
+}
+table thead th {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333333;
+  text-align: center;
+  border-bottom: 4px solid #333333;
+}
+
+table tfoot {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333333;
+  border-top: 4px solid #333333;
+}
+table tfoot td {
+  font-size: 14px;
+}
+
+h4 {
+    visibility: hidden;
+    height: 1px;
+    width: 1px;
+    font-size: 1pt;
+    display: none;
+}
+
+pre {
+    visibility: hidden;
+    height: 1px;
+    width: 1px;
+    font-size: 1pt;
+    display: none;
+}

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.27.3/full/pyodide.js"></script>
+    <title>ETDQualitizer v0.61</title>
+    <link rel="stylesheet" href="etdqualitizerv1.css">
+  </head>
+  <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 16px;">
+    <div id="kop" style="height:70px; width: 100%; position: absolute; top: 0px; left:0px; background-color:orange; padding: 20px;">
+      <img src="logo.png" style="height: 70px; display: inline-block"">
+      <h3 style="display: inline-block; font-size: 40px; margin:10px; position: relative; top: -10px;">ETDQualitizer v0.61</h3>
+    </div>
+    <div id"para1" style="width:700px; position: relative; top:120px;">
+      This tool below allows you to calculate data quality for validations, run with [our PsychoPy procedure] 
+      (<a href="https://github.com/dcnieho/ETDQualitizer/tree/master/python/ETDQualitizer/stim" target="_blank">https://github.com/dcnieho/ETDQualitizer/tree/master/python/ETDQualitizer/stim</a>), 
+      locally in your browser (data is not uploaded to the cloud). Do as follows:
+      <ol>
+      <li>Select one or more files for which you want to calculate data quality</li>
+      <li>Enter the geometry of your setup</li>
+      <li>Calculate the data quality measures by clicking the “Do it” button.</li>
+      <li>Once calculated, a table with the results will appear on this page, and it can be downloaded by clicking “<a id="linkdl2" onclick="nodataYet()" href="#">download CSV</a>”.</li>
+      </ol>
+      Version: 0.61
+      <br/><br/>
+      Please cite Niehorster, D. C., Nyström, M., Hessels, R. S., Benjamins, J. S., Andersson, R. & Hooge, I. T. C. (in prep). The fundamentals of eye tracking part 9: Data quality
+    </div>
+    <div id="pyodideinfo" style="top: 140px; position: relative; font-style: italic; height: 24px; line-height: 24px;">
+      <img src="load.gif" style="height: 24px; display: inline-block; vertical-align: middle;">
+      <span style="display: inline-block; vertical-align: middle;">Loading...</span>
+    </div>  
+    <div id="knop1" style="top:160px; position: relative">
+      <div id="knopselect">
+        <label for="bestand" id="lblbestand" style="background-color:dimgray; color:darkgray; padding: 10px; width: 130px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Select Data File(s)</label>
+        <input id="bestand" style="display:none;" type="file" disabled multiple>
+      </div>
+    </div> 
+    <div id="lijst" style="top: 170px; position: relative; font-style: italic;">Files:</div>
+
+    <div id="screenparams" style="top:190px; position: relative;"><b>Setup measurements:</b><br/>
+      <label for="screenxmm" id="lblscreenxmm" style="display: inline-block; width:280px;">Screen size, horizontal, in mm: </label><input type="number" id="screenxmm" step="0.1" value="528.0" style="position: relative; left:20px;"><br/>
+      <label for="screenymm" id="lblscreenymm" style="display: inline-block; width:280px;">Screen size, vertical, in mm: </label><input type="number" id="screenymm" step="0.1" value="269.9" style="position: relative; left:20px;"><br/>
+      <label for="screenxpix" id="lblscreenxpix" style="display: inline-block; width:280px;">Screen resolution, horizontal, in pixels: </label><input type="number" id="screenxpix" step="1.0" value="1920" style="position: relative; left:20px;"><br/>
+      <label for="screenypixm" id="lblscreenypix" style="display: inline-block; width:280px;">Screen resolution, vertical, in pixels: </label><input type="number" id="screenypix" step="1.0" value="1080" style="position: relative; left:20px;"><br/>
+      <label for="screendist" id="lblscreendist" style="display: inline-block; width:280px;">Distance to screen in mm: </label><input type="number" id="screendist" step="0.1" value="650.0" style="position: relative; left:20px;"><br/>
+    </div>
+    <div id="knop2" style="top:210px; position: relative">
+      <div id="knopdoehet">
+        <label for="doehet" id="lbldoehet" style="background-color: darkgray; color: lightgray; padding: 10px; width: 35px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Do it</label>
+        <input id="doehet" style="display:none;" type="button" disabled>
+      </div>
+    </div>
+    <div id="downloadbestand" style="top:230px; position: relative;">
+      <label for="dlknop" id="lbldl" style="background-color: darkgray; color: lightgray; padding: 10px; width: 105px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Download CSV</label>
+      <input id="dlknop" style="display:none;" type="button" onclick="tableToCSV()" disabled>
+    </div>
+    <div id="resultaat" style="top: 250px; position: relative;">A data quality table will appear below (<a id="linkdl1" onclick="nodataYet()" href="#">downloable as CSV</a>):<br/></div>
+    <div id="inhoudbestand" style="top:270px; position: relative; display: none; height: 1px; width: 1px;">this should show content of the data file after loading (will disappear under the hood later)</div>
+    
+    <script src="etdqualitizerv1.js"></script>
+    <script>
+        function nodataYet() {
+          alert("Select data first, then Do it, then download it");
+          console.log("Select data first, then Do it, then download it");
+        }
+
+        const bestanden = document.getElementById('bestand');
+        const doit = document.getElementById('doehet');
+        const dldata = document.getElementById('dlknop');
+        const inhoudbestanden = document.getElementById('inhoudbestand');
+        const resoutput = document.getElementById('resultaat');
+        const bestandlijst = document.getElementById('lijst');
+        const screenxmm = document.getElementById('screenxmm').value;
+        const screenymm = document.getElementById('screenymm').value;
+        const screenxpix = document.getElementById('screenxpix').value;
+        const screenypix = document.getElementById('screenypix').value;
+        const screendist = document.getElementById('screendist').value;
+        let fileContent = '';
+        let tekst = '';
+        let result = '';
+        
+        // this button function loads the data and puts in a hidden div to be retrieved by the do it button
+        bestanden.addEventListener("change", () => {
+          // clear the filelist
+          bestandlijst.innerHTML ='Loaded files:<br/>';
+          const files = bestanden.files;
+          Array.from(files).forEach((file) => {
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+              const fileContent = event.target.result;
+
+              // Display content (for text files) and file list
+              const datablok = document.createElement("div");
+              const bestandsnaam = document.createElement("div");
+              datablok.innerHTML = `<h4>${file.name}</h4><pre>${fileContent}</pre>`;
+              bestandsnaam.innerHTML = `${file.name}`;
+              inhoudbestanden.appendChild(datablok);
+              bestandlijst.appendChild(bestandsnaam);
+            };
+            reader.onerror = (error) => {
+              console.error("Error reading file:", error);
+            };
+            // Read the file as text
+            reader.readAsText(file);
+          });
+          document.getElementById('lbldoehet').style.backgroundColor = "green";
+          document.getElementById('lbldoehet').style.color = "white";
+          doit.disabled = false;
+        //   return fileContent;
+        //   return reader;
+        });
+
+        doit.addEventListener("click", () => {
+          document.getElementById('lbldoehet').style.backgroundColor = "orange";
+
+          setTimeout(() => {
+          datteksten = document.getElementsByTagName('pre');
+          bestandsnamen = document.getElementsByTagName('H4');
+
+          const pythonCodeInit = `
+            # run this stuff once ===
+            import pathlib
+            import numpy as np
+            import pandas as pd
+            from io import StringIO
+            from collections import defaultdict
+
+            import ETDQualitizer
+
+            # screen = ETDQualitizer.ScreenConfiguration(screen_size_x_mm = 528.0, screen_size_y_mm = 296.9997253417969, screen_res_x_pix = 1920, screen_res_y_pix = 1080, viewing_distance_mm = 650)
+            screen_size_x_mm = float(screen_size_x_mm)
+            screen_size_y_mm = float(screen_size_y_mm)
+            screen_res_x_pix = float(screen_res_x_pix)
+            screen_res_y_pix = float(screen_res_y_pix)
+            viewing_distance_mm = float(viewing_distance_mm)
+            screen = ETDQualitizer.ScreenConfiguration(screen_size_x_mm, screen_size_y_mm, screen_res_x_pix, screen_res_y_pix, viewing_distance_mm)
+
+            all_dfs: dict[str,pd.DataFrame] = {}
+          `;
+          for(var i = 0, max = datteksten.length; i < max; i++) {
+            tekst = datteksten[i].innerHTML
+            huidigbestand = bestandsnamen[i].innerHTML
+
+            pyodide.globals.set("tsv_data", tekst);
+            pyodide.globals.set("curfile",huidigbestand)
+
+            pyodide.globals.set("screen_size_x_mm", screenxmm);
+            pyodide.globals.set("screen_size_y_mm",screenymm)
+            pyodide.globals.set("screen_res_x_pix", screenxpix);
+            pyodide.globals.set("screen_res_y_pix",screenypix);
+            pyodide.globals.set("viewing_distance_mm", screendist);
+        
+            // here'd be the D's magic, lines 96, 98, 105-108 ==============
+
+
+            const pythonCodeFile = `
+            # run below for each files
+            # Read TSV data into DataFrame
+            print(curfile)
+            gaze = pd.read_csv(StringIO(tsv_data), sep='\t', dtype=defaultdict(lambda: float, {'target_id': int, 'tar_x': int, 'tar_y': int}))
+
+            dq_df = ETDQualitizer.compute_data_quality_from_validation(gaze, 'pixels', screen, advanced=False, include_data_loss=True)    # include_data_loss for testing, this is probably *not* what you want
+            all_dfs[curfile] = dq_df
+
+            dq_html = dq_df.to_html()
+            `;
+
+            const pythonCodeConcat = `
+            all_df = pd.concat(all_dfs, names=['file'])
+            all_df_html = all_df.to_html()
+            all_df_csv = all_df.to_csv()
+            `;
+            // =======================================
+          
+            try {
+                if (i==0) {
+                  const resultInit = pyodide.runPython(pythonCodeInit);
+                  const resultFile = pyodide.runPython(pythonCodeFile);
+                } else {
+                  const resultFile = pyodide.runPython(pythonCodeFile);
+                }
+
+                if (i == (max-1)) {
+                  const resultInit = pyodide.runPython(pythonCodeConcat);
+                  const resblokbig = document.createElement("div");
+                  resblokbig.innerHTML = `<h3>Data quality results :</h3>` + pyodide.globals.get('all_df_html');
+                  resoutput.appendChild(resblokbig);
+                  cleanupHTMLtableheader();
+                  dldata.disabled = false;
+                  document.getElementById('lbldl').style.backgroundColor ="green";
+                  document.getElementById('lbldl').style.color = "white";
+                  document.getElementById('linkdl1').onclick = tableToCSV;
+                  document.getElementById('linkdl2').onclick = tableToCSV;
+                  document.getElementById('lbldoehet').style.backgroundColor = "darkgrey";
+                }
+            } catch (err) {
+                resoutput.innerHTML = `Error: ${err}`;
+            }
+          }
+        },10)
+        });
+
+        function tableToCSV() {
+
+            // Variable to store the final csv data
+            let csv_data = [];
+
+            csv_data = pyodide.globals.get('all_df_csv');
+
+            // Call this function to download csv file  
+            downloadCSVFile(csv_data);
+
+        }
+
+        function downloadCSVFile(csv_data) {
+
+            // Create CSV file object and feed
+            // our csv_data into it
+            CSVFile = new Blob([csv_data], {
+                type: "text/csv"
+            });
+
+            // Create to temporary link to initiate
+            // download process
+            let temp_link = document.createElement('a');
+
+            // Download csv file
+            temp_link.download = "qualitydata.csv";
+            let url = window.URL.createObjectURL(CSVFile);
+            temp_link.href = url;
+
+            // This link should not be displayed
+            temp_link.style.display = "none";
+            document.body.appendChild(temp_link);
+
+            // Automatically click the link to
+            // trigger download
+            temp_link.click();
+            document.body.removeChild(temp_link);
+        }
+
+        function cleanupHTMLtableheader() {
+          const table = document.getElementsByClassName("dataframe")[0];
+          const thead = table.querySelector("thead");
+          const firstRow = thead.rows[0];
+          const secondRow = thead.rows[1];
+
+          // Merge first three columns: copy content from secondRow, and set rowspan
+          for (let i = 0; i < 3; i++) {
+            const topCell = firstRow.cells[i];
+            const bottomCell = secondRow.cells[i];
+            topCell.textContent = bottomCell.textContent;
+            topCell.rowSpan = 2;
+          }
+
+          // Remove first three cells from second row (already merged)
+          for (let i = 0; i < 3; i++) {
+            secondRow.deleteCell(0);
+          }
+
+          // Remove the second row entirely, since everything is merged
+          thead.deleteRow(1);
+          
+          const newfirstRow = table.querySelector("thead").rows[0];
+
+          // Set rowspan back to 1 for the first three header cells
+          for (let i = 0; i < 9; i++) {
+            newfirstRow.cells[i].rowSpan = 1;
+          }
+        }
+
+    </script>
+  </body>
+</html>
