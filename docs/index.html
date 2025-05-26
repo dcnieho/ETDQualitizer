@@ -3,14 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- force no cached, latest version always-->
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
+    <!-- end force no cahche-->
     <script src="https://cdn.jsdelivr.net/pyodide/v0.27.3/full/pyodide.js"></script>
-    <title>ETDQualitizer v0.6.1</title>
+    <title>ETDQualitizer</title>
     <link rel="stylesheet" href="etdqualitizer.css">
   </head>
   <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 16px;">
     <div id="kop" style="height:70px; width: 100%; height:110px; position: absolute; top: 0px; left:0px; background-color:orange; padding: 20px;">
       <img src="logoetdq.png" style="height: 70px; display: inline-block"">
-      <h3 style="display: inline-block; font-size: 40px; margin:10px; position: relative; top: -15px;">ETDQualitizer v0.6.1</h3>
+      <h3 id="etdqTitle" style="display: inline-block; font-size: 40px; margin:10px; position: relative; top: -15px;">ETDQualitizer</h3>
     </div>
     <div id="para1" style="width:700px; position: relative; top:130px;">
       This tool below allows you to calculate data quality for validations, run with [our PsychoPy procedure] 
@@ -22,7 +27,7 @@
       <li>Calculate the data quality measures by clicking the “Do it” button.</li>
       <li>Once calculated, a table with the results will appear on this page, and it can be downloaded by clicking “<a id="linkdl2" onclick="nodataYet()" href="#">download CSV</a>”.</li>
       </ol>
-      Version: 0.6.1
+      <span id="etdqVersion">Version loaded: ...</span>
       <br/><br/>
       Please cite Niehorster, D. C., Nyström, M., Hessels, R. S., Benjamins, J. S., Andersson, R. & Hooge, I. T. C. (in prep). The fundamentals of eye tracking part 9: Data quality
     </div>
@@ -129,6 +134,9 @@
 
             import ETDQualitizer
 
+            from importlib.metadata import version
+            etdqver = version('ETDQualitizer')
+
             # screen = ETDQualitizer.ScreenConfiguration(screen_size_x_mm = 528.0, screen_size_y_mm = 296.9997253417969, screen_res_x_pix = 1920, screen_res_y_pix = 1080, viewing_distance_mm = 650)
             screen_size_x_mm = float(screen_size_x_mm)
             screen_size_y_mm = float(screen_size_y_mm)
@@ -139,6 +147,7 @@
 
             all_dfs: dict[str,pd.DataFrame] = {}
           `;
+
           for(var i = 0, max = datteksten.length; i < max; i++) {
             tekst = datteksten[i].innerHTML
             huidigbestand = bestandsnamen[i].innerHTML
