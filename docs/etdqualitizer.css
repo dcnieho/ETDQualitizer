@@ -1,6 +1,21 @@
+body {
+  margin: 0;
+  margin-left: 20px;
+  overflow-x: hidden; /* Prevent horizontal scroll globally */
+}
+#kop {
+  box-sizing: border-box;
+}
+
+.dataframe {
+  max-width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
 table {
   border: 2px solid #FFFFFF;
-  width: 600px;
+  width: 850px;
   text-align: center;
   border-collapse: collapse;
 }
@@ -50,4 +65,6 @@ pre {
     width: 1px;
     font-size: 1pt;
     display: none;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
