@@ -113,13 +113,22 @@ classdef DataQuality
             loss_percentage = sum(missing)/length(missing)*100;
         end
 
+        function loss_percentage = data_loss_percentage_nominal(obj, frequency)
+            N_valid         = sum(~(isnan(obj.x) | isnan(obj.y)));
+            loss_percentage = (1-N_valid/(self.get_duration()*frequency))*100;
+        end
+
         function freq = effective_frequency(obj)
             % rate of valid samples
-            valid   = ~(isnan(obj.x) | isnan(obj.y));
+            N_valid = sum(~(isnan(obj.x) | isnan(obj.y)));
+            freq    = N_valid/obj.get_duration();
+        end
+
+        function duration = get_duration(obj)
             % to get duration right, we need to include duration of last
             % sample
             isi     = median(diff(obj.timestamps));
-            freq    = sum(valid)/(obj.timestamps(end)-obj.timestamps(1)+isi);
+            duration= obj.timestamps(end)-obj.timestamps(1)+isi;
         end
     end
 end

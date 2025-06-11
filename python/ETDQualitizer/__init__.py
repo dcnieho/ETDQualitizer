@@ -100,11 +100,18 @@ class DataQuality:
         missing = np.isnan(self.x) | np.isnan(self.y)
         return np.sum(missing)/missing.size*100
 
+    def data_loss_percentage_nominal(self, frequency):
+        N_valid = np.count_nonzero(~(np.isnan(self.x) | np.isnan(self.y)))
+        return (1-N_valid/(self.get_duration()*frequency))*100
+
     def effective_frequency(self):
         N_valid = np.count_nonzero(~(np.isnan(self.x) | np.isnan(self.y)))
+        return N_valid/self.get_duration()
+
+    def get_duration(self) -> float:
         # to get duration right, we need to include duration of last sample
-        isi     = np.median(np.diff(self.timestamps))
-        return N_valid/(self.timestamps[-1]-self.timestamps[0]+isi)
+        isi = np.median(np.diff(self.timestamps))
+        return self.timestamps[-1]-self.timestamps[0]+isi
 
 
     def precision_using_moving_window(self, window_length, metric, aggregation_fun=np.nanmedian, **kwargs) -> float:
