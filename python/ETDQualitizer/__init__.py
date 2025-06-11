@@ -97,11 +97,11 @@ class DataQuality:
         return _BCEA_impl(self.x, self.y, P)
 
     def data_loss_percentage(self):
-        missing = np.logical_or(np.isnan(self.x), np.isnan(self.y))
+        missing = np.isnan(self.x) | np.isnan(self.y)
         return np.sum(missing)/missing.shape[0]*100
 
     def effective_frequency(self):
-        N_valid = np.sum(np.logical_not(np.logical_or(np.isnan(self.x), np.isnan(self.y))))
+        N_valid = np.count_nonzero(~(np.isnan(self.x) | np.isnan(self.y)))
         # to get duration right, we need to include duration of last sample
         isi     = np.median(np.diff(self.timestamps))
         return N_valid/(self.timestamps[-1]-self.timestamps[0]+isi)
