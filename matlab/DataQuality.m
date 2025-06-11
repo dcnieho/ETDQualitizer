@@ -71,7 +71,7 @@ classdef DataQuality
         function [area, orientation, ax1, ax2, aspect_ratio] = precision_BCEA(obj, P)
             arguments
                 obj
-                P   (1,1) {mustBeNumeric} = 0.6827  % for BCEA: cumulative probability of area under the multivariate normal
+                P   (1,1) {mustBeNumeric} = 0.68    % for BCEA: cumulative probability of area under the multivariate normal
             end
             [area, orientation, ax1, ax2, aspect_ratio] = BCEA_impl(obj.x, obj.y, P);
         end
@@ -168,7 +168,7 @@ function [area, orientation, ax1, ax2, aspect_ratio] = BCEA_impl(x, y, P)
 arguments
     x   (:,1) {mustBeNumeric}
     y   (:,1) {mustBeNumeric}
-    P   (1,1) {mustBeNumeric} = 0.6827  % for BCEA: cumulative probability of area under the multivariate normal
+    P   (1,1) {mustBeNumeric} = 0.68    % cumulative probability of area under the multivariate normal
 end
     k    = log(1/(1-P));
 

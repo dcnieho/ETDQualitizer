@@ -194,7 +194,7 @@ def _STD_impl(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple
            float(std_x), \
            float(std_y)
 
-def _BCEA_impl(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], P: float = 0.6827) -> tuple[float,float,float,float,float]:
+def _BCEA_impl(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], P: float = 0.68) -> tuple[float,float,float,float,float]:
     k = np.log(1./(1-P))    # turn cumulative probability of area under the multivariate normal into scale factor
 
     x = np.delete(x, np.isnan(x))
