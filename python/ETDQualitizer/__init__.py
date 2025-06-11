@@ -98,7 +98,7 @@ class DataQuality:
 
     def data_loss_percentage(self):
         missing = np.isnan(self.x) | np.isnan(self.y)
-        return np.sum(missing)/missing.shape[0]*100
+        return np.sum(missing)/missing.size*100
 
     def effective_frequency(self):
         N_valid = np.count_nonzero(~(np.isnan(self.x) | np.isnan(self.y)))
