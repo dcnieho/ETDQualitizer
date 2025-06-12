@@ -160,7 +160,7 @@ def check_escape(win: visual.Window):
         core.quit()
 
 
-def prepare_validation(win: visual.Window, config: dict, screen_config: dict):
+def prepare_validation(win: visual.Window, config: dict):
     # get markers and target positions
     target_positions = read_coord_file(config["targets"]["file"])
 
@@ -263,7 +263,7 @@ def run_validation(win: visual.Window, config: dict, tracker) -> str:
     event.waitKeys()
 
     # prepare validation
-    task_vars = prepare_validation(win, config["validation"], config["screen"])
+    task_vars = prepare_validation(win, config["validation"])
 
     # run validation
     tracker.start_recording()
