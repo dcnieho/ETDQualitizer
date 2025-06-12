@@ -162,7 +162,10 @@ def check_escape(win: visual.Window):
 
 def prepare_validation(win: visual.Window, config: dict):
     # get markers and target positions
-    target_positions = read_coord_file(config["targets"]["file"])
+    file = pathlib.Path(config["targets"]["file"])
+    if not file.is_absolute():
+        file = pathlib.Path(__file__).parent.resolve() / file
+    target_positions = read_coord_file(file)
 
     # Create a background with circle placeholders where target will appear
     stimList = []
