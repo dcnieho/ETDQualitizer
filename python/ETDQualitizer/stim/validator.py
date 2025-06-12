@@ -2,14 +2,12 @@
 from psychopy import visual, monitors, core, event
 import numpy as np
 import pandas as pd
-import json
-import traceback
 import random
 from collections import defaultdict
-from titta import Titta, Tobii
 import pathlib
 import abc
 import time
+
 
 class EyeTrackerBase(metaclass=abc.ABCMeta):
     @abc.abstractmethod
@@ -26,7 +24,7 @@ class EyeTrackerBase(metaclass=abc.ABCMeta):
         pass
 
 class TobiiEyeTracker(EyeTrackerBase):
-    def __init__(self, tracker: Tobii.myTobii):
+    def __init__(self, tracker: 'Tobii.myTobii'):
         super().__init__()
         self.tracker = tracker
         self.start_ts: int = None
@@ -82,9 +80,13 @@ def parse_target_msg(message: str):
     return [t(s) for t,s in zip((str,str,int,int,int),[f for e in message.split() for f in ([e] if not e.startswith('(') else e.strip('()').split(','))])]
 
 def get_eye_tracker_wrapper(tracker):
-    if isinstance(tracker, Tobii.myTobii):
-        return TobiiEyeTracker(tracker)
-    raise NotImplementedError(f'Support for a "{tracker.__module__}.{tracker.__class__.__qualname__}" eye tracker is not implemented')
+    track_qual_name = f"{tracker.__module__}.{tracker.__class__.__qualname__}"
+    
+    match track_qual_name:
+        case "titta.Tobii.myTobii":
+            return TobiiEyeTracker(tracker)
+        case _:
+            raise NotImplementedError(f'Support for a "track_qual_name" eye tracker is not implemented')
 
 def get_filename(stem: str, ext: str):
     if stem is None:
@@ -280,46 +282,26 @@ def run_validation(win: visual.Window, config: dict, tracker) -> str:
     # save the validation data in our common format
     return tracker.save_data(None, win.monitor)
 
-def main():
-    # read protocol setup
-    with open(pathlib.Path(__file__).parent.resolve()/"setup.json") as fp:
-        config = json.load(fp)
 
-    try:
-        # Open window, check
-        mon = monitors.Monitor('temp')
-        mon.setWidth(config["screen"]["width"])
-        mon.setDistance(config["screen"]["viewing_distance"])
-        mon.setSizePix(config["screen"]["resolution"]) 
-        win = visual.Window(monitor=mon,
-                            fullscr=True,
-                            color=config["screen"]["background_color"],
-                            screen=config["screen"]["which_monitor"] or 0,
-                            units='pix',
-                            allowGUI=False,
-                            multiSample=True,
-                            numSamples=4,
-                            infoMsg='')
-        win.mouseVisible = False
-        if not all((x==y for x,y in zip(win.size,config["screen"]["resolution"]))):
-            raise RuntimeError(f'expected resolution of {config["screen"]["resolution"]}, but got {win.size}')
-        if 1/win.monitorFramePeriod<config["screen"]["refresh_rate"]-2 or 1/win.monitorFramePeriod>config["screen"]["refresh_rate"]+2:  # check within 2 Hz
-            raise RuntimeError(f'expected framerate of {config["screen"]["refresh_rate"]}, but got {1/win.monitorFramePeriod}')
-
-        # for demo purposes, use a Tobii eye tracker
-        settings = Titta.get_defaults('Tobii Pro Spectrum')
-        tracker = Titta.Connect(settings)
-        tracker.init()
-        tracker.calibrate(win)
-
-        file_name = run_validation(win, config, tracker)
-
-    except Exception as e:
-        tb_lines = traceback.format_exception(type(e), e, e.__traceback__)
-        print("".join(tb_lines))
-    finally:
-        if 'win' in locals():
-            win.close()
-
-if __name__=="__main__":
-    main()
+def open_demo_screen(config: dict) -> visual.Window:
+    # Open window, check
+    mon = monitors.Monitor('temp')
+    mon.setWidth(config["screen"]["width"])
+    mon.setDistance(config["screen"]["viewing_distance"])
+    mon.setSizePix(config["screen"]["resolution"]) 
+    win = visual.Window(monitor=mon,
+                        fullscr=True,
+                        color=config["screen"]["background_color"],
+                        screen=config["screen"]["which_monitor"] or 0,
+                        units='pix',
+                        allowGUI=False,
+                        multiSample=True,
+                        numSamples=4,
+                        infoMsg='')
+    win.mouseVisible = False
+    if not all((x==y for x,y in zip(win.size,config["screen"]["resolution"]))):
+        raise RuntimeError(f'expected resolution of {config["screen"]["resolution"]}, but got {win.size}')
+    if 1/win.monitorFramePeriod<config["screen"]["refresh_rate"]-2 or 1/win.monitorFramePeriod>config["screen"]["refresh_rate"]+2:  # check within 2 Hz
+        raise RuntimeError(f'expected framerate of {config["screen"]["refresh_rate"]}, but got {1/win.monitorFramePeriod}')
+    
+    return win
