@@ -9,6 +9,7 @@ from collections import defaultdict
 from titta import Titta, Tobii
 import pathlib
 import abc
+import time
 
 class EyeTrackerBase(metaclass=abc.ABCMeta):
     @abc.abstractmethod
@@ -67,8 +68,6 @@ class TobiiEyeTracker(EyeTrackerBase):
         data[['target_id','tar_x','tar_y']] = target_ids_pos
 
         # done, now store to file. First get filename
-        if file_stem is None:
-            file_stem = 'ETDQualitizer'
         file_name = get_filename(file_stem,'.tsv')
         # store to file
         data.to_csv(file_name, '\t', na_rep='nan', index=False, float_format='%.8f')
@@ -88,6 +87,9 @@ def get_eye_tracker_wrapper(tracker):
     raise NotImplementedError(f'Support for a "{tracker.__module__}.{tracker.__class__.__qualname__}" eye tracker is not implemented')
 
 def get_filename(stem: str, ext: str):
+    if stem is None:
+        stem = 'ETDQualitizer_'+time.strftime("%Y%m%d-%H_%M_%S")
+
     files = pathlib.Path.cwd().glob(f'*{ext}')
 
     i = 1
