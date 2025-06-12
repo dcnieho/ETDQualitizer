@@ -150,7 +150,7 @@ def get_eye_tracker_wrapper(tracker):
     elif track_qual_name=="eyelink.eyelink.Connect":
         return EyeLinkTracker(tracker)
     else:
-        raise NotImplementedError(f'Support for a "track_qual_name" eye tracker is not implemented')
+        raise NotImplementedError(f'Support for a "{track_qual_name}" eye tracker is not implemented')
 
 def get_filename(stem: str, ext: str):
     if stem is None:
