@@ -54,23 +54,13 @@ class TobiiEyeTracker(EyeTrackerBase):
         px,py = mon.currentCalib['sizePix']
         for i,(field,fac,sub) in enumerate((('system_time_stamp',0.001,0.),('left_gaze_point_on_display_area_x',px,px/2),('left_gaze_point_on_display_area_y',py,py/2),('right_gaze_point_on_display_area_x',px,px/2),('right_gaze_point_on_display_area_y',py,py/2))):
             data[:,i] = samples[field][to_include]*fac-sub
+        # also scale message timestamp us->ms)
+        msgs = [(m[0]/1000,m[1]) for m in msgs]
         # turn into dataframe
         data = pd.DataFrame(data,columns=['timestamp', 'left_x', 'left_y', 'right_x', 'right_y'])
-        # add target ID
-        target_ids_pos = np.full((n_samp,3),-1,'int32')
-        ts = samples['system_time_stamp'][to_include]
-        for ti in range(0,len(msgs),2):
-            is_target = np.logical_and(ts>=msgs[ti][0], ts<=msgs[ti+1][0])
-            target_ids_pos[is_target,:] = msgs[ti][1][2:]
-        target_ids_pos[:,2] = -target_ids_pos[:,2]  # positive y direction should be downward, not upwards like only PsychoPy does
-        data[['target_id','tar_x','tar_y']] = target_ids_pos
 
-        # done, now store to file. First get filename
-        file_name = get_filename(file_stem,'.tsv')
-        # store to file
-        data.to_csv(file_name, '\t', na_rep='nan', index=False, float_format='%.8f')
-
-        return file_name
+        # add target ID and store
+        return add_target_and_save_data(file_stem, data, msgs)
 
 class EyeLinkTracker(EyeTrackerBase):
     def __init__(self, tracker: 'eyelink.Connect'):
@@ -102,7 +92,7 @@ class EyeLinkTracker(EyeTrackerBase):
         # collect and organize data
         to_include = np.logical_and(samples[:, 0]>=msgs[0][0], samples[:, 0]<=msgs[-1][0])
         samples = samples[to_include, :]
-        
+
         # output: [timestamp, left_x, left_y, right_x, right_y, target_id, tar_x, tar_y] (timestamp in ms)
         # get all et data, make relative to screen center
         px,py = mon.currentCalib['sizePix']
@@ -118,22 +108,9 @@ class EyeLinkTracker(EyeTrackerBase):
         if is_binocular or eye_tracked=='right':
             cols += ['right_x', 'right_y']
         data = pd.DataFrame(samples,columns=cols).sort_values(by='timestamp')
-        # add target ID
-        n_samp = data.shape[0]
-        target_ids_pos = np.full((n_samp,3),-1,'int32')
-        ts = data['timestamp'].to_numpy()
-        for ti in range(0,len(msgs),2):
-            is_target = np.logical_and(ts>=msgs[ti][0], ts<=msgs[ti+1][0])
-            target_ids_pos[is_target,:] = msgs[ti][1][2:]
-        target_ids_pos[:,2] = -target_ids_pos[:,2]  # positive y direction should be downward, not upwards like only PsychoPy does
-        data[['target_id','tar_x','tar_y']] = target_ids_pos
 
-        # done, now store to file. First get filename
-        file_name = get_filename(file_stem,'.tsv')
-        # store to file
-        data.to_csv(file_name, '\t', na_rep='nan', index=False, float_format='%.8f')
-
-        return file_name
+        # add target ID and store
+        return add_target_and_save_data(file_stem, data, msgs)
 
 class SMIEyeTracker(EyeTrackerBase):
     def __init__(self, tracker: 'SMITE_ET.Connect'):
@@ -188,7 +165,7 @@ class SMIEyeTracker(EyeTrackerBase):
 
         # add target ID and store
         return add_target_and_save_data(file_stem, data, msgs)
-    
+
 def add_target_and_save_data(file_stem: str, data: pd.DataFrame, msgs: list[tuple[int,list]]) -> str:
     # add target ID
     n_samp = data.shape[0]
