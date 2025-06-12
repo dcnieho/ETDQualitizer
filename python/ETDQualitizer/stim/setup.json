@@ -19,6 +19,7 @@
         "targets": {
             "file": "targetPositions.csv",
             "duration": 1.0,
+            "randomize_order": true,
             "placeholder": {
                 "color": "white",
                 "diameter": 40

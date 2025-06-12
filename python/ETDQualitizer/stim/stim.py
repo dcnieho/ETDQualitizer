@@ -192,7 +192,8 @@ def show_validation(win: visual.Window, config: dict, refresh_rate: int, task_va
 
     # prepare target order
     targets = [t for t in task_vars['target_positions'].index.to_list()]
-    random.shuffle(targets)
+    if config["targets"]["randomize_order"]:
+        random.shuffle(targets)
 
     # prepare task parameters
     n_shrink_frames = int(config["targets"]["shrink"]["duration"]*refresh_rate)
