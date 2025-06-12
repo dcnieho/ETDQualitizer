@@ -72,6 +72,69 @@ class TobiiEyeTracker(EyeTrackerBase):
 
         return file_name
 
+class EyeLinkTracker(EyeTrackerBase):
+    def __init__(self, tracker: 'eyelink.Connect'):
+        super().__init__()
+        self.tracker = tracker
+        self.start_ts: int = None
+        self.stop_ts: int = None
+    def start_recording(self):
+        self.tracker.start_recording(sendlink=True)
+        self.start_ts = self.tracker.get_time_stamp()
+        core.wait(0.5)
+    def send_message(self, msg:str):
+        self.tracker.send_message(msg)
+    def stop_recording(self):
+        self.stop_ts = self.tracker.get_time_stamp()
+        self.tracker.stop_recording()
+    def save_data(self, file_stem: str, mon: monitors.Monitor) -> str:
+        samples = np.array(self.tracker.buf.peek_time_range(self.start_ts, self.stop_ts))
+        # Remove pupil size values
+        eye_tracked = self.tracker.settings.EYE_TRACKED.lower()
+        is_binocular = eye_tracked=='both'
+        to_delete = np.s_[3, 6] if is_binocular else np.s_[3]
+        samples = np.delete(samples, to_delete, 1)
+        messages= [msg for msg in self.tracker.msg_buffer if msg[0]>=self.start_ts and msg[0]<=self.stop_ts]
+
+        # parse target info
+        msgs = [(m[0],pm) for m in messages if (pm:=parse_target_msg(m[1])) is not None]
+
+        # collect and organize data
+        to_include = np.logical_and(samples[:, 0]>=msgs[0][0], samples[:, 0]<=msgs[-1][0])
+        samples = samples[to_include, :]
+        
+        # output: [timestamp, left_x, left_y, right_x, right_y, target_id, tar_x, tar_y] (timestamp in ms)
+        # get all et data, make relative to screen center
+        px,py = mon.currentCalib['sizePix']
+        eye_fac = (1,px/2),(1,py/2)
+        n_eye = 2 if is_binocular else 1
+        for i,(fac,sub) in enumerate(((1,0.),)+n_eye*eye_fac):
+            samples[:, i] = samples[:, i] * fac - sub
+
+        # turn into dataframe
+        cols = ['timestamp']
+        if is_binocular or eye_tracked=='left':
+            cols += ['left_x', 'left_y']
+        if is_binocular or eye_tracked=='right':
+            cols += ['right_x', 'right_y']
+        data = pd.DataFrame(samples,columns=cols).sort_values(by='timestamp')
+        # add target ID
+        n_samp = data.shape[0]
+        target_ids_pos = np.full((n_samp,3),-1,'int32')
+        ts = data['timestamp'].to_numpy()
+        for ti in range(0,len(msgs),2):
+            is_target = np.logical_and(ts>=msgs[ti][0], ts<=msgs[ti+1][0])
+            target_ids_pos[is_target,:] = msgs[ti][1][2:]
+        target_ids_pos[:,2] = -target_ids_pos[:,2]  # positive y direction should be downward, not upwards like only PsychoPy does
+        data[['target_id','tar_x','tar_y']] = target_ids_pos
+
+        # done, now store to file. First get filename
+        file_name = get_filename(file_stem,'.tsv')
+        # store to file
+        data.to_csv(file_name, '\t', na_rep='nan', index=False, float_format='%.8f')
+
+        return file_name
+
 
 def parse_target_msg(message: str):
     # format: onset/offset target N (x,y)
@@ -84,6 +147,8 @@ def get_eye_tracker_wrapper(tracker):
     
     if track_qual_name=="titta.Tobii.myTobii":
         return TobiiEyeTracker(tracker)
+    elif track_qual_name=="eyelink.eyelink.Connect":
+        return EyeLinkTracker(tracker)
     else:
         raise NotImplementedError(f'Support for a "track_qual_name" eye tracker is not implemented')
 
