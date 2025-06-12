@@ -92,7 +92,7 @@ def get_filename(stem: str, ext: str):
     if stem is None:
         stem = 'ETDQualitizer_'+time.strftime("%Y%m%d-%H_%M_%S")
 
-    files = pathlib.Path.cwd().glob(f'*{ext}')
+    files = list(pathlib.Path.cwd().glob(f'*{ext}'))
 
     i = 1
     file_add = ''
