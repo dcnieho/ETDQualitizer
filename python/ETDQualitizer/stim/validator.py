@@ -82,11 +82,10 @@ def parse_target_msg(message: str):
 def get_eye_tracker_wrapper(tracker):
     track_qual_name = f"{tracker.__module__}.{tracker.__class__.__qualname__}"
     
-    match track_qual_name:
-        case "titta.Tobii.myTobii":
-            return TobiiEyeTracker(tracker)
-        case _:
-            raise NotImplementedError(f'Support for a "track_qual_name" eye tracker is not implemented')
+    if track_qual_name=="titta.Tobii.myTobii":
+        return TobiiEyeTracker(tracker)
+    else:
+        raise NotImplementedError(f'Support for a "track_qual_name" eye tracker is not implemented')
 
 def get_filename(stem: str, ext: str):
     if stem is None:
@@ -296,8 +295,7 @@ def open_demo_screen(config: dict) -> visual.Window:
                         units='pix',
                         allowGUI=False,
                         multiSample=True,
-                        numSamples=4,
-                        infoMsg='')
+                        numSamples=4)
     win.mouseVisible = False
     if not all((x==y for x,y in zip(win.size,config["screen"]["resolution"]))):
         raise RuntimeError(f'expected resolution of {config["screen"]["resolution"]}, but got {win.size}')
