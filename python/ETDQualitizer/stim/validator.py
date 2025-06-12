@@ -135,6 +135,78 @@ class EyeLinkTracker(EyeTrackerBase):
 
         return file_name
 
+class SMIEyeTracker(EyeTrackerBase):
+    def __init__(self, tracker: 'SMITE_ET.Connect'):
+        super().__init__()
+        self.tracker = tracker
+        self.start_ts: int = None
+        self.stop_ts: int = None
+        self.msgs = []
+    def start_recording(self):
+        self.tracker.start_recording()
+        self.tracker.start_buffer(sample_buffer_length=None)
+        core.wait(0.5)
+        self.start_ts = self.tracker.rawSMI.get_current_time_stamp()
+    def send_message(self, msg:str):
+        self.tracker.send_message(msg)
+        self.msgs.append([self.tracker.rawSMI.get_current_time_stamp(), msg])
+    def stop_recording(self):
+        self.stop_ts = self.tracker.rawSMI.get_current_time_stamp()
+        self.tracker.stop_buffer()
+        self.tracker.stop_recording()
+    def save_data(self, file_stem: str, mon: monitors.Monitor) -> str:
+        samples = self.tracker.peek_buffer_data_time_range(self.start_ts, self.stop_ts)
+        samples = np.array([[s.timestamp,s.leftEye.gazeX,s.leftEye.gazeY,s.rightEye.gazeX,s.rightEye.gazeY] for s in samples])
+        # replace missing data (coded as 0,0) with nan
+        is_miss = np.logical_and(samples[:,1]==0, samples[:,2]==0)
+        samples[is_miss,1:3] = np.nan
+        is_miss = np.logical_and(samples[:,3]==0, samples[:,4]==0)
+        samples[is_miss,3:5] = np.nan
+        # get messages
+        messages= [msg for msg in self.msgs if msg[0]>=self.start_ts and msg[0]<=self.stop_ts]
+
+        # parse target info (message timestamp us->ms)
+        msgs = [(m[0],pm) for m in messages if (pm:=parse_target_msg(m[1])) is not None]
+
+        # collect and organize data
+        to_include = np.logical_and(samples[:, 0]>=msgs[0][0], samples[:, 0]<=msgs[-1][0])
+        samples = samples[to_include, :]
+
+        # output: [timestamp, left_x, left_y, right_x, right_y, target_id, tar_x, tar_y] (timestamp in ms)
+        # get all et data, make relative to screen center
+        px,py = mon.currentCalib['sizePix']
+        eye_fac = (1,px/2),(1,py/2)
+        n_eye = 2
+        for i,(fac,sub) in enumerate(((0.001,0.),)+n_eye*eye_fac):
+            samples[:, i] = samples[:, i] * fac - sub
+        # also scale message timestamp us->ms)
+        msgs = [(m[0]/1000,m[1]) for m in msgs]
+
+        # turn into dataframe
+        cols = ['timestamp','left_x','left_y','right_x','right_y']
+        data = pd.DataFrame(samples,columns=cols).sort_values(by='timestamp')
+
+        # add target ID and store
+        return add_target_and_save_data(file_stem, data, msgs)
+    
+def add_target_and_save_data(file_stem: str, data: pd.DataFrame, msgs: list[tuple[int,list]]) -> str:
+    # add target ID
+    n_samp = data.shape[0]
+    target_ids_pos = np.full((n_samp,3),-1,'int32')
+    target_ids_pos[:,2] = 1 # sign will be flipped below
+    ts = data['timestamp'].to_numpy()
+    for ti in range(0,len(msgs),2):
+        is_target = np.logical_and(ts>=msgs[ti][0], ts<=msgs[ti+1][0])
+        target_ids_pos[is_target,:] = msgs[ti][1][2:]
+    target_ids_pos[:,2] = -target_ids_pos[:,2]  # positive y direction should be downward, not upwards like only PsychoPy does
+    data[['target_id','tar_x','tar_y']] = target_ids_pos
+
+    # done, now store to file. First get filename
+    file_name = get_filename(file_stem,'.tsv')
+    # store to file
+    data.to_csv(file_name, sep='\t', na_rep='nan', index=False, float_format='%.8f')
+
+    return file_name
 
 def parse_target_msg(message: str):
     # format: onset/offset target N (x,y)
@@ -149,6 +221,8 @@ def get_eye_tracker_wrapper(tracker):
         return TobiiEyeTracker(tracker)
     elif track_qual_name=="eyelink.eyelink.Connect":
         return EyeLinkTracker(tracker)
+    elif track_qual_name=="py_smite.SMITE_ET.Connect":
+        return SMIEyeTracker(tracker)
     else:
         raise NotImplementedError(f'Support for a "{track_qual_name}" eye tracker is not implemented')
 
