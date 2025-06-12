@@ -276,7 +276,7 @@ def run_validation(win: visual.Window, config: dict, tracker) -> str:
 
 def main():
     # read protocol setup
-    with open("setup.json") as fp:
+    with open(pathlib.Path(__file__).parent.resolve()/"setup.json") as fp:
         config = json.load(fp)
 
     failed = False
