@@ -279,6 +279,7 @@ def main():
     with open("setup.json") as fp:
         config = json.load(fp)
 
+    failed = False
     try:
         # Open window, check
         mon = monitors.Monitor('temp')
@@ -311,12 +312,14 @@ def main():
     except Exception as e:
         tb_lines = traceback.format_exception(type(e), e, e.__traceback__)
         print("".join(tb_lines))
+        failed = True
     finally:
         if 'win' in locals():
             win.close()
         if 'file_name' not in locals():
             file_name = 'crashed'
-        tracker.save_data(file_name)
+        if not failed:
+            tracker.save_data(file_name)
 
 if __name__=="__main__":
     main()
