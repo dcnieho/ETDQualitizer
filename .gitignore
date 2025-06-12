@@ -53,3 +53,9 @@ MANIFEST
 .idea/
 .vs/
 *.ini
+
+# Titta output
+*.p
+*.json
+*.tsv
+*.h5
