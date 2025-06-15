@@ -34,7 +34,7 @@ class ScreenConfiguration:
         return np.degrees(azi), np.degrees(ele)
 
 
-def _Fick_to_cartesian(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[N], np.dtype[np.float64]], r: float=1.) -> tuple[np.ndarray[tuple[N], np.dtype[np.float64]], np.ndarray[tuple[N], np.dtype[np.float64]], np.ndarray[tuple[N], np.dtype[np.float64]]]:
+def Fick_to_cartesian(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[N], np.dtype[np.float64]], r: float=1.) -> tuple[np.ndarray[tuple[N], np.dtype[np.float64]], np.ndarray[tuple[N], np.dtype[np.float64]], np.ndarray[tuple[N], np.dtype[np.float64]]]:
     azi = np.radians(azi)
     ele = np.radians(ele)
     r_cos_ele = r*np.cos(ele)
@@ -74,8 +74,8 @@ class DataQuality:
 
     def accuracy(self, target_x_deg: float, target_y_deg: float, central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
         # get unit vectors for gaze and target
-        g_x,g_y,g_z = _Fick_to_cartesian(  self.x,       self.y)
-        t_x,t_y,t_z = _Fick_to_cartesian(target_x_deg, target_y_deg)
+        g_x,g_y,g_z = Fick_to_cartesian(  self.x,       self.y)
+        t_x,t_y,t_z = Fick_to_cartesian(target_x_deg, target_y_deg)
         # calculate angular offset for each sample using dot product
         offsets     = np.arccos(np.dot(np.vstack((g_x,g_y,g_z)).T, np.array([t_x,t_y,t_z])))
         # calculate on-screen orientation so we can decompose offset into x and y
