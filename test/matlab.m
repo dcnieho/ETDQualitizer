@@ -25,7 +25,8 @@ for f=1:length(files)
         % and RMS S2S calculated in two ways over the whole datafile
         dq_calc = DataQuality(gaze.([eyes{e} '_x']),gaze.([eyes{e} '_y']),gaze.timestamp/1000,'pixels',screen); % timestamps are in ms in the file
     
-        fs = str2double(files(f).name(1:end-length('Hz.tsv')));
+        fp = split(files(f).name,'_');
+        fs = str2double(fp{end}(1:end-length('Hz.tsv')));
         window_len = round(.2*fs);  % 200 ms
     
         fprintf('RMS S2S using median (%s eye): %.4f deg\n', eyes{e}, dq_calc.precision_RMS_S2S(@(x) median(x, 'omitnan')))
