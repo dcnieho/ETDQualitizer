@@ -257,3 +257,30 @@ def compute_data_quality_from_validation(gaze               : pd.DataFrame,
     if not advanced:
         dq_df = dq_df.drop(columns=[c for c in dq_df.columns if c not in ('eye', 'target_id', 'offset', 'rms_s2s', 'std', 'bcea', 'data_loss', 'effective_frequency')])
     return dq_df
+
+
+def report_data_quality_table(dq_table: pd.DataFrame) -> tuple[str,dict[str,pd.DataFrame]]:
+    measures = {}
+    # average over targets and eyes
+    measures['all']  = dq_table.groupby('file').mean()
+
+    # do summary statistics
+    measures['mean'] = measures['all'].mean()
+    measures['std']  = measures['all'].std()
+    measures['min']  = measures['all'].min()
+    measures['max']  = measures['all'].max()
+
+    # make text. A little overcomplete, user can trim what they don't want
+    # N.B.: do not include data loss/effective frequency, nor bcea. Bcea is
+    # niche, user who wants it can get that themselves. Data loss you'd really
+    # want to report for all the analyzed data, not just this validation
+    # procedure.
+    n_target = dq_table.index.get_level_values('target_id').nunique()
+    n_subj   = measures['all'].shape[0]
+    txt = (
+        f"For {n_subj} participants, the average inaccuracy in the data determined from a {n_target}-point validation using ETDQualitizer (Niehorster et al., in prep) "
+        f"was {measures['mean'].offset:.2f}° (STD {measures['std'].offset:.2f}°, range {measures['min'].offset:.2f}°--{measures['max'].offset:.2f}°). "
+        f"Average RMS-S2S precision was {measures['mean'].rms_s2s:.3f}° (STD {measures['std'].rms_s2s:.3f}°, range {measures['min'].rms_s2s:.3f}°--{measures['max'].rms_s2s:.3f}°) "
+        f"and STD precision {measures['mean']['std']:.3f}° (STD {measures['std']['std']:.3f}°, range {measures['min']['std']:.3f}°--{measures['max']['std']:.3f}°)."
+    )
+    return txt, measures

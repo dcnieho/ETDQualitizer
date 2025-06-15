@@ -44,3 +44,11 @@ for f=1:length(files)
     end
 end
 all_dq = vertcat(all_dq{:});
+
+% make a text one can directly put in a paper. Note that normally all_dq
+% would contain data for multiple subjects measured under the same
+% conditions, not like in this case data from different devices with
+% different settings
+[dq_txt,summary_dq] = report_data_quality_table(all_dq);
+fprintf('%s\n',dq_txt);
+summary_dq.all

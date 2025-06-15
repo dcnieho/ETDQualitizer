@@ -44,6 +44,13 @@ for f in (pathlib.Path(__file__).parent / 'data').glob('*.tsv'):
         print(f'Data loss ({e} eye): {dq.data_loss_nominal(fs):.1f}%')
         print(f'Effective frequency ({e} eye): {dq.effective_frequency():.1f} Hz')
 
-print('--------\nAll:')
 all_df = pd.concat(all_dfs, names=['file'])
-print(all_df.to_string(float_format='%.4f'))
+
+# make a text one can directly put in a paper. Note that normally all_df
+# would contain data for multiple subjects measured under the same
+# conditions, not like in this case data from different devices with
+# different settings
+print('--------\nAll:')
+dq_txt, summary_dq = ETDQualitizer.report_data_quality_table(all_df)
+print(dq_txt)
+summary_dq['all']
