@@ -33,8 +33,8 @@ for f=1:length(files)
         fprintf('RMS S2S using moving window (%s eye): %.4f deg\n', eyes{e}, dq_calc.precision_using_moving_window(window_len,"RMS_S2S"))
     
         % data loss and effective frequency
-        fprintf('Data loss (%s eye): %.1f%%\n', eyes{e}, dq_calc.data_loss_percentage())
-        fprintf('Data loss nominal frequency (%s eye): %.1f%%\n', eyes{e}, dq_calc.data_loss_percentage_nominal(fs))
+        fprintf('Data loss (%s eye): %.1f%%\n', eyes{e}, dq_calc.data_loss())
+        fprintf('Data loss nominal frequency (%s eye): %.1f%%\n', eyes{e}, dq_calc.data_loss_nominal(fs))
         fprintf('Effective frequency (%s eye): %.1f Hz\n', eyes{e}, dq_calc.effective_frequency())
     end
 end

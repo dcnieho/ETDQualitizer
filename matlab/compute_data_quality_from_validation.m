@@ -58,7 +58,7 @@ for e=1:length(eyes)
         [dq.std(oi),dq.std_x(oi),dq.std_y(oi)] = dq_calc.precision_STD();
         [dq.bcea(oi),dq.bcea_orientation(oi),dq.bcea_ax1(oi),dq.bcea_ax2(oi),dq.bcea_aspect_ratio(oi)] = dq_calc.precision_BCEA();
         if include_data_loss
-            dq.data_loss(oi) = dq_calc.data_loss_percentage();
+            dq.data_loss(oi) = dq_calc.data_loss();
             dq.effective_frequency(oi) = dq_calc.effective_frequency();
         end
     end
