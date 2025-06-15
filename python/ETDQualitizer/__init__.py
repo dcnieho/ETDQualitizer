@@ -6,6 +6,74 @@ from .version import __version__, __url__, __author__, __email__, __description_
 
 N = typing.TypeVar("N", bound=int)
 
+def accuracy(x: np.ndarray[tuple[N], np.dtype[np.float64]],
+             y: np.ndarray[tuple[N], np.dtype[np.float64]],
+             target_x_deg: float, target_y_deg: float,
+             central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
+    # get unit vectors for gaze and target
+    g_x,g_y,g_z = Fick_to_cartesian(       x,            y)
+    t_x,t_y,t_z = Fick_to_cartesian(target_x_deg, target_y_deg)
+    # calculate angular offset for each sample using dot product
+    offsets     = np.arccos(np.dot(np.vstack((g_x,g_y,g_z)).T, np.array([t_x,t_y,t_z])))
+    # calculate on-screen orientation so we can decompose offset into x and y
+    direction   = np.arctan2(g_y/g_z-t_y/t_z, g_x/g_z-t_x/t_z)  # compute direction on tangent screen (divide by z to project to screen at 1m)
+    offsets_2D  = np.degrees(offsets.reshape((-1,1))*np.array([np.cos(direction), np.sin(direction)]).T)
+    # calculate mean horizontal and vertical offset
+    offset_x    = central_tendency_fun(offsets_2D[:,0])
+    offset_y    = central_tendency_fun(offsets_2D[:,1])
+    # calculate offset of centroid
+    return float(np.hypot(offset_x, offset_y)), float(offset_x), float(offset_y)
+
+def rms_s2s(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
+    x_diff = np.diff(x)**2
+    y_diff = np.diff(y)**2
+    # N.B.: cannot simplify to np.hypot(rms_x, rms_y)
+    # as that is only equivalent when mean() is used as central tendency estimator
+    return float(np.sqrt(central_tendency_fun(x_diff + y_diff))), \
+           float(np.sqrt(central_tendency_fun(x_diff))), \
+           float(np.sqrt(central_tendency_fun(y_diff)))
+
+def std(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]]) -> tuple[float,float,float]:
+    std_x = np.nanstd(x, ddof=0)
+    std_y = np.nanstd(y, ddof=0)
+    return float(np.hypot(std_x, std_y)), \
+           float(std_x), \
+           float(std_y)
+
+def bcea(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], P: float = 0.68) -> tuple[float,float,float,float,float]:
+    k = np.log(1./(1-P))    # turn cumulative probability of area under the multivariate normal into scale factor
+
+    x = np.delete(x, np.isnan(x))
+    y = np.delete(y, np.isnan(y))
+    std_x = np.std(x, ddof=1)
+    std_y = np.std(y, ddof=1)
+    rho = np.corrcoef(x, y)[0,1]
+    area = 2*k*np.pi*std_x*std_y*np.sqrt(1-rho**2)
+    # compute major and minor axis radii, and orientation, of the BCEA ellipse
+    d,v = np.linalg.eig(np.cov(x,y))
+    i = np.argmax(d)
+    orientation = np.degrees(np.arctan2(v[1,i], v[0,i]))
+    ax1 = np.sqrt(k*d[i])
+    ax2 = np.sqrt(k*d[1-i])
+    aspect_ratio = max([ax1, ax2])/min([ax1, ax2])
+    # sanity check: this (formula for area of ellipse) should
+    # closely match directly computed area from above
+    # 2*np.pi*ax1*ax2
+    return float(area), float(orientation), float(ax1), float(ax2), float(aspect_ratio)
+
+def data_loss(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]]):
+    missing = np.isnan(x) | np.isnan(y)
+    return np.sum(missing)/missing.size*100
+
+def data_loss_nominal(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], duration: float, frequency: float):
+    N_valid = np.count_nonzero(~(np.isnan(x) | np.isnan(y)))
+    return (1-N_valid/(duration*frequency))*100
+
+def effective_frequency(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], duration: float):
+    N_valid = np.count_nonzero(~(np.isnan(x) | np.isnan(y)))
+    return N_valid/duration
+
+
 class ScreenConfiguration:
     def __init__(self,
                  screen_size_x_mm: float, screen_size_y_mm: float,
@@ -32,6 +100,27 @@ class ScreenConfiguration:
         azi = np.arctan2(x,self.viewing_distance_mm)
         ele = np.arctan2(y,np.hypot(self.viewing_distance_mm,x))
         return np.degrees(azi), np.degrees(ele)
+
+    def mm_to_pix(self, x: float, y: float) -> tuple[float,float]:
+        x_pix = x/self.screen_size_x_mm*self.screen_res_x_pix
+        y_pix = y/self.screen_size_y_mm*self.screen_res_y_pix
+        return x_pix, y_pix
+
+    def deg_to_pix(self, x: float, y: float) -> tuple[float,float]:
+        # N.B.: input is in Fick angles
+        x_mm, y_mm = self.deg_to_mm(x, y)
+        return self.mm_to_pix(x_mm, y_mm)
+
+    def deg_to_mm(self, x: float, y: float) -> tuple[float,float]:
+        # N.B.: input is in Fick angles
+        x,y,z = Fick_to_cartesian(x, y)
+        x_mm = x/z*self.viewing_distance_mm
+        y_mm = y/z*self.viewing_distance_mm
+        return x_mm, y_mm
+
+    def screen_extents(self) -> tuple[float,float]:
+        [x_deg, y_deg] = self.mm_to_deg(self.screen_size_x_mm/2, self.screen_size_y_mm/2)
+        return x_deg*2, y_deg*2
 
 
 def Fick_to_cartesian(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[N], np.dtype[np.float64]], r: float=1.) -> tuple[np.ndarray[tuple[N], np.dtype[np.float64]], np.ndarray[tuple[N], np.dtype[np.float64]], np.ndarray[tuple[N], np.dtype[np.float64]]]:
@@ -74,39 +163,25 @@ class DataQuality:
 
     def accuracy(self, target_x_deg: float, target_y_deg: float, central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
         # get unit vectors for gaze and target
-        g_x,g_y,g_z = Fick_to_cartesian(  self.x,       self.y)
-        t_x,t_y,t_z = Fick_to_cartesian(target_x_deg, target_y_deg)
-        # calculate angular offset for each sample using dot product
-        offsets     = np.arccos(np.dot(np.vstack((g_x,g_y,g_z)).T, np.array([t_x,t_y,t_z])))
-        # calculate on-screen orientation so we can decompose offset into x and y
-        direction   = np.arctan2(g_y/g_z-t_y/t_z, g_x/g_z-t_x/t_z)  # compute direction on tangent screen (divide by z to project to screen at 1m)
-        offsets_2D  = np.degrees(offsets.reshape((-1,1))*np.array([np.cos(direction), np.sin(direction)]).T)
-        # calculate mean horizontal and vertical offset
-        offset_x    = central_tendency_fun(offsets_2D[:,0])
-        offset_y    = central_tendency_fun(offsets_2D[:,1])
-        # calculate offset of centroid
-        return float(np.hypot(offset_x, offset_y)), float(offset_x), float(offset_y)
+        return accuracy(self.x, self.y, target_x_deg, target_y_deg, central_tendency_fun)
 
     def precision_RMS_S2S(self, central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
-        return _RMS_S2S_impl(self.x, self.y, central_tendency_fun)
+        return rms_s2s(self.x, self.y, central_tendency_fun)
 
     def precision_STD(self) -> tuple[float,float,float]:
-        return _STD_impl(self.x, self.y)
+        return std(self.x, self.y)
 
-    def precision_BCEA(self, P: float = 0.6827) -> tuple[float,float,float,float,float]:
-        return _BCEA_impl(self.x, self.y, P)
+    def precision_BCEA(self, P: float = 0.68) -> tuple[float,float,float,float,float]:
+        return bcea(self.x, self.y, P)
 
-    def data_loss_percentage(self):
-        missing = np.isnan(self.x) | np.isnan(self.y)
-        return np.sum(missing)/missing.size*100
+    def data_loss(self):
+        return data_loss(self.x, self.y)
 
-    def data_loss_percentage_nominal(self, frequency):
-        N_valid = np.count_nonzero(~(np.isnan(self.x) | np.isnan(self.y)))
-        return (1-N_valid/(self.get_duration()*frequency))*100
+    def data_loss_nominal(self, frequency):
+        return data_loss_nominal(self.x, self.y, self.get_duration(), frequency)
 
     def effective_frequency(self):
-        N_valid = np.count_nonzero(~(np.isnan(self.x) | np.isnan(self.y)))
-        return N_valid/self.get_duration()
+        return effective_frequency(self.x, self.y, self.get_duration())
 
     def get_duration(self) -> float:
         # to get duration right, we need to include duration of last sample
@@ -117,11 +192,11 @@ class DataQuality:
     def precision_using_moving_window(self, window_length, metric, aggregation_fun=np.nanmedian, **kwargs) -> float:
         match metric:
             case 'RMS_S2S':
-                fun =  _RMS_S2S_impl
+                fun =  rms_s2s
             case 'STD':
-                fun =  _STD_impl
+                fun =  std
             case 'BCEA':
-                fun =  _BCEA_impl
+                fun =  bcea
             case _:
                 raise ValueError(f'metric "{metric}" is not understood')
 
@@ -174,7 +249,7 @@ def compute_data_quality_from_validation(gaze               : pd.DataFrame,
             for k,v in zip(('bcea','bcea_orientation','bcea_ax1','bcea_ax2','bcea_aspect_ratio'),dq.precision_BCEA()):
                 row[k] = v
             if include_data_loss:
-                row['data_loss'] = dq.data_loss_percentage()
+                row['data_loss'] = dq.data_loss()
                 row['effective_frequency'] = dq.effective_frequency()
             rows.append(row)
 
@@ -182,42 +257,3 @@ def compute_data_quality_from_validation(gaze               : pd.DataFrame,
     if not advanced:
         dq_df = dq_df.drop(columns=[c for c in dq_df.columns if c not in ('eye', 'target_id', 'offset', 'rms_s2s', 'std', 'bcea', 'data_loss', 'effective_frequency')])
     return dq_df
-
-
-
-def _RMS_S2S_impl(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
-    x_diff = np.diff(x)**2
-    y_diff = np.diff(y)**2
-    # N.B.: cannot simplify to np.hypot(rms_x, rms_y)
-    # as that is only equivalent when mean() is used as central tendency estimator
-    return float(np.sqrt(central_tendency_fun(x_diff + y_diff))), \
-           float(np.sqrt(central_tendency_fun(x_diff))), \
-           float(np.sqrt(central_tendency_fun(y_diff)))
-
-def _STD_impl(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]]) -> tuple[float,float,float]:
-    std_x = np.nanstd(x, ddof=0)
-    std_y = np.nanstd(y, ddof=0)
-    return float(np.hypot(std_x, std_y)), \
-           float(std_x), \
-           float(std_y)
-
-def _BCEA_impl(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], P: float = 0.68) -> tuple[float,float,float,float,float]:
-    k = np.log(1./(1-P))    # turn cumulative probability of area under the multivariate normal into scale factor
-
-    x = np.delete(x, np.isnan(x))
-    y = np.delete(y, np.isnan(y))
-    std_x = np.std(x, ddof=1)
-    std_y = np.std(y, ddof=1)
-    rho = np.corrcoef(x, y)[0,1]
-    area = 2*k*np.pi*std_x*std_y*np.sqrt(1-rho**2)
-    # compute major and minor axis radii, and orientation, of the BCEA ellipse
-    d,v = np.linalg.eig(np.cov(x,y))
-    i = np.argmax(d)
-    orientation = np.degrees(np.arctan2(v[1,i], v[0,i]))
-    ax1 = np.sqrt(k*d[i])
-    ax2 = np.sqrt(k*d[1-i])
-    aspect_ratio = max([ax1, ax2])/min([ax1, ax2])
-    # sanity check: this (formula for area of ellipse) should
-    # closely match directly computed area from above
-    # 2*np.pi*ax1*ax2
-    return float(area), float(orientation), float(ax1), float(ax2), float(aspect_ratio)
