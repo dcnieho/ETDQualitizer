@@ -57,5 +57,11 @@ classdef ScreenConfiguration
             x_mm = x./z.*obj.viewing_distance_mm;
             y_mm = y./z.*obj.viewing_distance_mm;
         end
+
+        function [x_deg, y_deg] = screen_extents(obj)
+            [x_deg, y_deg] = obj.mm_to_deg(obj.screen_size_x_mm/2, obj.screen_size_y_mm/2);
+            x_deg = x_deg*2;
+            y_deg = y_deg*2;
+        end
     end
 end
