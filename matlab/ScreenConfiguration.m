@@ -46,7 +46,7 @@ classdef ScreenConfiguration
         end
 
         function [x_pix, y_pix] = deg_to_pix(obj, x, y)
-            % N.B.: output is in Fick angles
+            % N.B.: input is in Fick angles
             [x_mm , y_mm ] = obj.deg_to_mm(x, y);
             [x_pix, y_pix] = obj.mm_to_pix(x_mm, y_mm);
         end
