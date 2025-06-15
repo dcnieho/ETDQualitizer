@@ -39,5 +39,23 @@ classdef ScreenConfiguration
             x_deg = atan2(x,obj.viewing_distance_mm)*180/pi;            % azimuth
             y_deg = atan2(y,hypot(obj.viewing_distance_mm,x))*180/pi;   % elevation
         end
+
+        function [x_pix, y_pix] = mm_to_pix(obj, x, y)
+            x_pix = x/obj.screen_size_x_mm*obj.screen_res_x_pix;
+            y_pix = y/obj.screen_size_y_mm*obj.screen_res_y_pix;
+        end
+
+        function [x_pix, y_pix] = deg_to_pix(obj, x, y)
+            % N.B.: output is in Fick angles
+            [x_mm , y_mm ] = obj.deg_to_mm(x, y);
+            [x_pix, y_pix] = obj.mm_to_pix(x_mm, y_mm);
+        end
+
+        function [x_mm, y_mm] = deg_to_mm(obj, x, y)
+            % N.B.: input is in Fick angles
+            [x,y,z] = Fick_to_cartesian(x, y);
+            x_mm = x./z.*obj.viewing_distance_mm;
+            y_mm = y./z.*obj.viewing_distance_mm;
+        end
     end
 end
