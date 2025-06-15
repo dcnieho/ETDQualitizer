@@ -18,16 +18,21 @@ for f in (pathlib.Path(__file__).parent / 'data').glob('*.tsv'):
     print(f'----------\n{f.name}')
     gaze = pd.read_csv(f, sep='\t', dtype=defaultdict(lambda: float, {'target_id': int, 'tar_x': int, 'tar_y': int}))
 
+    # automatically compute data quality measures per target
     dq_df = ETDQualitizer.compute_data_quality_from_validation(gaze, 'pixels', screen, advanced=False, include_data_loss=True)    # include_data_loss for testing, this is probably *not* what you want
     print(dq_df.to_string(float_format='%.4f'))
     all_dfs[f.name] = dq_df
 
+    # manually perform some further data quality computations on data from
+    # the whole validation instead of per target
     for e in ('left','right'):
         if f'{e}_x' not in gaze.columns:
             continue
-        # and RMS S2S calculated in two ways over the whole datafile
+        # and RMS-S2S calculated in two ways over the whole datafile
         dq = ETDQualitizer.DataQuality(gaze[f'{e}_x'].to_numpy(),gaze[f'{e}_y'].to_numpy(),gaze['timestamp'].to_numpy()/1000,'pixels',screen)  # timestamps are in ms in the file
 
+        # determine sampling frequency from the filename (assumes our test
+        # files which end in '<xxx>Hz')
         fs = int(f.stem.split('_')[-1].removesuffix('Hz'))
         window_len = int(.2*fs) # 200 ms
 
