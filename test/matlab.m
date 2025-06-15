@@ -14,17 +14,22 @@ for f=1:length(files)
     fprintf('----------\n%s\n',files(f).name);
     gaze = readtable(fullfile(fold,files(f).name),'FileType','text','Delimiter','\t');
 
+    % automatically compute data quality measures per target
     dq = compute_data_quality_from_validation(gaze, 'pixels', screen, false, true)     % include_data_loss for testing, this is probably *not* what you want
     all_dq{end+1,1} = addvars(dq, repmat(string(files(f).name),size(dq,1),1), 'Before', 1, 'NewVariableNames',{'file'});
 
+    % manually perform some further data quality computations on data from
+    % the whole validation instead of per target
     eyes = {'left','right'};
     for e=1:length(eyes)
         if ~any(strcmp([eyes{e} '_x'],gaze.Properties.VariableNames))
             continue
         end
-        % and RMS S2S calculated in two ways over the whole datafile
+        % and RMS-S2S calculated in two ways over the whole datafile
         dq_calc = DataQuality(gaze.([eyes{e} '_x']),gaze.([eyes{e} '_y']),gaze.timestamp/1000,'pixels',screen); % timestamps are in ms in the file
     
+        % determine sampling frequency from the filename (assumes our test
+        % files which end in '<xxx>Hz')
         fp = split(files(f).name,'_');
         fs = str2double(fp{end}(1:end-length('Hz.tsv')));
         window_len = round(.2*fs);  % 200 ms
