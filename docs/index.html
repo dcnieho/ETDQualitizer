@@ -39,28 +39,41 @@
         <label for="bestand" id="lblbestand" style="background-color:dimgray; color:darkgray; padding: 10px; width: 130px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Select Data File(s)</label>
         <input id="bestand" style="display:none;" type="file" disabled multiple>
       </div>
+    </div>
+    <div id="knop2" style="top:180px; position: relative">
+      <div id="knopadd">
+        <label for="bestandadd" id="lblbestandadd" style="background-color:dimgray; color:darkgray; padding: 10px; width: 130px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Add Data File(s)</label>
+        <input id="bestandadd" style="display:none;" type="file" disabled multiple>
+      </div>
     </div> 
-    <div id="lijst" style="top: 170px; position: relative; font-style: italic;">Files:</div>
+    <div id="knop3" style="top:200px; position: relative">
+      <div id="knopreplace">
+        <label for="bestandreplace" id="lblbestandreplace" style="background-color:dimgray; color:darkgray; padding: 10px; width: 150px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Replace Data File(s)</label>
+        <input id="bestandreplace" style="display:none;" type="file" disabled multiple>
+      </div>
+    </div>  
+    <div id="lijst" style="top: 210px; position: relative; font-style: italic;">Files:</div>
 
-    <div id="screenparams" style="top:190px; position: relative;"><b>Setup measurements:</b><br/>
+    <div id="screenparams" style="top:230px; position: relative;"><b>Setup measurements:</b><br/>
       <label for="screenxmm" id="lblscreenxmm" style="display: inline-block; width:280px;">Screen size, horizontal, in mm: </label><input type="number" id="screenxmm" step="0.1" value="528.0" style="position: relative; left:20px;"><br/>
       <label for="screenymm" id="lblscreenymm" style="display: inline-block; width:280px;">Screen size, vertical, in mm: </label><input type="number" id="screenymm" step="0.1" value="269.9" style="position: relative; left:20px;"><br/>
       <label for="screenxpix" id="lblscreenxpix" style="display: inline-block; width:280px;">Screen resolution, horizontal, in pixels: </label><input type="number" id="screenxpix" step="1.0" value="1920" style="position: relative; left:20px;"><br/>
       <label for="screenypixm" id="lblscreenypix" style="display: inline-block; width:280px;">Screen resolution, vertical, in pixels: </label><input type="number" id="screenypix" step="1.0" value="1080" style="position: relative; left:20px;"><br/>
       <label for="screendist" id="lblscreendist" style="display: inline-block; width:280px;">Distance to screen in mm: </label><input type="number" id="screendist" step="0.1" value="650.0" style="position: relative; left:20px;"><br/>
     </div>
-    <div id="knop2" style="top:210px; position: relative">
+    <div id="knop2" style="top:250px; position: relative">
       <div id="knopdoehet">
         <label for="doehet" id="lbldoehet" style="background-color: darkgray; color: lightgray; padding: 10px; width: 35px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Do it</label>
         <input id="doehet" style="display:none;" type="button" disabled>
       </div>
     </div>
-    <div id="downloadbestand" style="top:230px; position: relative;">
+    <div id="downloadbestand" style="top:280px; position: relative;">
       <label for="dlknop" id="lbldl" style="background-color: darkgray; color: lightgray; padding: 10px; width: 105px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Download CSV</label>
       <input id="dlknop" style="display:none;" type="button" onclick="tableToCSV()" disabled>
     </div>
-    <div id="resultaat" style="top: 250px; position: relative;">A data quality table will appear below (<a id="linkdl1" onclick="nodataYet()" href="#">downloable as CSV</a>):<br/></div>
-    <div id="inhoudbestand" style="top:270px; position: relative; display: none; height: 1px; width: 1px;">this should show content of the data file after loading (will disappear under the hood later)</div>
+    <div id="resheader" style="top: 300px; position: relative;">A data quality table will appear below (<a id="linkdl1" onclick="nodataYet()" href="#">downloable as CSV</a>):<br/></div>
+    <div id="resultaat" style="top: 310px; position: relative;">&nbsp;</div>
+    <div id="inhoudbestand" style="top:320px; position: relative; display: none; height: 1px; width: 1px;">this should show content of the data file after loading (will disappear under the hood later)</div>
     
     <script src="etdqualitizer.js"></script>
     <script>
@@ -69,7 +82,14 @@
           console.log("Select data first, then Do it, then download it");
         }
 
+        function dataAddedReplaced() {
+          alert("You added or replaced data, first run Do it again.");
+          console.log("You added or replaced data, first run Do it again.");
+        }
+
         const bestanden = document.getElementById('bestand');
+        const bestandenadd = document.getElementById('bestandadd');
+        const bestandenreplace = document.getElementById('bestandreplace');
         const doit = document.getElementById('doehet');
         const dldata = document.getElementById('dlknop');
         const inhoudbestanden = document.getElementById('inhoudbestand');
@@ -80,6 +100,8 @@
         const screenxpix = document.getElementById('screenxpix').value;
         const screenypix = document.getElementById('screenypix').value;
         const screendist = document.getElementById('screendist').value;
+        const resblokbig = document.createElement("div");
+        resblokbig.innerHTML = '';
         let fileContent = '';
         let tekst = '';
         let result = '';
@@ -112,6 +134,90 @@
           document.getElementById('lbldoehet').style.backgroundColor = "green";
           document.getElementById('lbldoehet').style.color = "white";
           doit.disabled = false;
+          bestandenadd.disabled = false;
+          document.getElementById('lblbestandadd').style.backgroundColor = "cadetblue";
+          document.getElementById('lblbestandadd').style.color = "aliceblue";
+          bestandenreplace.disabled = false;
+          document.getElementById('lblbestandreplace').style.backgroundColor = "cadetblue";
+          document.getElementById('lblbestandreplace').style.color = "aliceblue";
+        //   return fileContent;
+        //   return reader;
+          bestanden.disabled = true;
+          document.getElementById('lblbestand').style.backgroundColor = "dimgray";
+          document.getElementById('lblbestand').style.color = "darkgray";
+          
+        });
+
+        bestandenadd.addEventListener("change", () => {
+          // clear the filelist
+          // bestandlijst.innerHTML ='Loaded files:<br/>';
+          const files = bestandenadd.files;
+          Array.from(files).forEach((file) => {
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+              const fileContent = event.target.result;
+
+              // Display content (for text files) and file list
+              const datablok = document.createElement("div");
+              const bestandsnaam = document.createElement("div");
+              datablok.innerHTML = `<h4>${file.name}</h4><pre>${fileContent}</pre>`;
+              bestandsnaam.innerHTML = `${file.name}`;
+              inhoudbestanden.appendChild(datablok);
+              bestandlijst.appendChild(bestandsnaam);
+            };
+            reader.onerror = (error) => {
+              console.error("Error reading file:", error);
+            };
+            // Read the file as text
+            reader.readAsText(file);
+          });
+          document.getElementById('lbldoehet').style.backgroundColor = "green";
+          document.getElementById('lbldoehet').style.color = "white";
+          doit.disabled = false;
+          document.getElementById('lbldl').style.backgroundColor = "darkgray";
+          document.getElementById('lbldl').style.color = "lightgray";
+          document.getElementById('linkdl1').onclick = dataAddedReplaced;
+          document.getElementById('linkdl2').onclick = dataAddedReplaced;
+          dldata.disabled = true;
+        //   return fileContent;
+        //   return reader;
+        });
+
+        bestandenreplace.addEventListener("change", () => {
+          // clear the filelist
+          bestandlijst.innerHTML ='Loaded files:<br/>';
+          inhoudbestanden.innerHTML = '';
+          resoutput.innerHTML = '';
+          const files = bestandenreplace.files;
+          Array.from(files).forEach((file) => {
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+              const fileContent = event.target.result;
+
+              // Display content (for text files) and file list
+              const datablok = document.createElement("div");
+              const bestandsnaam = document.createElement("div");
+              datablok.innerHTML = `<h4>${file.name}</h4><pre>${fileContent}</pre>`;
+              bestandsnaam.innerHTML = `${file.name}`;
+              inhoudbestanden.appendChild(datablok);
+              bestandlijst.appendChild(bestandsnaam);
+            };
+            reader.onerror = (error) => {
+              console.error("Error reading file:", error);
+            };
+            // Read the file as text
+            reader.readAsText(file);
+          });
+          document.getElementById('lbldoehet').style.backgroundColor = "green";
+          document.getElementById('lbldoehet').style.color = "white";
+          doit.disabled = false;
+          document.getElementById('lbldl').style.backgroundColor = "darkgray";
+          document.getElementById('lbldl').style.color = "lightgray";
+          document.getElementById('linkdl1').onclick = dataAddedReplaced;
+          document.getElementById('linkdl2').onclick = dataAddedReplaced;
+          dldata.disabled = true;
         //   return fileContent;
         //   return reader;
         });
@@ -191,17 +297,17 @@
                 }
 
                 if (i == (max-1)) {
-                  const resultInit = pyodide.runPython(pythonCodeConcat);
-                  const resblokbig = document.createElement("div");
+                  const resultConcat = pyodide.runPython(pythonCodeConcat);
                   resblokbig.innerHTML = `<h3>Data quality results :</h3>` + pyodide.globals.get('all_df_html');
                   resoutput.appendChild(resblokbig);
                   cleanupHTMLtableheader();
                   dldata.disabled = false;
-                  document.getElementById('lbldl').style.backgroundColor ="green";
-                  document.getElementById('lbldl').style.color = "white";
+                  document.getElementById('lbldoehet').style.backgroundColor = "darkgrey";
                   document.getElementById('linkdl1').onclick = tableToCSV;
                   document.getElementById('linkdl2').onclick = tableToCSV;
-                  document.getElementById('lbldoehet').style.backgroundColor = "darkgrey";
+                  document.getElementById('lbldl').style.backgroundColor ="green";
+                  document.getElementById('lbldl').style.color = "white";
+                  
                 }
             } catch (err) {
                 resoutput.innerHTML = `Error: ${err}`;
