@@ -380,7 +380,7 @@ def run_validation(win: visual.Window, config: dict, tracker) -> str:
     textstim = visual.TextStim(win, text="", height=config["instruction_text"]["height"], color=config["instruction_text"]["color"], wrapWidth=9999.)
 
     # validation instruction
-    textstim.text = 'A fixation target will be shown at different locations on the screen.\nWhen the target stands still at a given location on the screen,\nplease carefully fixate its center and do not blink. Do not look away,\nbut keep fixating its center for the entire time.\nPlease follow the fixation target when it moves to the next location.\n\n(Press the spacebar to start)'
+    textstim.text = 'A fixation target will be shown and move to different positions on the screen.\nWhen the target pauses at a location on the screen,\ncarefully fixate on its center and do not blink. Keep your gaze steady\non the center of the target for the entire time the target remains at that location.\nWhen the target moves again, follow it to the next location.\n\n(Press the spacebar to start)'
     textstim.draw()
     win.flip()
     event.waitKeys()
