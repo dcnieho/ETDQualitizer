@@ -20,4 +20,5 @@ measures.max  = max (measures.all(:,2:end),[],1);
 % procedure.
 n_target = length(unique(dq_table.target_id));
 n_subj   = size(measures.all,1);
-txt = sprintf('For %d participants, the average inaccuracy in the data determined from a %d-point validation procedure using ETDQualitizer (Niehorster et al., in prep) was %.2f° (STD %.2f°, range %.2f°--%.2f°). Average RMS-S2S precision was %.3f° (STD %.3f°, range %.3f°--%.3f°) and STD precision %.3f° (STD %.3f°, range %.3f°--%.3f°).',n_subj,n_target,measures.mean.offset,measures.std.offset,measures.min.offset,measures.max.offset,measures.mean.rms_s2s,measures.std.rms_s2s,measures.min.rms_s2s,measures.max.rms_s2s,measures.mean.std,measures.std.std,measures.min.std,measures.max.std);
+version  = ETDQ_version();
+txt = sprintf('For %d participants, the average inaccuracy in the data determined from a %d-point validation procedure using ETDQualitizer v%s (Niehorster et al., in prep) was %.2f° (STD %.2f°, range %.2f°--%.2f°). Average RMS-S2S precision was %.3f° (STD %.3f°, range %.3f°--%.3f°) and STD precision %.3f° (STD %.3f°, range %.3f°--%.3f°).',n_subj,n_target,version,measures.mean.offset,measures.std.offset,measures.min.offset,measures.max.offset,measures.mean.rms_s2s,measures.std.rms_s2s,measures.min.rms_s2s,measures.max.rms_s2s,measures.mean.std,measures.std.std,measures.min.std,measures.max.std);
