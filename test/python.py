@@ -41,7 +41,7 @@ for f in (pathlib.Path(__file__).parent / 'data').glob('*.tsv'):
 
         # data loss and effective frequency
         print(f'Data loss ({e} eye): {dq.data_loss():.1f}%')
-        print(f'Data loss ({e} eye): {dq.data_loss_nominal(fs):.1f}%')
+        print(f'Data loss nominal frequency ({e} eye): {dq.data_loss_nominal(fs):.1f}%')
         print(f'Effective frequency ({e} eye): {dq.effective_frequency():.1f} Hz')
 
 all_df = pd.concat(all_dfs, names=['file'])
