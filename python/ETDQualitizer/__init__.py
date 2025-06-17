@@ -278,7 +278,7 @@ def report_data_quality_table(dq_table: pd.DataFrame) -> tuple[str,dict[str,pd.D
     n_target = dq_table.index.get_level_values('target_id').nunique()
     n_subj   = measures['all'].shape[0]
     txt = (
-        f"For {n_subj} participants, the average inaccuracy in the data determined from a {n_target}-point validation using ETDQualitizer (Niehorster et al., in prep) "
+        f"For {n_subj} participants, the average inaccuracy in the data determined from a {n_target}-point validation procedure using ETDQualitizer (Niehorster et al., in prep) "
         f"was {measures['mean'].offset:.2f}° (STD {measures['std'].offset:.2f}°, range {measures['min'].offset:.2f}°--{measures['max'].offset:.2f}°). "
         f"Average RMS-S2S precision was {measures['mean'].rms_s2s:.3f}° (STD {measures['std'].rms_s2s:.3f}°, range {measures['min'].rms_s2s:.3f}°--{measures['max'].rms_s2s:.3f}°) "
         f"and STD precision {measures['mean']['std']:.3f}° (STD {measures['std']['std']:.3f}°, range {measures['min']['std']:.3f}°--{measures['max']['std']:.3f}°)."
