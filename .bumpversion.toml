@@ -4,8 +4,12 @@ current_version = "0.7.0"
 [[tool.bumpversion.files]]
 filename = "python/ETDQualitizer/version.py"
 
-
 [[tool.bumpversion.files]]
 filename = "README.md"
 search = "ETDQualitizer v{current_version}"
 replace = "ETDQualitizer v{new_version}"
+
+[[tool.bumpversion.files]]
+filename = "matlab/ETDQ_version.m"
+search = "version = '{current_version}';"
+replace = "version = '{new_version}';"
