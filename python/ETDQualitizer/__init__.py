@@ -279,8 +279,8 @@ def report_data_quality_table(dq_table: pd.DataFrame) -> tuple[str,dict[str,pd.D
     n_subj   = measures['all'].shape[0]
     txt = (
         f"For {n_subj} participants, the average inaccuracy in the data determined from a {n_target}-point validation procedure using ETDQualitizer v{__version__} (Niehorster et al., in prep) "
-        f"was {measures['mean'].offset:.2f}° (STD {measures['std'].offset:.2f}°, range {measures['min'].offset:.2f}°--{measures['max'].offset:.2f}°). "
-        f"Average RMS-S2S precision was {measures['mean'].rms_s2s:.3f}° (STD {measures['std'].rms_s2s:.3f}°, range {measures['min'].rms_s2s:.3f}°--{measures['max'].rms_s2s:.3f}°) "
-        f"and STD precision {measures['mean']['std']:.3f}° (STD {measures['std']['std']:.3f}°, range {measures['min']['std']:.3f}°--{measures['max']['std']:.3f}°)."
+        f"was {measures['mean'].offset:.2f}° (SD={measures['std'].offset:.2f}°, range={measures['min'].offset:.2f}°--{measures['max'].offset:.2f}°). "
+        f"Average RMS-S2S precision was {measures['mean'].rms_s2s:.3f}° (SD={measures['std'].rms_s2s:.3f}°, range={measures['min'].rms_s2s:.3f}°--{measures['max'].rms_s2s:.3f}°) "
+        f"and STD precision {measures['mean']['std']:.3f}° (SD={measures['std']['std']:.3f}°, range={measures['min']['std']:.3f}°--{measures['max']['std']:.3f}°)."
     )
     return txt, measures
