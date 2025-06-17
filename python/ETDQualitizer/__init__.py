@@ -65,7 +65,7 @@ def data_loss(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple
     missing = np.isnan(x) | np.isnan(y)
     return np.sum(missing)/missing.size*100
 
-def data_loss_nominal(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], duration: float, frequency: float):
+def data_loss_from_expected(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], duration: float, frequency: float):
     N_valid = np.count_nonzero(~(np.isnan(x) | np.isnan(y)))
     return (1-N_valid/(duration*frequency))*100
 
@@ -177,8 +177,8 @@ class DataQuality:
     def data_loss(self):
         return data_loss(self.x, self.y)
 
-    def data_loss_nominal(self, frequency):
-        return data_loss_nominal(self.x, self.y, self.get_duration(), frequency)
+    def data_loss_from_expected(self, frequency):
+        return data_loss_from_expected(self.x, self.y, self.get_duration(), frequency)
 
     def effective_frequency(self):
         return effective_frequency(self.x, self.y, self.get_duration())

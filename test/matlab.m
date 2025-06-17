@@ -39,7 +39,7 @@ for f=1:length(files)
     
         % data loss and effective frequency
         fprintf('Data loss (%s eye): %.1f%%\n', eyes{e}, dq_calc.data_loss())
-        fprintf('Data loss nominal frequency (%s eye): %.1f%%\n', eyes{e}, dq_calc.data_loss_nominal(fs))
+        fprintf('Data loss from expected #samples (%s eye): %.1f%%\n', eyes{e}, dq_calc.data_loss_from_expected(fs))
         fprintf('Effective frequency (%s eye): %.1f Hz\n', eyes{e}, dq_calc.effective_frequency())
     end
 end

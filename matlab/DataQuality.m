@@ -99,8 +99,8 @@ classdef DataQuality
             loss_percentage = data_loss(obj.x, obj.y);
         end
 
-        function loss_percentage = data_loss_nominal(obj, frequency)
-            loss_percentage = data_loss_nominal(obj.x, obj.y, obj.get_duration(), frequency);
+        function loss_percentage = data_loss_from_expected(obj, frequency)
+            loss_percentage = data_loss_from_expected(obj.x, obj.y, obj.get_duration(), frequency);
         end
 
         function freq = effective_frequency(obj)
