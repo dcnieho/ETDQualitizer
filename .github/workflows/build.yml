@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+    - name: Clone repo
+      uses: actions/checkout@v4
+
     - name: Set up MATLAB
       uses: matlab-actions/setup-matlab@v1
 
