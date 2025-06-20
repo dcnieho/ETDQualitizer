@@ -20,10 +20,12 @@ addpath(genpath(fullfile(p,'matlab')))
 publish(fullfile(p,'matlab','examples','ETDQualitizer_demo.m'))
 
 % Load packaging info
-
 packagingData = matlab.addons.toolbox.ToolboxOptions(prjFile);
+
 % Update the version number
-packagingData.ToolboxVersion = toolboxVersion;
+if ~strcmp(toolboxVersion,'master') % if triggered by workflow distpatch, ignore
+    packagingData.ToolboxVersion = toolboxVersion;
+end
 
 % Set name of output file to that required by FEX
 packagingData.OutputFile = strcat(toolboxVersion, ".mltbx");
