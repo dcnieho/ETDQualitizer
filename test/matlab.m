@@ -1,5 +1,9 @@
 p = fileparts(mfilename("fullpath"));
-addpath(fullfile(p,'..','matlab'))
+if isfolder(fullfile(p,'..','matlab'))
+    addpath(fullfile(p,'..','matlab'))
+else
+    addpath(fullfile(p,'..'))
+end
 
 screen = ScreenConfiguration(528.0, 296.9997253417969, 1920, 1080, 650);
 

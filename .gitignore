@@ -48,6 +48,8 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
+packaging/matlab/*
+*.mltbx
 
 # IDEs
 .idea/
