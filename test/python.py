@@ -52,5 +52,6 @@ all_df = pd.concat(all_dfs, names=['file'])
 # different settings
 print('--------\nAll:')
 dq_txt, summary_dq = ETDQualitizer.report_data_quality_table(all_df)
+print(summary_dq['all'].to_string(float_format='%.4f'))
 print(dq_txt)
-summary_dq['all']
+print(summary_dq['summary'].to_string(float_format='%.4f'))
