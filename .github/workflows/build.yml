@@ -8,7 +8,7 @@ on:
 
 jobs:
   matlab_dist:
-    name: Make matlab package 📦 and attach to release
+    name: Make matlab zip archive and attach to release
     runs-on: ubuntu-latest
     steps:
 
@@ -22,6 +22,8 @@ jobs:
         cp ./test/matlab.m ./dist/test.m
         mkdir ./dist/data
         cp ./test/data/* ./dist/data
+        cp LICENSE ./dist/LICENSE
+        cp README.md ./dist/README.md
 
     - name: "Zip artifact"
       run: |
