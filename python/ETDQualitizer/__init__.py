@@ -265,10 +265,12 @@ def report_data_quality_table(dq_table: pd.DataFrame) -> tuple[str,dict[str,pd.D
     measures['all']  = dq_table.groupby('file').mean()
 
     # do summary statistics
-    measures['mean'] = measures['all'].mean()
-    measures['std']  = measures['all'].std()
-    measures['min']  = measures['all'].min()
-    measures['max']  = measures['all'].max()
+    m = {}
+    m['mean'] = measures['all'].mean()
+    m['std']  = measures['all'].std()
+    m['min']  = measures['all'].min()
+    m['max']  = measures['all'].max()
+    measures['summary'] = pd.DataFrame(m).T
 
     # make text. A little overcomplete, user can trim what they don't want
     # N.B.: do not include data loss/effective frequency, nor bcea. Bcea is
@@ -279,8 +281,8 @@ def report_data_quality_table(dq_table: pd.DataFrame) -> tuple[str,dict[str,pd.D
     n_subj   = measures['all'].shape[0]
     txt = (
         f"For {n_subj} participants, the average inaccuracy in the data determined from a {n_target}-point validation procedure using ETDQualitizer v{__version__} (Niehorster et al., in prep) "
-        f"was {measures['mean'].offset:.2f}° (SD={measures['std'].offset:.2f}°, range={measures['min'].offset:.2f}°--{measures['max'].offset:.2f}°). "
-        f"Average RMS-S2S precision was {measures['mean'].rms_s2s:.3f}° (SD={measures['std'].rms_s2s:.3f}°, range={measures['min'].rms_s2s:.3f}°--{measures['max'].rms_s2s:.3f}°) "
-        f"and STD precision {measures['mean']['std']:.3f}° (SD={measures['std']['std']:.3f}°, range={measures['min']['std']:.3f}°--{measures['max']['std']:.3f}°)."
+        f"was {measures['summary'].loc['mean'].offset:.2f}° (SD={measures['summary'].loc['std'].offset:.2f}°, range={measures['summary'].loc['min'].offset:.2f}°--{measures['summary'].loc['max'].offset:.2f}°). "
+        f"Average RMS-S2S precision was {measures['summary'].loc['mean'].rms_s2s:.3f}° (SD={measures['summary'].loc['std'].rms_s2s:.3f}°, range={measures['summary'].loc['min'].rms_s2s:.3f}°--{measures['summary'].loc['max'].rms_s2s:.3f}°) "
+        f"and STD precision {measures['summary'].loc['mean']['std']:.3f}° (SD={measures['summary'].loc['std']['std']:.3f}°, range={measures['summary'].loc['min']['std']:.3f}°--{measures['summary'].loc['max']['std']:.3f}°)."
     )
     return txt, measures
