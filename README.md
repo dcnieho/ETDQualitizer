@@ -3,4 +3,4 @@
 [![File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://se.mathworks.com/matlabcentral/fileexchange/181328-etdqualitizer)
 [![image](https://img.shields.io/pypi/pyversions/ETDQualitizer.svg)](https://pypi.org/project/ETDQualitizer/)
 
-# ETDQualitizer v0.8.3
+# ETDQualitizer v0.8.4
