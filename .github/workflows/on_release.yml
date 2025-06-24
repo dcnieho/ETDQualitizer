@@ -4,40 +4,9 @@ on:
   workflow_dispatch:
   release:
     types:
-      - "created"
+      - "published"
 
 jobs:
-  matlab_dist:
-    name: Make matlab MLTBX 📦 and attach to release
-    runs-on: ubuntu-latest
-    steps:
-
-    - name: Clone repo
-      uses: actions/checkout@v4
-
-    - name: Set up MATLAB
-      uses: matlab-actions/setup-matlab@v2
-
-    - name: Create MLTBX
-      uses: matlab-actions/run-command@v2
-      continue-on-error: false
-      with:
-        command: addpath([pwd filesep 'packaging']); createETDQ_MLTBX('packaging/ETDQualitizer.prj','${{  github.ref_name }}')
-
-    - name: Upload mltbx as workflow artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: matlab_mltbx
-        path: ./${{  github.ref_name }}.mltbx
-
-    - name: Upload mltbx as release artifact
-      uses: softprops/action-gh-release@v2
-      env:
-        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-      with:
-        files: ./${{  github.ref_name }}.mltbx
-
-
   matlab_zip_dist:
     name: Make matlab zip archive and attach to release
     runs-on: ubuntu-latest
