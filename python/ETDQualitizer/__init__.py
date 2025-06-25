@@ -74,6 +74,32 @@ def effective_frequency(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.nda
     return N_valid/duration
 
 
+def precision_using_moving_window(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]],
+                                  window_length: int, metric: str, aggregation_fun=np.nanmedian, **kwargs) -> float:
+    match metric:
+        case 'RMS_S2S':
+            fun =  rms_s2s
+        case 'STD':
+            fun =  std
+        case 'BCEA':
+            fun =  bcea
+        case _:
+            raise ValueError(f'metric "{metric}" is not understood')
+
+    # get number of samples in data
+    ns  = x.shape[0]
+
+    if window_length < ns:  # if number of samples in data exceeds window size
+        values = np.full((ns-window_length+1,), np.nan)  # pre-allocate
+        for p in range(0,ns-window_length+1):
+            values[p] = fun(x[p:p+window_length], y[p:p+window_length], **kwargs)[0]
+        precision = aggregation_fun(values)
+    else:
+        # if too few samples in data
+        precision = np.nan
+    return precision
+
+
 class ScreenConfiguration:
     def __init__(self,
                  screen_size_x_mm: float, screen_size_y_mm: float,
@@ -190,28 +216,7 @@ class DataQuality:
 
 
     def precision_using_moving_window(self, window_length, metric, aggregation_fun=np.nanmedian, **kwargs) -> float:
-        match metric:
-            case 'RMS_S2S':
-                fun =  rms_s2s
-            case 'STD':
-                fun =  std
-            case 'BCEA':
-                fun =  bcea
-            case _:
-                raise ValueError(f'metric "{metric}" is not understood')
-
-        # get number of samples in data
-        ns  = self.x.shape[0]
-
-        if window_length < ns:  # if number of samples in data exceeds window size
-            values = np.full((ns-window_length+1,), np.nan)  # pre-allocate
-            for p in range(0,ns-window_length+1):
-                values[p] = fun(self.x[p:p+window_length], self.y[p:p+window_length], **kwargs)[0]
-            precision = aggregation_fun(values)
-        else:
-            # if too few samples in data
-            precision = np.nan
-        return precision
+        return precision_using_moving_window(self.x, self.y, window_length, metric, aggregation_fun, **kwargs)
 
 
 def compute_data_quality_from_validation(gaze               : pd.DataFrame,

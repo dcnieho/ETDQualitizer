@@ -72,27 +72,7 @@ classdef DataQuality
                 aggregation_fun (1,1) {mustBeA(aggregation_fun,'function_handle')} = @(x) median(x,'omitnan')
             end
 
-            switch metric
-                case 'RMS_S2S'
-                    fun =  @rms_s2s;
-                case 'STD'
-                    fun =  @std_;
-                case 'BCEA'
-                    fun =  @bcea;
-            end
-            
-            % get number of samples in data
-            ns  = length(obj.x);
-
-            if window_length < ns % if number of samples in data exceeds window size
-                values = nan(1,ns-window_length); % pre-allocate
-                for p=1:ns-window_length+1
-                    values(p) = fun(obj.x(p:p+window_length-1), obj.y(p:p+window_length-1), input_args{:});
-                end
-                precision = aggregation_fun(values);
-            else % if too few samples in data
-                precision = NaN;
-            end
+            precision = precision_using_moving_window(obj.x, obj.y, window_length, metric, input_args, aggregation_fun);
         end
 
         function loss_percentage = data_loss(obj)
