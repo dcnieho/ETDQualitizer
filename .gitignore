@@ -51,6 +51,12 @@ MANIFEST
 packaging/matlab/*
 *.mltbx
 
+# R-project user files
+.Rproj.user/
+.Rbuildignore
+.Rhistory
+.RData
+
 # IDEs
 .idea/
 .vs/
