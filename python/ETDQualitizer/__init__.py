@@ -151,14 +151,14 @@ class ScreenConfiguration:
         return x_deg*2, y_deg*2
 
 
-def Fick_to_vector(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[N], np.dtype[np.float64]], r: float=1.) -> tuple[np.ndarray[tuple[N], np.dtype[np.float64]], np.ndarray[tuple[N], np.dtype[np.float64]], np.ndarray[tuple[N], np.dtype[np.float64]]]:
-    azi = np.radians(azi)
-    ele = np.radians(ele)
-    r_cos_ele = r*np.cos(ele)
+def Fick_to_vector(azi: np.ndarray[tuple[N], np.dtype[np.float64]]|float, ele: np.ndarray[tuple[N], np.dtype[np.float64]]|float, r: np.ndarray[tuple[N], np.dtype[np.float64]]|float=1.) -> tuple[np.ndarray[tuple[N], np.dtype[np.float64]], np.ndarray[tuple[N], np.dtype[np.float64]], np.ndarray[tuple[N], np.dtype[np.float64]]]:
+    azr = np.radians(azi)
+    elr = np.radians(ele)
+    r_cos_ele = r*np.cos(elr)
 
-    x = r_cos_ele * np.sin(azi)
-    y =         r * np.sin(ele)
-    z = r_cos_ele * np.cos(azi)
+    x = r_cos_ele * np.sin(azr)
+    y =         r * np.sin(elr)
+    z = r_cos_ele * np.cos(azr)
     return x,y,z
 
 
