@@ -8,8 +8,8 @@ classdef DataQuality
     % all angular positions are expected to be expressed in Fick angles.
     properties (SetAccess=private)
         timestamps
-        x
-        y
+        azi
+        ele
     end
 
     methods
@@ -28,8 +28,8 @@ classdef DataQuality
                 end
                 [x,y] = screen.pix_to_deg(x, y);
             end
-            obj.x = x;
-            obj.y = y;
+            obj.azi = x;
+            obj.ele = y;
         end
 
 
@@ -40,7 +40,7 @@ classdef DataQuality
                 target_y_deg        (1,1) {mustBeNumeric}
                 central_tendency_fun(1,1) {mustBeA(central_tendency_fun,'function_handle')} = @(x) mean(x,'omitnan')
             end
-            [offset, offset_x, offset_y] = accuracy(obj.x, obj.y, target_x_deg, target_y_deg, central_tendency_fun);
+            [offset, offset_x, offset_y] = accuracy(obj.azi, obj.ele, target_x_deg, target_y_deg, central_tendency_fun);
         end
 
         function [rms, rms_x, rms_y] = precision_RMS_S2S(obj, central_tendency_fun)
@@ -48,11 +48,11 @@ classdef DataQuality
                 obj
                 central_tendency_fun(1,1) {mustBeA(central_tendency_fun,'function_handle')} = @(x) mean(x,'omitnan')
             end
-            [rms, rms_x, rms_y] = rms_s2s(obj.x, obj.y, central_tendency_fun);
+            [rms, rms_x, rms_y] = rms_s2s(obj.azi, obj.ele, central_tendency_fun);
         end
 
         function [std__, std_x, std_y] = precision_STD(obj)
-            [std__, std_x, std_y] = std_(obj.x, obj.y);
+            [std__, std_x, std_y] = std_(obj.azi, obj.ele);
         end
 
         function [area, orientation, ax1, ax2, aspect_ratio] = precision_BCEA(obj, P)
@@ -60,7 +60,7 @@ classdef DataQuality
                 obj
                 P   (1,1) {mustBeNumeric} = 0.68    % for BCEA: cumulative probability of area under the multivariate normal
             end
-            [area, orientation, ax1, ax2, aspect_ratio] = bcea(obj.x, obj.y, P);
+            [area, orientation, ax1, ax2, aspect_ratio] = bcea(obj.azi, obj.ele, P);
         end
 
         function precision = precision_using_moving_window(obj, window_length, metric, input_args, aggregation_fun)
@@ -72,20 +72,20 @@ classdef DataQuality
                 aggregation_fun (1,1) {mustBeA(aggregation_fun,'function_handle')} = @(x) median(x,'omitnan')
             end
 
-            precision = precision_using_moving_window(obj.x, obj.y, window_length, metric, input_args, aggregation_fun);
+            precision = precision_using_moving_window(obj.azi, obj.ele, window_length, metric, input_args, aggregation_fun);
         end
 
         function loss_percentage = data_loss(obj)
-            loss_percentage = data_loss(obj.x, obj.y);
+            loss_percentage = data_loss(obj.azi, obj.ele);
         end
 
         function loss_percentage = data_loss_from_expected(obj, frequency)
-            loss_percentage = data_loss_from_expected(obj.x, obj.y, obj.get_duration(), frequency);
+            loss_percentage = data_loss_from_expected(obj.azi, obj.ele, obj.get_duration(), frequency);
         end
 
         function freq = effective_frequency(obj)
             % rate of valid samples
-            freq = effective_frequency(obj.x, obj.y, obj.get_duration());
+            freq = effective_frequency(obj.azi, obj.ele, obj.get_duration());
         end
 
         function duration = get_duration(obj)

@@ -28,16 +28,16 @@ classdef ScreenConfiguration
             y_mm = y/obj.screen_res_y_pix*obj.screen_size_y_mm;
         end
 
-        function [x_deg, y_deg] = pix_to_deg(obj, x, y)
+        function [azi, ele] = pix_to_deg(obj, x, y)
             % N.B.: output is in Fick angles
             [x_mm , y_mm ] = obj.pix_to_mm(x, y);
-            [x_deg, y_deg] = obj.mm_to_deg(x_mm, y_mm);
+            [azi, ele] = obj.mm_to_deg(x_mm, y_mm);
         end
 
-        function [x_deg, y_deg] = mm_to_deg(obj, x, y)
+        function [azi, ele] = mm_to_deg(obj, x, y)
             % N.B.: output is in Fick angles
-            x_deg = atan2(x,obj.viewing_distance_mm)*180/pi;            % azimuth
-            y_deg = atan2(y,hypot(obj.viewing_distance_mm,x))*180/pi;   % elevation
+            azi = atan2(x,obj.viewing_distance_mm)*180/pi;          % azimuth
+            ele = atan2(y,hypot(obj.viewing_distance_mm,x))*180/pi; % elevation
         end
 
         function [x_pix, y_pix] = mm_to_pix(obj, x, y)
@@ -45,15 +45,15 @@ classdef ScreenConfiguration
             y_pix = y/obj.screen_size_y_mm*obj.screen_res_y_pix;
         end
 
-        function [x_pix, y_pix] = deg_to_pix(obj, x, y)
+        function [x_pix, y_pix] = deg_to_pix(obj, azi, ele)
             % N.B.: input is in Fick angles
-            [x_mm , y_mm ] = obj.deg_to_mm(x, y);
+            [x_mm , y_mm ] = obj.deg_to_mm(azi, ele);
             [x_pix, y_pix] = obj.mm_to_pix(x_mm, y_mm);
         end
 
-        function [x_mm, y_mm] = deg_to_mm(obj, x, y)
+        function [x_mm, y_mm] = deg_to_mm(obj, azi, ele)
             % N.B.: input is in Fick angles
-            [x,y,z] = Fick_to_cartesian(x, y);
+            [x,y,z] = Fick_to_cartesian(azi, ele);
             x_mm = x./z.*obj.viewing_distance_mm;
             y_mm = y./z.*obj.viewing_distance_mm;
         end

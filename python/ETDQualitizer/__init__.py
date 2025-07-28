@@ -132,14 +132,14 @@ class ScreenConfiguration:
         y_pix = y/self.screen_size_y_mm*self.screen_res_y_pix
         return x_pix, y_pix
 
-    def deg_to_pix(self, x: float, y: float) -> tuple[float,float]:
+    def deg_to_pix(self, azi: float, ele: float) -> tuple[float,float]:
         # N.B.: input is in Fick angles
-        x_mm, y_mm = self.deg_to_mm(x, y)
+        x_mm, y_mm = self.deg_to_mm(azi, ele)
         return self.mm_to_pix(x_mm, y_mm)
 
-    def deg_to_mm(self, x: float, y: float) -> tuple[float,float]:
+    def deg_to_mm(self, azi: float, ele: float) -> tuple[float,float]:
         # N.B.: input is in Fick angles
-        x,y,z = Fick_to_cartesian(x, y)
+        x,y,z = Fick_to_cartesian(azi, ele)
         x_mm = x/z*self.viewing_distance_mm
         y_mm = y/z*self.viewing_distance_mm
         return x_mm, y_mm
@@ -185,30 +185,30 @@ class DataQuality:
             gaze_x, gaze_y = screen.pix_to_deg(gaze_x, gaze_y)
         elif unit!='degrees':
             raise ValueError('unit should be "pixels" or "degrees"')
-        self.x = gaze_x
-        self.y = gaze_y
+        self.azi = gaze_x
+        self.ele = gaze_y
 
     def accuracy(self, target_x_deg: float, target_y_deg: float, central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
         # get unit vectors for gaze and target
-        return accuracy(self.x, self.y, target_x_deg, target_y_deg, central_tendency_fun)
+        return accuracy(self.azi, self.ele, target_x_deg, target_y_deg, central_tendency_fun)
 
     def precision_RMS_S2S(self, central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
-        return rms_s2s(self.x, self.y, central_tendency_fun)
+        return rms_s2s(self.azi, self.ele, central_tendency_fun)
 
     def precision_STD(self) -> tuple[float,float,float]:
-        return std(self.x, self.y)
+        return std(self.azi, self.ele)
 
     def precision_BCEA(self, P: float = 0.68) -> tuple[float,float,float,float,float]:
-        return bcea(self.x, self.y, P)
+        return bcea(self.azi, self.ele, P)
 
     def data_loss(self):
-        return data_loss(self.x, self.y)
+        return data_loss(self.azi, self.ele)
 
     def data_loss_from_expected(self, frequency):
-        return data_loss_from_expected(self.x, self.y, self.get_duration(), frequency)
+        return data_loss_from_expected(self.azi, self.ele, self.get_duration(), frequency)
 
     def effective_frequency(self):
-        return effective_frequency(self.x, self.y, self.get_duration())
+        return effective_frequency(self.azi, self.ele, self.get_duration())
 
     def get_duration(self) -> float:
         # to get duration right, we need to include duration of last sample
@@ -217,7 +217,7 @@ class DataQuality:
 
 
     def precision_using_moving_window(self, window_length, metric, aggregation_fun=np.nanmedian, **kwargs) -> float:
-        return precision_using_moving_window(self.x, self.y, window_length, metric, aggregation_fun, **kwargs)
+        return precision_using_moving_window(self.azi, self.ele, window_length, metric, aggregation_fun, **kwargs)
 
 
 def compute_data_quality_from_validation(gaze               : pd.DataFrame,
