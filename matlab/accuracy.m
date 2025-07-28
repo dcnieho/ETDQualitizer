@@ -8,8 +8,8 @@ arguments
 end
 
 % get unit vectors for gaze and target
-[g_x,g_y,g_z] = Fick_to_cartesian(       x    ,        y);
-[t_x,t_y,t_z] = Fick_to_cartesian(target_x_deg, target_y_deg);
+[g_x,g_y,g_z] = Fick_to_vector(       x    ,        y);
+[t_x,t_y,t_z] = Fick_to_vector(target_x_deg, target_y_deg);
 % calculate angular offset for each sample using dot product
 offsets     = acos(dot([g_x,g_y,g_z], repmat([t_x,t_y,t_z],length(g_x),1),2));
 % calculate on-screen orientation so we can decompose offset into x and y

@@ -1,4 +1,4 @@
-function [x,y,z] = Fick_to_cartesian(azi, ele, r)
+function [x,y,z] = Fick_to_vector(azi, ele, r)
 arguments
     azi (:,1) {mustBeNumeric}
     ele (:,1) {mustBeNumeric}
