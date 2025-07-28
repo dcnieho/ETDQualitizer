@@ -161,6 +161,10 @@ def Fick_to_vector(azi: np.ndarray[tuple[N], np.dtype[np.float64]]|float, ele: n
     z = r_cos_ele * np.cos(azr)
     return x,y,z
 
+def vector_to_Fick(x: np.ndarray[tuple[N], np.dtype[np.float64]]|float, y: np.ndarray[tuple[N], np.dtype[np.float64]]|float, z: np.ndarray[tuple[N], np.dtype[np.float64]]|float) -> tuple[np.ndarray[tuple[N], np.dtype[np.float64]], np.ndarray[tuple[N], np.dtype[np.float64]]]:
+    return np.degrees(np.arctan2(x,z)), \
+           np.degrees(np.arctan2(y,np.hypot(x,z)))
+
 
 class DataQuality:
     # N.B: for this module it is assumed that any missing data are not coded with some special value
