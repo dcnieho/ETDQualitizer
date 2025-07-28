@@ -53,9 +53,8 @@ classdef ScreenConfiguration
 
         function [x_mm, y_mm] = deg_to_mm(obj, azi, ele)
             % N.B.: input is in Fick angles
-            [x,y,z] = Fick_to_cartesian(azi, ele);
-            x_mm = x./z.*obj.viewing_distance_mm;
-            y_mm = y./z.*obj.viewing_distance_mm;
+            x_mm = obj.viewing_distance_mm.*tand(azi);
+            y_mm = obj.viewing_distance_mm.*tand(ele)./cosd(azi);
         end
 
         function [x_deg, y_deg] = screen_extents(obj)

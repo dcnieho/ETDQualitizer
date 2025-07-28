@@ -139,9 +139,10 @@ class ScreenConfiguration:
 
     def deg_to_mm(self, azi: float, ele: float) -> tuple[float,float]:
         # N.B.: input is in Fick angles
-        x,y,z = Fick_to_cartesian(azi, ele)
-        x_mm = x/z*self.viewing_distance_mm
-        y_mm = y/z*self.viewing_distance_mm
+        azi = np.radians(azi)
+        ele = np.radians(ele)
+        x_mm = self.viewing_distance_mm*np.tan(azi)
+        y_mm = self.viewing_distance_mm*np.tan(ele)/np.cos(azi)
         return x_mm, y_mm
 
     def screen_extents(self) -> tuple[float,float]:
