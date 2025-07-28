@@ -59,9 +59,8 @@ classdef ScreenConfiguration
         end
 
         function [x_deg, y_deg] = screen_extents(obj)
-            [x_deg, y_deg] = obj.mm_to_deg(obj.screen_size_x_mm/2, obj.screen_size_y_mm/2);
-            x_deg = x_deg*2;
-            y_deg = y_deg*2;
+            x_deg = obj.mm_to_deg(obj.screen_size_x_mm/2,0)*2;
+            y_deg = obj.mm_to_deg(obj.screen_size_y_mm/2,0)*2;
         end
     end
 end

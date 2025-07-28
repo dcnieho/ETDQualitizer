@@ -145,7 +145,8 @@ class ScreenConfiguration:
         return x_mm, y_mm
 
     def screen_extents(self) -> tuple[float,float]:
-        [x_deg, y_deg] = self.mm_to_deg(self.screen_size_x_mm/2, self.screen_size_y_mm/2)
+        [x_deg, _] = self.mm_to_deg(self.screen_size_x_mm/2, 0)
+        [_, y_deg] = self.mm_to_deg(0, self.screen_size_y_mm/2)
         return x_deg*2, y_deg*2
 
 
