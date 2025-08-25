@@ -12,9 +12,9 @@ end
 p = fileparts(mfilename("fullpath"));
 copyfile(fullfile(p,'..','matlab'),fullfile(p,'matlab'))
 mkdir(fullfile(p,'matlab','examples'))
-copyfile(fullfile(p,'..','test','matlab.m'),fullfile(p,'matlab','examples','ETDQualitizer_demo.m'))
+copyfile(fullfile(p,'..','example','matlab.m'),fullfile(p,'matlab','examples','ETDQualitizer_demo.m'))
 copyfile(fullfile(p,'demos.xml'),fullfile(p,'matlab','demos.xml'))
-copyfile(fullfile(p,'..','test','data'),fullfile(p,'matlab','examples','data'))
+copyfile(fullfile(p,'..','example','data'),fullfile(p,'matlab','examples','data'))
 
 addpath(genpath(fullfile(p,'matlab')))
 publish(fullfile(p,'matlab','examples','ETDQualitizer_demo.m'))
