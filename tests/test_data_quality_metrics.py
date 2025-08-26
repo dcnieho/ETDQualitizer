@@ -28,13 +28,12 @@ class TestDataQualityMetrics(unittest.TestCase):
         self.assertAlmostEqual(s, np.hypot(sx, sy))
 
     def test_bcea(self):
-        x = np.random.randn(100)
-        y = np.random.randn(100)
+        x = np.random.randn(10000)
+        y = np.random.randn(10000)
         area, orientation, ax1, ax2, aspect_ratio = bcea(x, y)
         self.assertGreater(area, 0)
-        self.assertGreaterEqual(aspect_ratio, 1)
-        self.assertGreater(ax1, 0)
-        self.assertGreater(ax2, 0)
+        self.assertAlmostEqual(aspect_ratio, 1, places=1)
+        self.assertAlmostEqual(area, 2*np.pi*ax1*ax2, places=3)
 
     def test_rms_s2s(self):
         x = np.array([1, 2, 3])

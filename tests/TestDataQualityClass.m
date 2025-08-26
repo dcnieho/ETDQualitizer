@@ -12,7 +12,7 @@ classdef TestDataQualityClass < matlab.unittest.TestCase
         function setupData(testCase)
             testCase.duration = 1000;                   % 1000 s
             testCase.freq = 100;                        % 100 Hz
-            testCase.timestamps = (0:1/testCase.freq:1000-1/testCase.freq)';
+            testCase.timestamps = (0:1/testCase.freq:testCase.duration-1/testCase.freq)';
             n_samples = length(testCase.timestamps);
             testCase.azi = randn(n_samples,1);          % random azimuths
             testCase.ele = randn(n_samples,1);          % random elevations
@@ -45,32 +45,57 @@ classdef TestDataQualityClass < matlab.unittest.TestCase
             testCase.verifyEqual(offset_y, 0, 'AbsTol', 1e-2);
         end
 
-        function testPrecisionRMS(testCase)
+        function testPrecisionRMSLotsOfData(testCase)
             dq = DataQuality(testCase.azi, testCase.ele, testCase.timestamps, 'degrees');
             [rms, rms_x, rms_y] = dq.precision_RMS_S2S();
-            testCase.verifyGreaterThanOrEqual(rms, 0);
-            testCase.verifyGreaterThanOrEqual(rms_x, 0);
-            testCase.verifyGreaterThanOrEqual(rms_y, 0);
+            testCase.verifyEqual(rms, 2, 'AbsTol', 1e-2);
+            testCase.verifyEqual(rms_x, sqrt(2), 'AbsTol', 1e-2);
+            testCase.verifyEqual(rms_y, sqrt(2), 'AbsTol', 1e-2);
+        end
+
+        function testPrecisionRMSOneAxis(testCase)
+            az = [1 2 4];
+            el = [1 1 1];
+            dq = DataQuality(az, el, [0 1 2], 'degrees');
+            [rms, rms_x, rms_y] = dq.precision_RMS_S2S();
+            expected_rms = sqrt(mean([1 2].^2));
+            testCase.verifyEqual(rms, expected_rms, 'AbsTol', 1e-10);
+            testCase.verifyEqual(rms_x, expected_rms, 'AbsTol', 1e-10);
+            testCase.verifyEqual(rms_y, 0);
+        end
+
+        function testPrecisionRMSTwoAxes(testCase)
+            az = [1 2 4];
+            el = [1 2 4];
+            dq = DataQuality(az, el, [0 1 2], 'degrees');
+            [rms, rms_x, rms_y] = dq.precision_RMS_S2S();
+            expected_rms_xy = sqrt(mean([1 2].^2));
+            expected_rms = hypot(expected_rms_xy,expected_rms_xy);
+            testCase.verifyEqual(rms, expected_rms, 'AbsTol', 1e-10);
+            testCase.verifyEqual(rms_x, expected_rms_xy, 'AbsTol', 1e-10);
+            testCase.verifyEqual(rms_y, expected_rms_xy, 'AbsTol', 1e-10);
         end
 
         function testPrecisionSTD(testCase)
             dq = DataQuality(testCase.azi, testCase.ele, testCase.timestamps, 'degrees');
             [s, sx, sy] = dq.precision_STD();
-            testCase.verifyGreaterThanOrEqual(s, 0);
-            testCase.verifyEqual(s, hypot(sx, sy));
+            testCase.verifyEqual(sx, 1, 'AbsTol', 1e-2);
+            testCase.verifyEqual(sy, 1, 'AbsTol', 1e-2);
+            testCase.verifyEqual(s, sqrt(2), 'AbsTol', 1e-2);
         end
 
         function testPrecisionBCEA(testCase)
             dq = DataQuality(testCase.azi, testCase.ele, testCase.timestamps, 'degrees');
-            [area, orientation, ax1, ax2, aspect_ratio] = dq.precision_BCEA();
+            [area, ~, ax1, ax2, aspect_ratio] = dq.precision_BCEA();
             testCase.verifyGreaterThan(area, 0);
-            testCase.verifyGreaterThanOrEqual(aspect_ratio, 1);
+            testCase.verifyEqual(aspect_ratio, 1, 'AbsTol', 1e-2);
+            testCase.verifyEqual(area, 2*pi*ax1*ax2, 'AbsTol', 1e-4);
         end
 
         function testPrecisionMovingWindow(testCase)
             dq = DataQuality(testCase.azi, testCase.ele, testCase.timestamps, 'degrees');
-            s = dq.precision_using_moving_window(10, 'STD');
-            testCase.verifyGreaterThanOrEqual(s, 0);
+            s = dq.precision_using_moving_window(50, 'STD');
+            testCase.verifyLessThanOrEqual(s, sqrt(2)); % std of whole sequence is about sqrt(2), when taking it in smaller windows it'll come out a bit smaller even though generation process is stationary
         end
 
         function testDataLoss(testCase)
@@ -87,14 +112,14 @@ classdef TestDataQualityClass < matlab.unittest.TestCase
 
         function testEffectiveFrequency(testCase)
             dq = DataQuality(testCase.azi, testCase.ele, testCase.timestamps, 'degrees');
-            freq = dq.effective_frequency();
-            testCase.verifyEqual(freq, testCase.freq, 'AbsTol', 1e-10);
+            fs = dq.effective_frequency();
+            testCase.verifyEqual(fs, testCase.freq, 'AbsTol', 1e-10);
         end
 
         function testGetDuration(testCase)
             dq = DataQuality(testCase.azi, testCase.ele, testCase.timestamps, 'degrees');
-            duration = dq.get_duration();
-            testCase.verifyEqual(duration, testCase.duration, 'AbsTol', 1e-10);
+            dur = dq.get_duration();
+            testCase.verifyEqual(dur, testCase.duration, 'AbsTol', 1e-10);
         end
     end
 end

@@ -30,13 +30,12 @@ classdef TestDataQualityMetrics < matlab.unittest.TestCase
         end
 
         function testBCEA(testCase)
-            x = randn(100,1);
-            y = randn(100,1);
-            [area, orientation, ax1, ax2, aspect_ratio] = bcea(x, y, 0.68);
+            x = randn(10000,1);
+            y = randn(10000,1);
+            [area, ~, ax1, ax2, aspect_ratio] = bcea(x, y, 0.68);
             testCase.verifyGreaterThan(area, 0);
-            testCase.verifyGreaterThanOrEqual(aspect_ratio, 1);
-            testCase.verifyGreaterThan(ax1, 0);
-            testCase.verifyGreaterThan(ax2, 0);
+            testCase.verifyEqual(aspect_ratio, 1, 'AbsTol', 1e-2);
+            testCase.verifyEqual(area, 2*pi*ax1*ax2, 'AbsTol', 1e-4);
         end
 
         function testRmsS2S(testCase)
