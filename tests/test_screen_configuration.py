@@ -38,8 +38,10 @@ class TestScreenConfiguration(unittest.TestCase):
 
     def test_pix_to_deg(self):
         azi, ele = self.config.pix_to_deg(960, 540)
-        self.assertIsInstance(azi, float)
-        self.assertIsInstance(ele, float)
+        expected_azi = math.degrees(math.atan2(250, 600))
+        expected_ele = math.degrees(math.atan2(150, math.hypot(600, 250)))
+        self.assertAlmostEqual(azi, expected_azi, places=10)
+        self.assertAlmostEqual(ele, expected_ele, places=10)
 
     def test_deg_to_pix(self):
         azi = math.degrees(math.atan2(250, 600))
