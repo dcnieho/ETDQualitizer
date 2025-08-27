@@ -1,5 +1,5 @@
 [tool.bumpversion]
-current_version = "0.8.5"
+current_version = "0.9.0"
 
 [[tool.bumpversion.files]]
 filename = "python/ETDQualitizer/version.py"
@@ -16,8 +16,8 @@ replace = "version = '{new_version}';"
 
 [[tool.bumpversion.files]]
 filename = "r/ETDQualitizer/DESCRIPTION"
-search = "Version: '{current_version}'"
-replace = "Version: '{new_version}'"
+search = "Version: {current_version}"
+replace = "Version: {new_version}"
 
 [[tool.bumpversion.files]]
 filename = "r/ETDQualitizer/R/ETDQualitizer.R"
