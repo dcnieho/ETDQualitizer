@@ -34,8 +34,8 @@ test_that("mm_to_deg and deg_to_mm are consistent", {
 test_that("screen_extents returns positive values", {
   config <- ScreenConfiguration$new(500, 300, 1920, 1080, 600)
   extents <- config$screen_extents()
-  expect_gt(extents$x_deg, 0)
-  expect_gt(extents$y_deg, 0)
+  expect_gt(extents$width, 0)
+  expect_gt(extents$height, 0)
 })
 
 test_that("Fick to vector and back is consistent", {

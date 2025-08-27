@@ -60,61 +60,61 @@ bcea <- function(x, y, P = 0.68) {
 }
 
 ScreenConfiguration <- R6Class("ScreenConfiguration",
-                               public = list(
-                                 screen_size_x_mm = NULL,
-                                 screen_size_y_mm = NULL,
-                                 screen_res_x_pix = NULL,
-                                 screen_res_y_pix = NULL,
-                                 viewing_distance_mm = NULL,
+  public = list(
+    screen_size_x_mm = NULL,
+    screen_size_y_mm = NULL,
+    screen_res_x_pix = NULL,
+    screen_res_y_pix = NULL,
+    viewing_distance_mm = NULL,
 
-                                 initialize = function(screen_size_x_mm, screen_size_y_mm, screen_res_x_pix, screen_res_y_pix, viewing_distance_mm) {
-                                   self$screen_size_x_mm <- screen_size_x_mm
-                                   self$screen_size_y_mm <- screen_size_y_mm
-                                   self$screen_res_x_pix <- screen_res_x_pix
-                                   self$screen_res_y_pix <- screen_res_y_pix
-                                   self$viewing_distance_mm <- viewing_distance_mm
-                                 },
+    initialize = function(screen_size_x_mm, screen_size_y_mm, screen_res_x_pix, screen_res_y_pix, viewing_distance_mm) {
+      self$screen_size_x_mm <- screen_size_x_mm
+      self$screen_size_y_mm <- screen_size_y_mm
+      self$screen_res_x_pix <- screen_res_x_pix
+      self$screen_res_y_pix <- screen_res_y_pix
+      self$viewing_distance_mm <- viewing_distance_mm
+    },
 
-                                 pix_to_mm = function(x, y) {
-                                   x_mm <- x / self$screen_res_x_pix * self$screen_size_x_mm
-                                   y_mm <- y / self$screen_res_y_pix * self$screen_size_y_mm
-                                   return(c(x_mm, y_mm))
-                                 },
+    pix_to_mm = function(x, y) {
+      x_mm <- x / self$screen_res_x_pix * self$screen_size_x_mm
+      y_mm <- y / self$screen_res_y_pix * self$screen_size_y_mm
+      return(list(x = x_mm, y = y_mm))
+    },
 
-                                 pix_to_deg = function(x, y) {
-                                   mm <- self$pix_to_mm(x, y)
-                                   return(self$mm_to_deg(mm[1], mm[2]))
-                                 },
+    pix_to_deg = function(x, y) {
+      mm <- self$pix_to_mm(x, y)
+      return(self$mm_to_deg(mm$x, mm$y))
+    },
 
-                                 mm_to_deg = function(x, y) {
-                                   azi <- atan2(x, self$viewing_distance_mm)
-                                   ele <- atan2(y, sqrt(self$viewing_distance_mm^2 + x^2))
-                                   return(c(azi * 180 / pi, ele * 180 / pi))
-                                 },
+    mm_to_deg = function(x, y) {
+      azi <- atan2(x, self$viewing_distance_mm)
+      ele <- atan2(y, sqrt(self$viewing_distance_mm^2 + x^2))
+      return(list(azi = azi * 180 / pi, ele = ele * 180 / pi))
+    },
 
-                                 mm_to_pix = function(x, y) {
-                                   x_pix <- x / self$screen_size_x_mm * self$screen_res_x_pix
-                                   y_pix <- y / self$screen_size_y_mm * self$screen_res_y_pix
-                                   return(c(x_pix, y_pix))
-                                 },
+    mm_to_pix = function(x, y) {
+      x_pix <- x / self$screen_size_x_mm * self$screen_res_x_pix
+      y_pix <- y / self$screen_size_y_mm * self$screen_res_y_pix
+      return(list(x = x_pix, y = y_pix))
+    },
 
-                                 deg_to_mm = function(x, y) {
-                                   cart <- Fick_to_cartesian(x, y)
-                                   x_mm <- cart$x / cart$z * self$viewing_distance_mm
-                                   y_mm <- cart$y / cart$z * self$viewing_distance_mm
-                                   return(c(x_mm, y_mm))
-                                 },
+    deg_to_mm = function(x, y) {
+      cart <- Fick_to_cartesian(x, y)
+      x_mm <- cart$x / cart$z * self$viewing_distance_mm
+      y_mm <- cart$y / cart$z * self$viewing_distance_mm
+      return(list(x = x_mm, y = y_mm))
+    },
 
-                                 deg_to_pix = function(x, y) {
-                                   mm <- self$deg_to_mm(x, y)
-                                   return(self$mm_to_pix(mm[1], mm[2]))
-                                 },
+    deg_to_pix = function(x, y) {
+      mm <- self$deg_to_mm(x, y)
+      return(self$mm_to_pix(mm$x, mm$y))
+    },
 
-                                 screen_extents = function() {
-                                   deg <- self$mm_to_deg(self$screen_size_x_mm / 2, self$screen_size_y_mm / 2)
-                                   return(c(deg[1] * 2, deg[2] * 2))
-                                 }
-                               )
+    screen_extents = function() {
+      deg <- self$mm_to_deg(self$screen_size_x_mm / 2, self$screen_size_y_mm / 2)
+      return(list(width = deg$azi * 2, height = deg$ele * 2))
+    }
+  )
 )
 
 DataQuality <- R6Class("DataQuality",
