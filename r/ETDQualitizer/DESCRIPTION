@@ -1,6 +1,6 @@
 Package: ETDQualitizer
 Type: Package
-Title: Automated Eye Tracking Data Quality Determination for Screen-based Eye Trackers 
+Title: Automated Eye Tracking Data Quality Determination for Screen-based Eye Trackers
 Version: 0.1.0
 Authors@R: c(
     person(
@@ -11,11 +11,15 @@ Authors@R: c(
   )
 Description: Compute common data quality metrics for accuracy, precision, offset,
   and other qualities for screen-based eye trackers. By supplying a ScreenConfiguration
-  object the accuracy and precision metrics will be transformed and reported in 
+  object the accuracy and precision metrics will be transformed and reported in
   degrees, as is the literature standard.
 License: use_mit_license()
 Encoding: UTF-8
 LazyData: true
-Suggests: 
+Imports:
+    dplyr,
+    tidyr,
+    R6
+Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
