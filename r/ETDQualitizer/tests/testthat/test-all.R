@@ -16,13 +16,10 @@
 test_that("pix_to_mm and mm_to_pix are consistent", {
   config <- ScreenConfiguration$new(500, 300, 1920, 1080, 600)
   mm <- config$pix_to_mm(960, 540)
-  names(mm) <- c("x", "y")
-  pix <- config$mm_to_pix(mm["x"], mm["y"])
-  names(pix) <- c("x", "y")
-  expect_equal(pix["x"], c(x = 960), tolerance = 1e-10)
-  expect_equal(pix["y"], c(y = 540), tolerance = 1e-10)
+  pix <- config$mm_to_pix(mm$x, mm$y)
+  expect_equal(pix$x, 960, tolerance = 1e-10)
+  expect_equal(pix$y, 540, tolerance = 1e-10)
 })
-
 test_that("mm_to_deg and deg_to_mm are consistent", {
   config <- ScreenConfiguration$new(500, 300, 1920, 1080, 600)
   deg <- config$mm_to_deg(250, 0)
@@ -30,7 +27,6 @@ test_that("mm_to_deg and deg_to_mm are consistent", {
   expect_equal(mm$x, 250, tolerance = 1e-10)
   expect_equal(mm$y, 0, tolerance = 1e-10)
 })
-
 test_that("screen_extents returns positive values", {
   config <- ScreenConfiguration$new(500, 300, 1920, 1080, 600)
   extents <- config$screen_extents()
