@@ -1,0 +1,1 @@
+Note that tests for the R package are included in the [r subdirectory](../r/ETDQualitizer/tests/)
