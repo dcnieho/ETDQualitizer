@@ -129,7 +129,7 @@ std <- function(azi, ele) {
 #' @noRd
 pop_sd <- function(x) {
   x <- x[!is.na(x)]
-  sqrt(mean((x - mean(x, na.rm = TRUE))^2, na.rm = TRUE))
+  sqrt(mean((x - mean(x))^2))
 }
 
 #' Bivariate Contour Ellipse Area (BCEA)
