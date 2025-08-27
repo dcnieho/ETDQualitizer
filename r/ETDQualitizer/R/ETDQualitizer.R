@@ -553,53 +553,191 @@ DataQuality <- R6Class("DataQuality",
   )
 )
 
-compute_data_quality_from_validation <- function(gaze, unit, screen = NULL, advanced = FALSE, include_data_loss = FALSE) {
-  targets <- sort(unique(gaze$target_id[gaze$target_id != -1]))
-  target_locations <- sapply(targets, function(t) {
-    idx <- which(gaze$target_id == t)[1]
-    c(gaze$tar_x[idx], gaze$tar_y[idx])
-  })
-  target_locations <- t(target_locations)
 
-  if (unit == "pixels") {
-    if (is.null(screen)) stop("If unit is 'pixels', a screen configuration must be supplied")
-    deg_coords <- screen$pix_to_deg(target_locations[,1], target_locations[,2])
-    target_locations[,1] <- deg_coords[1]
-    target_locations[,2] <- deg_coords[2]
-  } else if (unit != "degrees") {
-    stop("unit should be 'pixels' or 'degrees'")
+#' Compute Data Quality Metrics from Validation Data
+#'
+#' This function computes a set of data quality metrics for gaze data collected during the PsychoPy validation procedure
+#' that is provided in the ETDQualitizer repository on github
+#' (https://github.com/dcnieho/ETDQualitizer/tree/master/python/ETDQualitizer/stim).
+#' It evaluates accuracy, precision, and optionally data loss and effective sampling frequency, per eye and per target.
+#'
+#' @param gaze A `data.frame` containing gaze data. Must include columns `target_id`, `tar_x`, `tar_y`, `timestamp`,
+#'   and eye-specific columns such as `left_x`, `left_y`, `right_x`, `right_y`. Timestamps should be provided in milliseconds.
+#' @param unit A character string specifying the unit of measurement for gaze and target coordinates in the gaze data.frame.
+#'   Must be either `"pixels"` or `"degrees"`.
+#' @param screen An optional `ScreenConfiguration` object or numeric scalar used to convert pixel coordinates to degrees.
+#'   Required if `unit == "pixels"`.
+#' @param advanced Logical. If `TRUE`, all available metrics are returned. If `FALSE`, only a simplified subset is included (default is FALSE).
+#' @param include_data_loss Logical. If `TRUE`, includes data loss and effective frequency metrics in the output (default is FALSE).
+#'
+#' @return A `data.frame` with one row per eye-target combination, containing computed metrics:
+#'   - `eye`, `target_id`: identifiers
+#'   - `offset`, `offset_x`, `offset_y`: accuracy metrics (`offset_x`, `offset_y` only if `advanced` is `TRUE`)
+#'   - `rms_s2s`, `rms_s2s_x`, `rms_s2s_y`: precision (RMS sample-to-sample) (`rms_s2s_x`, `rms_s2s_y` only if `advanced` is `TRUE`)
+#'   - `std`, `std_x`, `std_y`: precision (standard deviation) (`std_x`, `std_y` only if `advanced` is `TRUE`)
+#'   - `bcea`, `bcea_orientation`, `bcea_ax1`, `bcea_ax2`, `bcea_aspect_ratio`: precision (BCEA metrics) (`bcea_orientation`, `bcea_ax1`, `bcea_ax2`, `bcea_aspect_ratio` only if `advanced` is `TRUE`)
+#'   - `data_loss`, `effective_frequency`: optional metrics if `include_data_loss = TRUE`
+#'
+#' @details
+#' This function uses the following methods in the `DataQuality` class to compute the returned results:
+#' `accuracy()`, `precision_RMS_S2S()`, `precision_STD()`, `precision_BCEA()`, `data_loss()`, and `effective_frequency()`.
+#'
+#' @examples
+#' \dontrun{
+#' dq <- compute_data_quality_from_validation(gaze_data, unit = "pixels", screen = my_screen_config)
+#' }
+#'
+#' @export
+compute_data_quality_from_validation <- function(gaze, unit, screen = NULL, advanced = FALSE, include_data_loss = FALSE) {
+  stopifnot(is.data.frame(gaze))
+  stopifnot(unit %in% c("pixels", "degrees"))
+
+  # Get all targets
+  targets <- unique(gaze$target_id)
+  targets <- targets[targets != -1]
+  target_locations <- matrix(NA, nrow = length(targets), ncol = 2)
+
+  for (t in seq_along(targets)) {
+    qTarget <- gaze$target_id == targets[t]
+    iTarget <- which(qTarget)[1]
+    target_locations[t, ] <- c(gaze$tar_x[iTarget], gaze$tar_y[iTarget])
   }
 
-  rows <- list()
-  for (e in c("left", "right")) {
-    if (!(paste0(e, "_x") %in% colnames(gaze))) next
-    for (i in seq_along(targets)) {
-      t_id <- targets[i]
+  # Convert target locations to degrees if needed
+  if (unit == "pixels") {
+    if (is.null(screen)) {
+      stop('If unit is "pixels", a screen configuration must be supplied')
+    }
+    deg_coords <- screen$pix_to_deg(target_locations[, 1], target_locations[, 2])
+    target_locations[, 1] <- deg_coords$azi
+    target_locations[, 2] <- deg_coords$ele
+  } else if (unit != "degrees") {
+    stop('unit should be "pixels" or "degrees"')
+  }
+
+  # Determine which eyes are present
+  eyes <- c("left", "right")
+  have_eye <- sapply(eyes, function(e) paste0(e, "_x") %in% names(gaze))
+  eyes <- eyes[have_eye]
+
+  # Prepare output table
+  vars <- c("eye", "target_id", "offset", "offset_x", "offset_y",
+            "rms_s2s", "rms_s2s_x", "rms_s2s_y",
+            "std", "std_x", "std_y",
+            "bcea", "bcea_orientation", "bcea_ax1", "bcea_ax2", "bcea_aspect_ratio")
+  if (include_data_loss) {
+    vars <- c(vars, "data_loss", "effective_frequency")
+  }
+
+  dq <- data.frame(matrix(NA, nrow = length(targets) * length(eyes), ncol = length(vars)))
+  names(dq) <- vars
+  dq$eye <- ""
+  dq$target_id <- NA
+
+  # Compute metrics per eye and target
+  for (e in seq_along(eyes)) {
+    eye <- eyes[e]
+    x_col <- paste0(eye, "_x")
+    y_col <- paste0(eye, "_y")
+
+    for (t in seq_along(targets)) {
+      oi <- (e - 1) * length(targets) + t
+      t_id <- targets[t]
       is_target <- gaze$target_id == t_id
-      dq <- DataQuality$new(
-        gaze_x = gaze[[paste0(e, "_x")]][is_target],
-        gaze_y = gaze[[paste0(e, "_y")]][is_target],
+
+      dq_calc <- DataQuality$new(
+        gaze_x = gaze[[x_col]][is_target],
+        gaze_y = gaze[[y_col]][is_target],
         timestamps = gaze$timestamp[is_target] / 1000,
         unit = unit,
         screen = screen
       )
-      row <- list(eye = e, target_id = t_id)
-      row <- c(row, setNames(as.list(dq$accuracy(target_locations[i,1], target_locations[i,2])), c("offset", "offset_x", "offset_y")))
-      row <- c(row, setNames(as.list(dq$precision_RMS_S2S()), c("rms_s2s", "rms_s2s_x", "rms_s2s_y")))
-      row <- c(row, setNames(as.list(dq$precision_STD()), c("std", "std_x", "std_y")))
-      row <- c(row, setNames(as.list(dq$precision_BCEA()), c("bcea", "bcea_orientation", "bcea_ax1", "bcea_ax2", "bcea_aspect_ratio")))
+
+      dq$eye[oi] <- eye
+      dq$target_id[oi] <- t_id
+      dq[oi, c("offset", "offset_x", "offset_y")] <- dq_calc$accuracy(target_locations[t, 1], target_locations[t, 2])
+      dq[oi, c("rms_s2s", "rms_s2s_x", "rms_s2s_y")] <- dq_calc$precision_RMS_S2S()
+      dq[oi, c("std", "std_x", "std_y")] <- dq_calc$precision_STD()
+      dq[oi, c("bcea", "bcea_orientation", "bcea_ax1", "bcea_ax2", "bcea_aspect_ratio")] <- dq_calc$precision_BCEA()
+
       if (include_data_loss) {
-        row$data_loss <- dq$data_loss()
-        row$effective_frequency <- dq$effective_frequency()
+        dq$data_loss[oi] <- dq_calc$data_loss()
+        dq$effective_frequency[oi] <- dq_calc$effective_frequency()
       }
-      rows[[length(rows) + 1]] <- row
     }
   }
 
-  dq_df <- bind_rows(rows)
+  # Drop advanced metrics if not requested
   if (!advanced) {
-    keep_cols <- c("eye", "target_id", "offset", "rms_s2s", "std", "bcea", "data_loss", "effective_frequency")
-    dq_df <- dq_df[, intersect(names(dq_df), keep_cols)]
+    keep_vars <- c("eye", "target_id", "offset", "rms_s2s", "std", "bcea")
+    if (include_data_loss) {
+      keep_vars <- c(keep_vars, "data_loss", "effective_frequency")
+    }
+    dq <- dq[, keep_vars, drop = FALSE]
   }
-  return(dq_df)
+
+  dq
+}
+
+
+#' Summarize and Report Data Quality Metrics
+#'
+#' This function summarizes data quality metrics from a validation procedure by computing averages per participant and generating descriptive statistics across participants.
+#' It also returns a formatted textual summary suitable for reporting.
+#'
+#' @param dq_table A `data.frame` containing data quality metrics. Must include columns `file`, `eye`, `target_id`, and relevant numeric metrics such as `offset`, `rms_s2s`, and `std`.
+#'  This would generally be created by concatenating the output of the compute_data_quality_from_validation() for multiple files.
+#'
+#' @return A named list with two elements:
+#' \describe{
+#'   \item{txt}{A character string summarizing key metrics (accuracy, RMS-S2S precision, STD precision).}
+#'   \item{measures}{A list containing:
+#'     \itemize{
+#'       \item{\code{all}: A data frame with per-participant averages (grouped by `file`).}
+#'       \item{\code{mean}, \code{std}, \code{min}, \code{max}: Named numeric vectors with summary statistics across participants.}
+#'     }
+#'   }
+#' }
+#'
+#' @details
+#' The summary text excludes BCEA and data loss metrics. BCEA is considered a niche metric and data loss is best reported across the full dataset rather than just the validation subset.
+#'
+#' @examples
+#' \dontrun{
+#' result <- report_data_quality_table(dq_table)
+#' cat(result$txt)
+#' head(result$measures$all)
+#' }
+#'
+#' @export
+report_data_quality_table <- function(dq_table) {
+  stopifnot(is.data.frame(dq_table))
+
+  measures <- list()
+
+  # Average over targets and eyes, grouped by file
+  grouped <- aggregate(. ~ file, data = subset(dq_table, select = -c(eye, target_id)), FUN = mean, na.rm = TRUE)
+  measures$all <- grouped
+
+  # Summary statistics
+  numeric_cols <- names(grouped)[-1]  # exclude 'file'
+  measures$mean <- sapply(grouped[numeric_cols], mean, na.rm = TRUE)
+  measures$std  <- sapply(grouped[numeric_cols], sd, na.rm = TRUE)
+  measures$min  <- sapply(grouped[numeric_cols], min, na.rm = TRUE)
+  measures$max  <- sapply(grouped[numeric_cols], max, na.rm = TRUE)
+
+  # Text summary (excluding BCEA and data loss)
+  n_target <- length(unique(dq_table$target_id))
+  n_subj   <- nrow(measures$all)
+  version  <- ETDQ_version()  # Assumes this function exists
+
+  txt <- sprintf(
+    "For %d participants, the average inaccuracy in the data determined from a %d-point validation procedure using ETDQualitizer v%s (Niehorster et al., in prep) was %.2f\u00b0 (SD=%.2f\u00b0, range=%.2f\u00b0--%.2f\u00b0). Average RMS-S2S precision was %.3f\u00b0 (SD=%.3f\u00b0, range=%.3f\u00b0--%.3f\u00b0) and STD precision %.3f\u00b0 (SD=%.3f\u00b0, range=%.3f\u00b0--%.3f\u00b0).",
+    n_subj, n_target, version,
+    measures$mean["offset"], measures$std["offset"], measures$min["offset"], measures$max["offset"],
+    measures$mean["rms_s2s"], measures$std["rms_s2s"], measures$min["rms_s2s"], measures$max["rms_s2s"],
+    measures$mean["std"], measures$std["std"], measures$min["std"], measures$max["std"]
+  )
+
+  list(txt = txt, measures = measures)
 }
