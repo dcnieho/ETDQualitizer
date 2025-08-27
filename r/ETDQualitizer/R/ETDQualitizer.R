@@ -4,6 +4,21 @@ library(tidyr)
 library(stats)
 
 
+#' Get ETDQualitizer Version
+#'
+#' Returns the current version string of the ETDQualitizer tool.
+#'
+#' @return A character string representing the version number.
+#'
+#' @examples
+#' ETDQ_version()
+#'
+#' @export
+ETDQ_version <- function() {
+  return("0.8.5")
+}
+
+
 #' Convert Fick Angles to 3D Vector
 #'
 #' Converts azimuth and elevation angles (in degrees) to a 3D unit vector.
