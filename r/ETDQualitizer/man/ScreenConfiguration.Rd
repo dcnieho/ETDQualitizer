@@ -2,7 +2,7 @@
 % Please edit documentation in R/ETDQualitizer.R
 \name{ScreenConfiguration}
 \alias{ScreenConfiguration}
-\title{Screen Configuration Class}
+\title{R6 Screen Configuration Class}
 \description{
 Provides methods for converting between pixel, millimeter, and degree units.
 }
@@ -15,70 +15,42 @@ sc$pix_to_deg(960, 540)
 ## ------------------------------------------------
 
 sc <- ScreenConfiguration$new(500, 300, 1920, 1080, 600)
-Convert Pixels to Millimeters
-
-Converts pixel coordinates to millimeter coordinates on the screen.
-
 
 ## ------------------------------------------------
 ## Method `ScreenConfiguration$pix_to_mm`
 ## ------------------------------------------------
 
 sc$pix_to_mm(960, 540)
-Convert Pixels to Degrees
-
-Converts pixel coordinates to an angular gaze direction in degrees.
-
 
 ## ------------------------------------------------
 ## Method `ScreenConfiguration$pix_to_deg`
 ## ------------------------------------------------
 
 sc$pix_to_deg(960, 540)
-Convert Millimeters to Degrees
-
-Converts millimeter coordinates to an angular gaze direction in degrees.
-
 
 ## ------------------------------------------------
 ## Method `ScreenConfiguration$mm_to_deg`
 ## ------------------------------------------------
 
 sc$mm_to_deg(100, 50)
-Convert Millimeters to Pixels
-
-Converts millimeter coordinates on the screen to pixel coordinates.
-
 
 ## ------------------------------------------------
 ## Method `ScreenConfiguration$mm_to_pix`
 ## ------------------------------------------------
 
 sc$mm_to_pix(100, 50)
-Convert Degrees to Millimeters
-
-Converts an angular gaze direction in degrees to millimeter coordinates on the screen.
-
 
 ## ------------------------------------------------
 ## Method `ScreenConfiguration$deg_to_mm`
 ## ------------------------------------------------
 
 sc$deg_to_mm(2, 1)
-Convert Degrees to Pixels
-
-Converts an angular gaze direction in degrees to pixel coordinates.
-
 
 ## ------------------------------------------------
 ## Method `ScreenConfiguration$deg_to_pix`
 ## ------------------------------------------------
 
 sc$deg_to_pix(2, 1)
-Get Screen Extents in Degrees
-
-Computes the horizontal and vertical extents of the screen (in degrees).
-
 
 ## ------------------------------------------------
 ## Method `ScreenConfiguration$screen_extents`
@@ -97,10 +69,7 @@ sc$screen_extents()
 
 \item{\code{screen_res_y_pix}}{Vertical screen resolution in pixels.}
 
-\item{\code{viewing_distance_mm}}{Viewing distance in mm.
-Initialize Screen Configuration
-
-Creates a new ScreenConfiguration object with screen and viewing distance parameters.}
+\item{\code{viewing_distance_mm}}{Viewing distance in mm.}
 }
 \if{html}{\out{</div>}}
 }
@@ -122,6 +91,7 @@ Creates a new ScreenConfiguration object with screen and viewing distance parame
 \if{html}{\out{<a id="method-ScreenConfiguration-new"></a>}}
 \if{latex}{\out{\hypertarget{method-ScreenConfiguration-new}{}}}
 \subsection{Method \code{new()}}{
+Creates a new ScreenConfiguration object with screen and viewing distance parameters.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ScreenConfiguration$new(
   screen_size_x_mm,
@@ -153,10 +123,6 @@ A new ScreenConfiguration object.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{sc <- ScreenConfiguration$new(500, 300, 1920, 1080, 600)
-Convert Pixels to Millimeters
-
-Converts pixel coordinates to millimeter coordinates on the screen.
-
 }
 \if{html}{\out{</div>}}
 
@@ -167,6 +133,7 @@ Converts pixel coordinates to millimeter coordinates on the screen.
 \if{html}{\out{<a id="method-ScreenConfiguration-pix_to_mm"></a>}}
 \if{latex}{\out{\hypertarget{method-ScreenConfiguration-pix_to_mm}{}}}
 \subsection{Method \code{pix_to_mm()}}{
+Converts pixel coordinates to millimeter coordinates on the screen.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ScreenConfiguration$pix_to_mm(x, y)}\if{html}{\out{</div>}}
 }
@@ -186,10 +153,6 @@ A list with x and y in millimeters.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{sc$pix_to_mm(960, 540)
-Convert Pixels to Degrees
-
-Converts pixel coordinates to an angular gaze direction in degrees.
-
 }
 \if{html}{\out{</div>}}
 
@@ -200,6 +163,7 @@ Converts pixel coordinates to an angular gaze direction in degrees.
 \if{html}{\out{<a id="method-ScreenConfiguration-pix_to_deg"></a>}}
 \if{latex}{\out{\hypertarget{method-ScreenConfiguration-pix_to_deg}{}}}
 \subsection{Method \code{pix_to_deg()}}{
+Converts pixel coordinates to an angular gaze direction in degrees.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ScreenConfiguration$pix_to_deg(x, y)}\if{html}{\out{</div>}}
 }
@@ -219,10 +183,6 @@ A list with azimuth (\code{"azi"}) and elevation (\code{"ele"}) in degrees.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{sc$pix_to_deg(960, 540)
-Convert Millimeters to Degrees
-
-Converts millimeter coordinates to an angular gaze direction in degrees.
-
 }
 \if{html}{\out{</div>}}
 
@@ -233,6 +193,7 @@ Converts millimeter coordinates to an angular gaze direction in degrees.
 \if{html}{\out{<a id="method-ScreenConfiguration-mm_to_deg"></a>}}
 \if{latex}{\out{\hypertarget{method-ScreenConfiguration-mm_to_deg}{}}}
 \subsection{Method \code{mm_to_deg()}}{
+Converts millimeter coordinates to an angular gaze direction in degrees.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ScreenConfiguration$mm_to_deg(x, y)}\if{html}{\out{</div>}}
 }
@@ -252,10 +213,6 @@ A list with azimuth (\code{"azi"}) and elevation (\code{"ele"}) in degrees.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{sc$mm_to_deg(100, 50)
-Convert Millimeters to Pixels
-
-Converts millimeter coordinates on the screen to pixel coordinates.
-
 }
 \if{html}{\out{</div>}}
 
@@ -266,6 +223,7 @@ Converts millimeter coordinates on the screen to pixel coordinates.
 \if{html}{\out{<a id="method-ScreenConfiguration-mm_to_pix"></a>}}
 \if{latex}{\out{\hypertarget{method-ScreenConfiguration-mm_to_pix}{}}}
 \subsection{Method \code{mm_to_pix()}}{
+Converts millimeter coordinates on the screen to pixel coordinates.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ScreenConfiguration$mm_to_pix(x, y)}\if{html}{\out{</div>}}
 }
@@ -285,10 +243,6 @@ A list with x and y in pixels.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{sc$mm_to_pix(100, 50)
-Convert Degrees to Millimeters
-
-Converts an angular gaze direction in degrees to millimeter coordinates on the screen.
-
 }
 \if{html}{\out{</div>}}
 
@@ -299,6 +253,7 @@ Converts an angular gaze direction in degrees to millimeter coordinates on the s
 \if{html}{\out{<a id="method-ScreenConfiguration-deg_to_mm"></a>}}
 \if{latex}{\out{\hypertarget{method-ScreenConfiguration-deg_to_mm}{}}}
 \subsection{Method \code{deg_to_mm()}}{
+Converts an angular gaze direction in degrees to millimeter coordinates on the screen.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ScreenConfiguration$deg_to_mm(azi, ele)}\if{html}{\out{</div>}}
 }
@@ -318,10 +273,6 @@ A list with x and y in millimeters.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{sc$deg_to_mm(2, 1)
-Convert Degrees to Pixels
-
-Converts an angular gaze direction in degrees to pixel coordinates.
-
 }
 \if{html}{\out{</div>}}
 
@@ -332,6 +283,7 @@ Converts an angular gaze direction in degrees to pixel coordinates.
 \if{html}{\out{<a id="method-ScreenConfiguration-deg_to_pix"></a>}}
 \if{latex}{\out{\hypertarget{method-ScreenConfiguration-deg_to_pix}{}}}
 \subsection{Method \code{deg_to_pix()}}{
+Converts an angular gaze direction in degrees to pixel coordinates.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ScreenConfiguration$deg_to_pix(x, y)}\if{html}{\out{</div>}}
 }
@@ -351,10 +303,6 @@ A list with x and y in pixels.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{sc$deg_to_pix(2, 1)
-Get Screen Extents in Degrees
-
-Computes the horizontal and vertical extents of the screen (in degrees).
-
 }
 \if{html}{\out{</div>}}
 
@@ -365,6 +313,7 @@ Computes the horizontal and vertical extents of the screen (in degrees).
 \if{html}{\out{<a id="method-ScreenConfiguration-screen_extents"></a>}}
 \if{latex}{\out{\hypertarget{method-ScreenConfiguration-screen_extents}{}}}
 \subsection{Method \code{screen_extents()}}{
+Computes the horizontal and vertical extents of the screen (in degrees).
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ScreenConfiguration$screen_extents()}\if{html}{\out{</div>}}
 }

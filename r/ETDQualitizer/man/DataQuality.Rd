@@ -2,112 +2,80 @@
 % Please edit documentation in R/ETDQualitizer.R
 \name{DataQuality}
 \alias{DataQuality}
-\title{Data Quality Class}
+\title{R6 class for calculating Data Quality from a gaze data segment}
 \description{
 Provides methods for assessing the quality of gaze data, including accuracy, precision, data loss, and effective sampling frequency.
 }
 \examples{
 sc <- ScreenConfiguration$new(500, 300, 1920, 1080, 600)
+gaze_x <- c(0, 1, -1)
+gaze_y <- c(0, 1, -1)
+timestamps <- c(0, 1, 2)
 dq <- DataQuality$new(gaze_x, gaze_y, timestamps, unit = "pixels", screen = sc)
 dq$accuracy(0, 0)
 dq$precision_RMS_S2S()
 dq$data_loss()
+
 
 ## ------------------------------------------------
 ## Method `DataQuality$new`
 ## ------------------------------------------------
 
 dq <- DataQuality$new(gaze_x, gaze_y, timestamps, unit = "pixels", screen = sc)
-Compute Accuracy
-
-Calculates the accuracy of gaze data relative to a known target location.
-
 
 ## ------------------------------------------------
 ## Method `DataQuality$accuracy`
 ## ------------------------------------------------
 
 dq$accuracy(0, 0)
-Compute Precision (RMS S2S)
-
-Calculates precision using root mean square of sample-to-sample differences.
-
 
 ## ------------------------------------------------
 ## Method `DataQuality$precision_RMS_S2S`
 ## ------------------------------------------------
 
 dq$precision_RMS_S2S()
-Compute Precision (Standard Deviation)
-
-Calculates precision using standard deviation of gaze positions.
-
 
 ## ------------------------------------------------
 ## Method `DataQuality$precision_STD`
 ## ------------------------------------------------
 
 dq$precision_STD()
-Compute Precision (BCEA)
-
-Calculates the Bivariate Contour Ellipse Area (BCEA) and ellipse parameters for gaze precision.
-
 
 ## ------------------------------------------------
 ## Method `DataQuality$precision_BCEA`
 ## ------------------------------------------------
 
 dq$precision_BCEA()
-Compute Data Loss
-
-Calculates the proportion of missing data (coded as NA).
-
 
 ## ------------------------------------------------
 ## Method `DataQuality$data_loss`
 ## ------------------------------------------------
 
 dq$data_loss()
-Compute Data Loss from Expected Number of Samples
-
-Estimates data loss based on expected number of samples given the duration and sampling frequency.
-
 
 ## ------------------------------------------------
 ## Method `DataQuality$data_loss_from_expected`
 ## ------------------------------------------------
 
 dq$data_loss_from_expected(500)
-Compute Effective Sampling Frequency
-
-Calculates the effective sampling frequency based on timestamps.
-
 
 ## ------------------------------------------------
 ## Method `DataQuality$effective_frequency`
 ## ------------------------------------------------
 
 dq$effective_frequency()
-Get Duration of Gaze Data
-
-Computes the total duration of the gaze recording, including the last sample.
-
 
 ## ------------------------------------------------
 ## Method `DataQuality$get_duration`
 ## ------------------------------------------------
 
 dq$get_duration()
-Compute Precision Using Moving Window
-
-Calculates precision using a moving window approach.
-
 
 ## ------------------------------------------------
 ## Method `DataQuality$precision_using_moving_window`
 ## ------------------------------------------------
 
-dq$precision_using_moving_window(0.2, "RMS")
+dq$precision_using_moving_window(0.2, "RMS-S2S")
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -116,10 +84,7 @@ dq$precision_using_moving_window(0.2, "RMS")
 
 \item{\code{azi}}{Vector of azimuth angles in degrees (Fick coordinates). Missing data should be coded as NA, not using some special value such as (0,0) or (-xres,-yres).}
 
-\item{\code{ele}}{Vector of elevation angles in degrees (Fick coordinates). Missing data should be coded as NA, not using some special value such as (0,0) or (-xres,-yres).
-Initialize Data Quality
-
-Creates a new DataQuality object from gaze data and timestamps.}
+\item{\code{ele}}{Vector of elevation angles in degrees (Fick coordinates). Missing data should be coded as NA, not using some special value such as (0,0) or (-xres,-yres).}
 }
 \if{html}{\out{</div>}}
 }
@@ -143,6 +108,7 @@ Creates a new DataQuality object from gaze data and timestamps.}
 \if{html}{\out{<a id="method-DataQuality-new"></a>}}
 \if{latex}{\out{\hypertarget{method-DataQuality-new}{}}}
 \subsection{Method \code{new()}}{
+Creates a new DataQuality object from gaze data and timestamps.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DataQuality$new(gaze_x, gaze_y, timestamps, unit, screen = NULL)}\if{html}{\out{</div>}}
 }
@@ -168,10 +134,6 @@ A new DataQuality object.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{dq <- DataQuality$new(gaze_x, gaze_y, timestamps, unit = "pixels", screen = sc)
-Compute Accuracy
-
-Calculates the accuracy of gaze data relative to a known target location.
-
 }
 \if{html}{\out{</div>}}
 
@@ -182,6 +144,7 @@ Calculates the accuracy of gaze data relative to a known target location.
 \if{html}{\out{<a id="method-DataQuality-accuracy"></a>}}
 \if{latex}{\out{\hypertarget{method-DataQuality-accuracy}{}}}
 \subsection{Method \code{accuracy()}}{
+Calculates the accuracy of gaze data relative to a known target location.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DataQuality$accuracy(target_x_deg, target_y_deg, central_tendency_fun = mean)}\if{html}{\out{</div>}}
 }
@@ -203,10 +166,6 @@ Accuracy in degrees.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{dq$accuracy(0, 0)
-Compute Precision (RMS S2S)
-
-Calculates precision using root mean square of sample-to-sample differences.
-
 }
 \if{html}{\out{</div>}}
 
@@ -217,6 +176,7 @@ Calculates precision using root mean square of sample-to-sample differences.
 \if{html}{\out{<a id="method-DataQuality-precision_RMS_S2S"></a>}}
 \if{latex}{\out{\hypertarget{method-DataQuality-precision_RMS_S2S}{}}}
 \subsection{Method \code{precision_RMS_S2S()}}{
+Calculates precision as root mean square of sample-to-sample distances
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DataQuality$precision_RMS_S2S(central_tendency_fun = mean)}\if{html}{\out{</div>}}
 }
@@ -234,10 +194,6 @@ Precision in degrees.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{dq$precision_RMS_S2S()
-Compute Precision (Standard Deviation)
-
-Calculates precision using standard deviation of gaze positions.
-
 }
 \if{html}{\out{</div>}}
 
@@ -248,6 +204,7 @@ Calculates precision using standard deviation of gaze positions.
 \if{html}{\out{<a id="method-DataQuality-precision_STD"></a>}}
 \if{latex}{\out{\hypertarget{method-DataQuality-precision_STD}{}}}
 \subsection{Method \code{precision_STD()}}{
+Calculates precision as standard deviation of gaze positions.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DataQuality$precision_STD()}\if{html}{\out{</div>}}
 }
@@ -258,10 +215,6 @@ Standard deviation in degrees.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{dq$precision_STD()
-Compute Precision (BCEA)
-
-Calculates the Bivariate Contour Ellipse Area (BCEA) and ellipse parameters for gaze precision.
-
 }
 \if{html}{\out{</div>}}
 
@@ -272,6 +225,7 @@ Calculates the Bivariate Contour Ellipse Area (BCEA) and ellipse parameters for 
 \if{html}{\out{<a id="method-DataQuality-precision_BCEA"></a>}}
 \if{latex}{\out{\hypertarget{method-DataQuality-precision_BCEA}{}}}
 \subsection{Method \code{precision_BCEA()}}{
+Calculates the Bivariate Contour Ellipse Area (BCEA) and ellipse parameters for gaze precision.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DataQuality$precision_BCEA(P = 0.68)}\if{html}{\out{</div>}}
 }
@@ -289,10 +243,6 @@ BCEA in degrees-squared.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{dq$precision_BCEA()
-Compute Data Loss
-
-Calculates the proportion of missing data (coded as NA).
-
 }
 \if{html}{\out{</div>}}
 
@@ -303,6 +253,7 @@ Calculates the proportion of missing data (coded as NA).
 \if{html}{\out{<a id="method-DataQuality-data_loss"></a>}}
 \if{latex}{\out{\hypertarget{method-DataQuality-data_loss}{}}}
 \subsection{Method \code{data_loss()}}{
+Calculates the proportion of missing data (coded as NA).
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DataQuality$data_loss()}\if{html}{\out{</div>}}
 }
@@ -313,10 +264,6 @@ Proportion of missing samples.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{dq$data_loss()
-Compute Data Loss from Expected Number of Samples
-
-Estimates data loss based on expected number of samples given the duration and sampling frequency.
-
 }
 \if{html}{\out{</div>}}
 
@@ -327,6 +274,7 @@ Estimates data loss based on expected number of samples given the duration and s
 \if{html}{\out{<a id="method-DataQuality-data_loss_from_expected"></a>}}
 \if{latex}{\out{\hypertarget{method-DataQuality-data_loss_from_expected}{}}}
 \subsection{Method \code{data_loss_from_expected()}}{
+Estimates data loss based on expected number of samples given the duration and sampling frequency.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DataQuality$data_loss_from_expected(frequency)}\if{html}{\out{</div>}}
 }
@@ -344,10 +292,6 @@ Proportion of missing samples.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{dq$data_loss_from_expected(500)
-Compute Effective Sampling Frequency
-
-Calculates the effective sampling frequency based on timestamps.
-
 }
 \if{html}{\out{</div>}}
 
@@ -358,6 +302,7 @@ Calculates the effective sampling frequency based on timestamps.
 \if{html}{\out{<a id="method-DataQuality-effective_frequency"></a>}}
 \if{latex}{\out{\hypertarget{method-DataQuality-effective_frequency}{}}}
 \subsection{Method \code{effective_frequency()}}{
+Calculates the effective sampling frequency based on timestamps.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DataQuality$effective_frequency()}\if{html}{\out{</div>}}
 }
@@ -368,10 +313,6 @@ Effective frequency in Hz.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{dq$effective_frequency()
-Get Duration of Gaze Data
-
-Computes the total duration of the gaze recording, including the last sample.
-
 }
 \if{html}{\out{</div>}}
 
@@ -382,6 +323,7 @@ Computes the total duration of the gaze recording, including the last sample.
 \if{html}{\out{<a id="method-DataQuality-get_duration"></a>}}
 \if{latex}{\out{\hypertarget{method-DataQuality-get_duration}{}}}
 \subsection{Method \code{get_duration()}}{
+Computes the total duration of the gaze recording, including the last sample.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DataQuality$get_duration()}\if{html}{\out{</div>}}
 }
@@ -392,10 +334,6 @@ Duration in seconds.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{dq$get_duration()
-Compute Precision Using Moving Window
-
-Calculates precision using a moving window approach.
-
 }
 \if{html}{\out{</div>}}
 
@@ -406,6 +344,7 @@ Calculates precision using a moving window approach.
 \if{html}{\out{<a id="method-DataQuality-precision_using_moving_window"></a>}}
 \if{latex}{\out{\hypertarget{method-DataQuality-precision_using_moving_window}{}}}
 \subsection{Method \code{precision_using_moving_window()}}{
+Calculates precision using a moving window approach.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DataQuality$precision_using_moving_window(
   window_length,
@@ -420,7 +359,7 @@ Calculates precision using a moving window approach.
 \describe{
 \item{\code{window_length}}{Length of the moving window in number of samples.}
 
-\item{\code{metric}}{Precision metric to use (e.g., \code{"RMS"}, \code{"STD"}).}
+\item{\code{metric}}{Precision metric to use (\code{"RMS-S2S"}, \code{"STD"}, or \code{"BCEA"}).}
 
 \item{\code{aggregation_fun}}{Function to aggregate windowed precision values (e.g., \code{median}).}
 
@@ -433,7 +372,7 @@ Precision value.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{dq$precision_using_moving_window(0.2, "RMS")
+\preformatted{dq$precision_using_moving_window(0.2, "RMS-S2S")
 }
 \if{html}{\out{</div>}}
 

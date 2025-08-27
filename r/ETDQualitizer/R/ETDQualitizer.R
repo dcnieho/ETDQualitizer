@@ -275,14 +275,15 @@ precision_using_moving_window <- function(x, y, window_length, metric, aggregati
 }
 
 
-#' Screen Configuration Class
+#' @title R6 Screen Configuration Class
 #'
-#' Provides methods for converting between pixel, millimeter, and degree units.
+#' @description Provides methods for converting between pixel, millimeter, and degree units.
 #'
 #' @examples
 #' sc <- ScreenConfiguration$new(500, 300, 1920, 1080, 600)
 #' sc$pix_to_deg(960, 540)
 #' @export
+#' @importFrom R6 R6Class
 ScreenConfiguration <- R6Class("ScreenConfiguration",
   public = list(
     #' @field screen_size_x_mm Screen width in mm.
@@ -296,10 +297,7 @@ ScreenConfiguration <- R6Class("ScreenConfiguration",
     screen_res_y_pix = NULL,
     viewing_distance_mm = NULL,
 
-    #' Initialize Screen Configuration
-    #'
-    #' Creates a new ScreenConfiguration object with screen and viewing distance parameters.
-    #'
+    #' @description Creates a new ScreenConfiguration object with screen and viewing distance parameters.
     #' @param screen_size_x_mm Screen width in millimeters.
     #' @param screen_size_y_mm Screen height in millimeters.
     #' @param screen_res_x_pix Horizontal screen resolution in pixels.
@@ -316,10 +314,7 @@ ScreenConfiguration <- R6Class("ScreenConfiguration",
       self$viewing_distance_mm <- viewing_distance_mm
     },
 
-    #' Convert Pixels to Millimeters
-    #'
-    #' Converts pixel coordinates to millimeter coordinates on the screen.
-    #'
+    #' @description Converts pixel coordinates to millimeter coordinates on the screen.
     #' @param x Horizontal pixel coordinate.
     #' @param y Vertical pixel coordinate.
     #' @return A list with x and y in millimeters.
@@ -331,10 +326,7 @@ ScreenConfiguration <- R6Class("ScreenConfiguration",
       list(x = x_mm, y = y_mm)
     },
 
-    #' Convert Pixels to Degrees
-    #'
-    #' Converts pixel coordinates to an angular gaze direction in degrees.
-    #'
+    #' @description Converts pixel coordinates to an angular gaze direction in degrees.
     #' @param x Horizontal pixel coordinate.
     #' @param y Vertical pixel coordinate.
     #' @return A list with azimuth (\code{"azi"}) and elevation (\code{"ele"}) in degrees.
@@ -345,10 +337,7 @@ ScreenConfiguration <- R6Class("ScreenConfiguration",
       self$mm_to_deg(mm$x, mm$y)
     },
 
-    #' Convert Millimeters to Degrees
-    #'
-    #' Converts millimeter coordinates to an angular gaze direction in degrees.
-    #'
+    #' @description Converts millimeter coordinates to an angular gaze direction in degrees.
     #' @param x Horizontal position in millimeters.
     #' @param y Vertical position in millimeters.
     #' @return A list with azimuth (\code{"azi"}) and elevation (\code{"ele"}) in degrees.
@@ -360,10 +349,7 @@ ScreenConfiguration <- R6Class("ScreenConfiguration",
       list(azi = azi * 180 / pi, ele = ele * 180 / pi)
     },
 
-    #' Convert Millimeters to Pixels
-    #'
-    #' Converts millimeter coordinates on the screen to pixel coordinates.
-    #'
+    #' @description Converts millimeter coordinates on the screen to pixel coordinates.
     #' @param x Horizontal position in millimeters.
     #' @param y Vertical position in millimeters.
     #' @return A list with x and y in pixels.
@@ -375,10 +361,7 @@ ScreenConfiguration <- R6Class("ScreenConfiguration",
       list(x = x_pix, y = y_pix)
     },
 
-    #' Convert Degrees to Millimeters
-    #'
-    #' Converts an angular gaze direction in degrees to millimeter coordinates on the screen.
-    #'
+    #' @description Converts an angular gaze direction in degrees to millimeter coordinates on the screen.
     #' @param azi Azimuth in degrees (Fick angles).
     #' @param ele Elevation in degrees (Fick angles).
     #' @return A list with x and y in millimeters.
@@ -390,10 +373,7 @@ ScreenConfiguration <- R6Class("ScreenConfiguration",
       list(x = x_mm, y = y_mm)
     },
 
-    #' Convert Degrees to Pixels
-    #'
-    #' Converts an angular gaze direction in degrees to pixel coordinates.
-    #'
+    #' @description Converts an angular gaze direction in degrees to pixel coordinates.
     #' @param x Azimuth in degrees (Fick angles).
     #' @param y Elevation in degrees (Fick angles).
     #' @return A list with x and y in pixels.
@@ -404,10 +384,7 @@ ScreenConfiguration <- R6Class("ScreenConfiguration",
       self$mm_to_pix(mm$x, mm$y)
     },
 
-    #' Get Screen Extents in Degrees
-    #'
-    #' Computes the horizontal and vertical extents of the screen (in degrees).
-    #'
+    #' @description Computes the horizontal and vertical extents of the screen (in degrees).
     #' @return A list with width and height in degrees.
     #' @examples
     #' sc$screen_extents()
@@ -419,17 +396,23 @@ ScreenConfiguration <- R6Class("ScreenConfiguration",
   )
 )
 
-#' Data Quality Class
+
+#' @title R6 class for calculating Data Quality from a gaze data segment
 #'
-#' Provides methods for assessing the quality of gaze data, including accuracy, precision, data loss, and effective sampling frequency.
+#' @description Provides methods for assessing the quality of gaze data, including accuracy, precision, data loss, and effective sampling frequency.
 #'
 #' @examples
 #' sc <- ScreenConfiguration$new(500, 300, 1920, 1080, 600)
+#' gaze_x <- c(0, 1, -1)
+#' gaze_y <- c(0, 1, -1)
+#' timestamps <- c(0, 1, 2)
 #' dq <- DataQuality$new(gaze_x, gaze_y, timestamps, unit = "pixels", screen = sc)
 #' dq$accuracy(0, 0)
 #' dq$precision_RMS_S2S()
 #' dq$data_loss()
+#'
 #' @export
+#' @importFrom R6 R6Class
 DataQuality <- R6Class("DataQuality",
   public = list(
     #' @field timestamps Vector of timestamps in seconds. Samples with missing data should not be removed, or the RMS calculation would be incorrect.
@@ -439,10 +422,7 @@ DataQuality <- R6Class("DataQuality",
     azi = NULL,
     ele = NULL,
 
-    #' Initialize Data Quality
-    #'
-    #' Creates a new DataQuality object from gaze data and timestamps.
-    #'
+    #' @description Creates a new DataQuality object from gaze data and timestamps.
     #' @param gaze_x Horizontal gaze positions (pixels or degrees).
     #' @param gaze_y Vertical gaze positions (pixels or degrees).
     #' @param timestamps Vector of timestamps in seconds.
@@ -472,10 +452,7 @@ DataQuality <- R6Class("DataQuality",
       self$ele <- gaze_y
     },
 
-    #' Compute Accuracy
-    #'
-    #' Calculates the accuracy of gaze data relative to a known target location.
-    #'
+    #' @description Calculates the accuracy of gaze data relative to a known target location.
     #' @param target_x_deg Target azimuth in degrees.
     #' @param target_y_deg Target elevation in degrees.
     #' @param central_tendency_fun Function to compute central tendency (e.g., \code{mean}, \code{median}).
@@ -486,10 +463,7 @@ DataQuality <- R6Class("DataQuality",
       accuracy(self$azi, self$ele, target_x_deg, target_y_deg, central_tendency_fun)
     },
 
-    #' Compute Precision (RMS S2S)
-    #'
-    #' Calculates precision using root mean square of sample-to-sample differences.
-    #'
+    #' @description Calculates precision as root mean square of sample-to-sample distances
     #' @param central_tendency_fun Function to compute central tendency (e.g., \code{mean}, \code{median}).
     #' @return Precision in degrees.
     #' @examples
@@ -498,10 +472,7 @@ DataQuality <- R6Class("DataQuality",
       rms_s2s(self$azi, self$ele, central_tendency_fun)
     },
 
-    #' Compute Precision (Standard Deviation)
-    #'
-    #' Calculates precision using standard deviation of gaze positions.
-    #'
+    #' @description Calculates precision as standard deviation of gaze positions.
     #' @return Standard deviation in degrees.
     #' @examples
     #' dq$precision_STD()
@@ -509,10 +480,7 @@ DataQuality <- R6Class("DataQuality",
       std(self$azi, self$ele)
     },
 
-    #' Compute Precision (BCEA)
-    #'
-    #' Calculates the Bivariate Contour Ellipse Area (BCEA) and ellipse parameters for gaze precision.
-    #'
+    #' @description Calculates the Bivariate Contour Ellipse Area (BCEA) and ellipse parameters for gaze precision.
     #' @param P Proportion of data to include in the ellipse (default is 0.68).
     #' @return BCEA in degrees-squared.
     #' @examples
@@ -521,10 +489,7 @@ DataQuality <- R6Class("DataQuality",
       bcea(self$azi, self$ele, P)
     },
 
-    #' Compute Data Loss
-    #'
-    #' Calculates the proportion of missing data (coded as NA).
-    #'
+    #' @description Calculates the proportion of missing data (coded as NA).
     #' @return Proportion of missing samples.
     #' @examples
     #' dq$data_loss()
@@ -532,10 +497,7 @@ DataQuality <- R6Class("DataQuality",
       data_loss(self$azi, self$ele)
     },
 
-    #' Compute Data Loss from Expected Number of Samples
-    #'
-    #' Estimates data loss based on expected number of samples given the duration and sampling frequency.
-    #'
+    #' @description Estimates data loss based on expected number of samples given the duration and sampling frequency.
     #' @param frequency Expected sampling frequency in Hz.
     #' @return Proportion of missing samples.
     #' @examples
@@ -544,10 +506,7 @@ DataQuality <- R6Class("DataQuality",
       data_loss_from_expected(self$azi, self$ele, self$get_duration(), frequency)
     },
 
-    #' Compute Effective Sampling Frequency
-    #'
-    #' Calculates the effective sampling frequency based on timestamps.
-    #'
+    #' @description Calculates the effective sampling frequency based on timestamps.
     #' @return Effective frequency in Hz.
     #' @examples
     #' dq$effective_frequency()
@@ -555,10 +514,7 @@ DataQuality <- R6Class("DataQuality",
       effective_frequency(self$azi, self$ele, self$get_duration())
     },
 
-    #' Get Duration of Gaze Data
-    #'
-    #' Computes the total duration of the gaze recording, including the last sample.
-    #'
+    #' @description Computes the total duration of the gaze recording, including the last sample.
     #' @return Duration in seconds.
     #' @examples
     #' dq$get_duration()
@@ -568,10 +524,7 @@ DataQuality <- R6Class("DataQuality",
       self$timestamps[length(self$timestamps)] - self$timestamps[1] + isi
     },
 
-    #' Compute Precision Using Moving Window
-    #'
-    #' Calculates precision using a moving window approach.
-    #'
+    #' @description Calculates precision using a moving window approach.
     #' @param window_length Length of the moving window in number of samples.
     #' @param metric Precision metric to use (\code{"RMS-S2S"}, \code{"STD"}, or \code{"BCEA"}).
     #' @param aggregation_fun Function to aggregate windowed precision values (e.g., \code{median}).

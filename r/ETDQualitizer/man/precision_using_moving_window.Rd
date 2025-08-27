@@ -20,7 +20,7 @@ precision_using_moving_window(
 
 \item{window_length}{Window size in samples.}
 
-\item{metric}{Precision metric: \code{"RMS_S2S"}, \code{"STD"}, or \code{"BCEA"}.}
+\item{metric}{Precision metric: \code{"RMS-S2S"}, \code{"STD"}, or \code{"BCEA"}.}
 
 \item{aggregation_fun}{Function to aggregate precision values across the windows (default: \code{median}).}
 
