@@ -17,8 +17,6 @@ License: use_mit_license()
 Encoding: UTF-8
 LazyData: true
 Imports:
-    dplyr,
-    tidyr,
     R6
 Suggests:
     testthat (>= 3.0.0)
