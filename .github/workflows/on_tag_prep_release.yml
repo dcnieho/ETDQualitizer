@@ -1,4 +1,4 @@
-name: Create release and build and attach MATLAB MLTBX 📦 file
+name: Prep release, build+attach MATLAB MLTBX 📦 and R CRAN 📦 files
 
 on:
   workflow_dispatch:
@@ -29,7 +29,7 @@ jobs:
           name: matlab_mltbx
           path: ./${{  github.ref_name }}.mltbx
 
-      - name: Create release with mltbx atached
+      - name: Create release with mltbx attached
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
@@ -58,22 +58,18 @@ jobs:
       - name: Run checks
         working-directory: r/ETDQualitizer
         run: |
-          Rscript -e 'devtools::check(document = FALSE)'
+          Rscript -e 'devtools::check(document = FALSE, cran = TRUE, remote = TRUE, manual = TRUE)'
 
       - name: Build package
         working-directory: r/ETDQualitizer
         run: |
-          Rscript -e 'devtools::build(path = "../../pkg_build")'
+          Rscript -e 'devtools::build(manual = TRUE)'
 
-      - name: Get version
-        id: get_version
-        working-directory: r/ETDQualitizer
-        run: |
-          Rscript -e 'version <- as.character(devtools::as.package(".")$version); writeLines(paste0("version=", version), Sys.getenv("GITHUB_OUTPUT"))'
-
-      - name: Upload CRAN package as release artifact
+      - name: Create release with CRAN package attached
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
-          files: pkg_build/*.tar.gz
+          draft: true
+          name: ${{ github.ref_name }}
+          files: ./r/ETDQualitizer*.tar.gz
