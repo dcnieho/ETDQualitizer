@@ -13,3 +13,8 @@ replace = "ETDQualitizer v{new_version}"
 filename = "matlab/ETDQ_version.m"
 search = "version = '{current_version}';"
 replace = "version = '{new_version}';"
+
+[[tool.bumpversion.files]]
+filename = "r/ETDQualitizer/DESCRIPTION"
+search = "Version: '{current_version}'"
+replace = "Version: '{new_version}'"
