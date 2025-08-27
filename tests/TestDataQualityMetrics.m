@@ -29,9 +29,18 @@ classdef TestDataQualityMetrics < matlab.unittest.TestCase
             testCase.verifyEqual(s, hypot(sx, sy));
         end
 
+        function testStdFunctionWithNan(testCase)
+            x = [1; 2; nan; 3];
+            y = [4; 5; nan; 6];
+            [s, sx, sy] = std_(x, y);
+            testCase.verifyEqual(sx, std(x, 1, 'omitnan'));
+            testCase.verifyEqual(sy, std(y, 1, 'omitnan'));
+            testCase.verifyEqual(s, hypot(sx, sy));
+        end
+
         function testBCEA(testCase)
-            x = randn(10000,1);
-            y = randn(10000,1);
+            x = randn(100000,1);
+            y = randn(100000,1);
             [area, ~, ax1, ax2, aspect_ratio] = bcea(x, y, 0.68);
             testCase.verifyGreaterThan(area, 0);
             testCase.verifyEqual(aspect_ratio, 1, 'AbsTol', 1e-2);

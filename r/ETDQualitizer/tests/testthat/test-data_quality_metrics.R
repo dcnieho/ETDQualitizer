@@ -25,10 +25,19 @@ test_that("std returns correct values", {
   expect_equal(result$std, sqrt(result$std_a^2 + result$std_e^2))
 })
 
+test_that("std returns correct values (with NA)", {
+  x <- c(1, 2, NA, 3)
+  y <- c(4, 5, NA, 6)
+  result <- std(x, y)
+  expect_equal(result$std_a, sqrt(mean((x - mean(x, na.rm = TRUE))^2, na.rm = TRUE)))
+  expect_equal(result$std_e, sqrt(mean((y - mean(y, na.rm = TRUE))^2, na.rm = TRUE)))
+  expect_equal(result$std, sqrt(result$std_a^2 + result$std_e^2))
+})
+
 test_that("bcea returns valid area and aspect ratio", {
   set.seed(42)
-  x <- rnorm(10000)
-  y <- rnorm(10000)
+  x <- rnorm(100000)
+  y <- rnorm(100000)
   result <- bcea(x, y)
   expect_gt(result$area, 0)
   expect_equal(result$aspect_ratio, 1, tolerance = 0.1)
