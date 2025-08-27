@@ -1,6 +1,4 @@
 library(R6)
-library(dplyr)
-library(tidyr)
 library(stats)
 
 
