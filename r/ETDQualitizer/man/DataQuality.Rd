@@ -82,9 +82,9 @@ dq$precision_using_moving_window(0.2, "RMS-S2S")
 \describe{
 \item{\code{timestamps}}{Vector of timestamps in seconds. Samples with missing data should not be removed, or the RMS calculation would be incorrect.}
 
-\item{\code{azi}}{Vector of azimuth angles in degrees (Fick coordinates). Missing data should be coded as NA, not using some special value such as (0,0) or (-xres,-yres).}
+\item{\code{azi}}{Vector of azimuth angles in degrees (Fick angles). Missing data should be coded as NA, not using some special value such as (0,0) or (-xres,-yres).}
 
-\item{\code{ele}}{Vector of elevation angles in degrees (Fick coordinates). Missing data should be coded as NA, not using some special value such as (0,0) or (-xres,-yres).}
+\item{\code{ele}}{Vector of elevation angles in degrees (Fick angles). Missing data should be coded as NA, not using some special value such as (0,0) or (-xres,-yres).}
 }
 \if{html}{\out{</div>}}
 }
