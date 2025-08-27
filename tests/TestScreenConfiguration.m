@@ -63,6 +63,20 @@ classdef TestScreenConfiguration < matlab.unittest.TestCase
             testCase.verifyEqual(y_pix, 540, 'AbsTol', 1e-10);
         end
 
+        function testPixToMmAndMmToPixConsistency(testCase)
+            [x, y]  = testCase.config.pix_to_mm(960, 540);
+            [xp,yp] = testCase.config.mm_to_pix(x, y);
+            testCase.verifyEqual(xp, 960, 'AbsTol', 1e-10);
+            testCase.verifyEqual(yp, 540, 'AbsTol', 1e-10);
+        end
+
+        function testMmToDegAndDegToMmConsistency(testCase)
+            [azi, ele] = testCase.config.mm_to_deg(250, 0);
+            [x, y] = testCase.config.deg_to_mm(azi, ele);
+            testCase.verifyEqual(x, 250, 'AbsTol', 1e-10);
+            testCase.verifyEqual(y, 0, 'AbsTol', 1e-10);
+        end
+
         function testScreenExtents(testCase)
             [x_deg, y_deg] = testCase.config.screen_extents();
             expected_x_deg = 2 * atan2d(250, 600);

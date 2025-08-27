@@ -48,6 +48,18 @@ class TestScreenConfiguration(unittest.TestCase):
         self.assertAlmostEqual(x_pix, 960, places=1)
         self.assertAlmostEqual(y_pix, 540, places=1)
 
+    def test_pix_to_mm_and_mm_to_pix_consistency(self):
+        x, y = self.config.pix_to_mm(960, 540)
+        xp, yp = self.config.mm_to_pix(x, y)
+        self.assertAlmostEqual(xp, 960, places=10)
+        self.assertAlmostEqual(yp, 540, places=10)
+
+    def test_mm_to_deg_and_deg_to_mm_consistency(self):
+        azi, ele = self.config.mm_to_deg(250, 0)
+        x, y = self.config.deg_to_mm(azi, ele)
+        self.assertAlmostEqual(x, 250, places=10)
+        self.assertAlmostEqual(y, 0, places=10)
+
     def test_screen_extents(self):
         x_deg, y_deg = self.config.screen_extents()
         expected_x_deg = math.degrees(2 * math.atan2(250, 600))
