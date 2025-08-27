@@ -175,7 +175,7 @@ bcea <- function(azi, ele, P = 0.68) {
   area <- 2 * k * pi * std_a * std_e * sqrt(1 - rho^2)
 
   # compute major and minor axis radii, and orientation, of the BCEA ellipse
-  cov_matrix <- cov(cbind(azi, ele))
+  cov_matrix <- cov(cbind(azi_valid, ele_valid))
   eig <- eigen(cov_matrix)
   i <- which.max(eig$values)
   orientation <- atan2(eig$vectors[2, i], eig$vectors[1, i]) * 180 / pi
@@ -359,9 +359,9 @@ ScreenConfiguration <- R6Class("ScreenConfiguration",
     #' @examples
     #' sc$mm_to_deg(100, 50)
     mm_to_deg = function(x, y) {
-      azi <- atan2(x, self$viewing_distance_mm)
-      ele <- atan2(y, sqrt(self$viewing_distance_mm^2 + x^2))
-      list(azi = azi * 180 / pi, ele = ele * 180 / pi)
+      azi <- atan2(x, self$viewing_distance_mm) * 180 / pi
+      ele <- atan2(y, sqrt(self$viewing_distance_mm^2 + x^2)) * 180 / pi
+      list(azi = azi, ele = ele)
     },
 
     #' @description Converts millimeter coordinates on the screen to pixel coordinates.
