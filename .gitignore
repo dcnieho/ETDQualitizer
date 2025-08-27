@@ -56,6 +56,7 @@ packaging/matlab/*
 .Rbuildignore
 .Rhistory
 .RData
+*.tar.gz
 
 # IDEs
 .idea/
