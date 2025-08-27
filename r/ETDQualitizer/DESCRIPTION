@@ -9,11 +9,10 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-Description: Compute common data quality metrics for accuracy, precision, offset,
-  and other qualities for screen-based eye trackers. By supplying a ScreenConfiguration
-  object the accuracy and precision metrics will be transformed and reported in
-  degrees, as is the literature standard.
-License: use_mit_license()
+Description: Compute common data quality metrics for accuracy, precision and data loss
+  for screen-based eye trackers. Supports input data both in pixels on the screen and
+  in degrees, output measures are (where appropriate) expressed as angles in degrees.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
