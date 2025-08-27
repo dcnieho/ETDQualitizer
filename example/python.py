@@ -28,7 +28,6 @@ for f in (pathlib.Path(__file__).parent / 'data').glob('*.tsv'):
     for e in ('left','right'):
         if f'{e}_x' not in gaze.columns:
             continue
-        # and RMS-S2S calculated in two ways over the whole datafile
         dq = ETDQualitizer.DataQuality(gaze[f'{e}_x'].to_numpy(),gaze[f'{e}_y'].to_numpy(),gaze['timestamp'].to_numpy()/1000,'pixels',screen)  # timestamps are in ms in the file
 
         # determine sampling frequency from the filename (assumes our test
@@ -36,6 +35,7 @@ for f in (pathlib.Path(__file__).parent / 'data').glob('*.tsv'):
         fs = int(f.stem.split('_')[-1].removesuffix('Hz'))
         window_len = int(.2*fs) # 200 ms
 
+        # RMS-S2S calculated in two ways over the whole datafile
         print(f'RMS-S2S using median ({e} eye): {dq.precision_RMS_S2S(central_tendency_fun=np.nanmedian)[0]:.4f} deg')
         print(f'RMS-S2S using moving window ({e} eye): {dq.precision_using_moving_window(window_len,"RMS-S2S"):.4f} deg')
 
