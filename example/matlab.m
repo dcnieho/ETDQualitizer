@@ -38,8 +38,8 @@ for f=1:length(files)
         fs = str2double(fp{end}(1:end-length('Hz.tsv')));
         window_len = round(.2*fs);  % 200 ms
     
-        fprintf('RMS S2S using median (%s eye): %.4f deg\n', eyes{e}, dq_calc.precision_RMS_S2S(@(x) median(x, 'omitnan')))
-        fprintf('RMS S2S using moving window (%s eye): %.4f deg\n', eyes{e}, dq_calc.precision_using_moving_window(window_len,"RMS_S2S"))
+        fprintf('RMS-S2S using median (%s eye): %.4f deg\n', eyes{e}, dq_calc.precision_RMS_S2S(@(x) median(x, 'omitnan')))
+        fprintf('RMS-S2S using moving window (%s eye): %.4f deg\n', eyes{e}, dq_calc.precision_using_moving_window(window_len,"RMS-S2S"))
     
         % data loss and effective frequency
         fprintf('Data loss (%s eye): %.1f%%\n', eyes{e}, dq_calc.data_loss())

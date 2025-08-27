@@ -77,7 +77,7 @@ def effective_frequency(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.nda
 def precision_using_moving_window(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]],
                                   window_length: int, metric: str, aggregation_fun=np.nanmedian, **kwargs) -> float:
     match metric:
-        case 'RMS_S2S':
+        case 'RMS-S2S':
             fun =  rms_s2s
         case 'STD':
             fun =  std

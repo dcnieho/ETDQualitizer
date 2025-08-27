@@ -238,7 +238,7 @@ effective_frequency <- function(x, y, duration) {
 #' @param x Azimuth values.
 #' @param y Elevation values.
 #' @param window_length Window size in samples.
-#' @param metric Precision metric: \code{"RMS_S2S"}, \code{"STD"}, or \code{"BCEA"}.
+#' @param metric Precision metric: \code{"RMS-S2S"}, \code{"STD"}, or \code{"BCEA"}.
 #' @param aggregation_fun Function to aggregate precision values across the windows (default: \code{median}).
 #' @param ... Additional arguments passed to metric function.
 #'
@@ -249,7 +249,7 @@ effective_frequency <- function(x, y, duration) {
 precision_using_moving_window <- function(x, y, window_length, metric, aggregation_fun = median, ...) {
   # Select the appropriate precision metric function
   fun <- switch(metric,
-    "RMS_S2S" = rms_s2s,
+    "RMS-S2S" = rms_s2s,
     "STD"     = std,
     "BCEA"    = bcea,
     stop(sprintf('metric "%s" is not understood', metric))
@@ -573,12 +573,12 @@ DataQuality <- R6Class("DataQuality",
     #' Calculates precision using a moving window approach.
     #'
     #' @param window_length Length of the moving window in number of samples.
-    #' @param metric Precision metric to use (e.g., \code{"RMS"}, \code{"STD"}).
+    #' @param metric Precision metric to use (\code{"RMS-S2S"}, \code{"STD"}, or \code{"BCEA"}).
     #' @param aggregation_fun Function to aggregate windowed precision values (e.g., \code{median}).
     #' @param ... Additional arguments passed to the precision metric function.
     #' @return Precision value.
     #' @examples
-    #' dq$precision_using_moving_window(0.2, "RMS")
+    #' dq$precision_using_moving_window(0.2, "RMS-S2S")
     precision_using_moving_window = function(window_length, metric, aggregation_fun = median, ...) {
       precision_using_moving_window(self$azi, self$ele, window_length, metric, aggregation_fun, ...)
     }

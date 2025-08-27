@@ -36,8 +36,8 @@ for f in (pathlib.Path(__file__).parent / 'data').glob('*.tsv'):
         fs = int(f.stem.split('_')[-1].removesuffix('Hz'))
         window_len = int(.2*fs) # 200 ms
 
-        print(f'RMS S2S using median ({e} eye): {dq.precision_RMS_S2S(central_tendency_fun=np.nanmedian)[0]:.4f} deg')
-        print(f'RMS S2S using moving window ({e} eye): {dq.precision_using_moving_window(window_len,"RMS_S2S"):.4f} deg')
+        print(f'RMS-S2S using median ({e} eye): {dq.precision_RMS_S2S(central_tendency_fun=np.nanmedian)[0]:.4f} deg')
+        print(f'RMS-S2S using moving window ({e} eye): {dq.precision_using_moving_window(window_len,"RMS-S2S"):.4f} deg')
 
         # data loss and effective frequency
         print(f'Data loss ({e} eye): {dq.data_loss():.1f}%')

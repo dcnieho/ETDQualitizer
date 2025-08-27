@@ -67,7 +67,7 @@ classdef DataQuality
             arguments
                 obj
                 window_length   (1,1) {mustBeInteger}
-                metric          (1,:) char {mustBeMember(metric,{'RMS_S2S','STD','BCEA'})}
+                metric          (1,:) char {mustBeMember(metric,{'RMS-S2S','STD','BCEA'})}
                 input_args      (1,:) cell = {}
                 aggregation_fun (1,1) {mustBeA(aggregation_fun,'function_handle')} = @(x) median(x,'omitnan')
             end

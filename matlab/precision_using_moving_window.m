@@ -3,13 +3,13 @@ arguments
     x               (:,1) {mustBeNumeric}
     y               (:,1) {mustBeNumeric}
     window_length   (1,1) {mustBeInteger}
-    metric          (1,:) char {mustBeMember(metric,{'RMS_S2S','STD','BCEA'})}
+    metric          (1,:) char {mustBeMember(metric,{'RMS-S2S','STD','BCEA'})}
     input_args      (1,:) cell = {}
     aggregation_fun (1,1) {mustBeA(aggregation_fun,'function_handle')} = @(x) median(x,'omitnan')
 end
 
 switch metric
-    case 'RMS_S2S'
+    case 'RMS-S2S'
         fun =  @rms_s2s;
     case 'STD'
         fun =  @std_;
