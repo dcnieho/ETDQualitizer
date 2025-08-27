@@ -1,19 +1,36 @@
 classdef DataQuality
-    % N.B: for this module it is assumed that any missing data are not coded with some special value
-    % such as (0,0) or (-xres,-yres) but as nan. Missing data should also not be removed, or the RMS
-    % calculation would be incorrect.
+    %DATAQUALITY Class for calculating Data Quality from a gaze data segment
     %
-    % timestamps should be in seconds.
+    %   Provides methods for assessing the quality of gaze data, including accuracy,
+    %   precision, data loss, and effective sampling frequency.
     %
-    % all angular positions are expected to be expressed in Fick angles.
+    %   Notes:
+    %   - Missing data should be coded as NaN, not as special values like (0,0) or (-xres,-yres).
+    %   - Missing samples should not be removed, or RMS calculations will be incorrect.
+    %   - Timestamps should be in seconds.
+    %   - All angular positions are expected to be expressed in Fick angles.
+    %
+    %   Example:
+    %       sc = ScreenConfiguration(500, 300, 1920, 1080, 600);
+    %       dq = DataQuality([0;1;-1], [0;1;-1], [0;1;2], 'pixels', sc);
+    %       dq.accuracy(0, 0);
+    %       dq.precision_RMS_S2S();
+    %       dq.data_loss();
     properties (SetAccess=private)
-        timestamps
-        azi
-        ele
+        timestamps      % Vector of timestamps in seconds
+        azi             % Azimuth angles in degrees (Fick angles)
+        ele             % Elevation angles in degrees (Fick angles)
     end
 
     methods
         function obj = DataQuality(x, y, timestamps, unit, screen)
+            % DATAQUALITY Construct a DataQuality object from gaze data and timestamps.
+            %
+            % Inputs:
+            %   x, y        - Horizontal and vertical gaze positions (pixels or degrees)
+            %   timestamps  - Vector of timestamps in seconds
+            %   unit        - Unit of gaze data: 'pixels' or 'degrees'
+            %   screen      - Optional ScreenConfiguration object (required if unit is 'pixels')
             arguments
                 x           (:,1) {mustBeNumeric}
                 y           (:,1) {mustBeNumeric}
@@ -34,6 +51,17 @@ classdef DataQuality
 
 
         function [offset, offset_x, offset_y] = accuracy(obj, target_x_deg, target_y_deg, central_tendency_fun)
+            % ACCURACY Calculates the accuracy of gaze data relative to a known target location.
+            %
+            % Inputs:
+            %   target_x_deg - Target azimuth in degrees
+            %   target_y_deg - Target elevation in degrees
+            %   central_tendency_fun - Function to compute central tendency (default: mean)
+            %
+            % Outputs:
+            %   offset     - Total angular offset in degrees
+            %   offset_x   - Horizontal offset in degrees
+            %   offset_y   - Vertical offset in degrees
             arguments
                 obj
                 target_x_deg        (1,1) {mustBeNumeric}
@@ -44,6 +72,15 @@ classdef DataQuality
         end
 
         function [rms, rms_x, rms_y] = precision_RMS_S2S(obj, central_tendency_fun)
+            % PRECISION_RMS_S2S Calculates precision as root mean square of sample-to-sample distances.
+            %
+            % Input:
+            %   central_tendency_fun - Function to compute central tendency (default: mean)
+            %
+            % Outputs:
+            %   rms     - Total RMS precision in degrees
+            %   rms_x   - RMS of azimuthal component
+            %   rms_y   - RMS of elevation component
             arguments
                 obj
                 central_tendency_fun(1,1) {mustBeA(central_tendency_fun,'function_handle')} = @(x) mean(x,'omitnan')
@@ -52,10 +89,27 @@ classdef DataQuality
         end
 
         function [std__, std_x, std_y] = precision_STD(obj)
+            % PRECISION_STD Calculates precision as standard deviation of gaze positions.
+            %
+            % Outputs:
+            %   std__   - Total standard deviation in degrees
+            %   std_x   - Standard deviation of azimuth
+            %   std_y   - Standard deviation of elevation
             [std__, std_x, std_y] = std_(obj.azi, obj.ele);
         end
 
         function [area, orientation, ax1, ax2, aspect_ratio] = precision_BCEA(obj, P)
+            % PRECISION_BCEA Calculates the Bivariate Contour Ellipse Area (BCEA) and ellipse parameters.
+            %
+            % Input:
+            %   P - Proportion of data to include in the ellipse (default: 0.68)
+            %
+            % Outputs:
+            %   area         - BCEA value
+            %   orientation  - Orientation of the ellipse in degrees
+            %   ax1          - Length of major axis
+            %   ax2          - Length of minor axis
+            %   aspect_ratio - Ratio of major to minor axis
             arguments
                 obj
                 P   (1,1) {mustBeNumeric} = 0.68    % for BCEA: cumulative probability of area under the multivariate normal
@@ -64,6 +118,16 @@ classdef DataQuality
         end
 
         function precision = precision_using_moving_window(obj, window_length, metric, input_args, aggregation_fun)
+            % PRECISION_USING_MOVING_WINDOW Calculates precision using a moving window approach.
+            %
+            % Inputs:
+            %   window_length   - Length of the moving window in number of samples
+            %   metric          - Precision metric: 'RMS-S2S', 'STD', or 'BCEA'
+            %   input_args      - Additional arguments passed to the metric function
+            %   aggregation_fun - Function to aggregate windowed precision values (default: median)
+            %
+            % Output:
+            %   precision - Aggregated precision value
             arguments
                 obj
                 window_length   (1,1) {mustBeInteger}
@@ -76,19 +140,38 @@ classdef DataQuality
         end
 
         function loss_percentage = data_loss(obj)
+            % DATA_LOSS Calculates the proportion of missing data (coded as NaN).
+            %
+            % Output:
+            %   loss_percentage - Percentage of missing samples
             loss_percentage = data_loss(obj.azi, obj.ele);
         end
 
         function loss_percentage = data_loss_from_expected(obj, frequency)
+            % DATAS_LOSS_FROM_EXPECTED Estimates data loss based on expected number of samples.
+            %
+            % Input:
+            %   frequency - Expected sampling frequency in Hz
+            %
+            % Output:
+            %   loss_percentage - Percentage of missing samples
             loss_percentage = data_loss_from_expected(obj.azi, obj.ele, obj.get_duration(), frequency);
         end
 
         function freq = effective_frequency(obj)
-            % rate of valid samples
+            % EFFECTIVE_FREQUENCY Calculates the effective sampling frequency based on timestamps.
+            %
+            % Output:
+            %   freq - Effective frequency in Hz (rate of valid samples)
             freq = effective_frequency(obj.azi, obj.ele, obj.get_duration());
         end
 
         function duration = get_duration(obj)
+            % GET_DURATION Computes the total duration of the gaze recording, including the last sample.
+            %
+            % Output:
+            %   duration - Duration in seconds
+
             % to get duration right, we need to include duration of last
             % sample
             isi     = median(diff(obj.timestamps));

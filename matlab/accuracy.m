@@ -1,4 +1,22 @@
 function [offset, offset_x, offset_y] = accuracy(x, y, target_x_deg, target_y_deg, central_tendency_fun)
+%ACCURACY Compute Gaze Accuracy
+%
+%   [offset, offset_x, offset_y] = ACCURACY(x, y, target_x_deg, target_y_deg, central_tendency_fun)
+%   calculates the angular offset between gaze and target directions.
+%
+%   Inputs:
+%       x, y - Gaze azimuth and elevation in degrees
+%       target_x_deg, target_y_deg - Target azimuth and elevation in degrees
+%       central_tendency_fun - Function handle for central tendency (default: @mean)
+%
+%   Outputs:
+%       offset - Total angular offset in degrees
+%       offset_x - Horizontal offset in degrees
+%       offset_y - Vertical offset in degrees
+%
+%   Example:
+%       [offset, offset_x, offset_y] = accuracy([1,2], [1,2], 0, 0)
+
 arguments
     x                   (:,1) {mustBeNumeric}
     y                   (:,1) {mustBeNumeric}
@@ -20,4 +38,4 @@ offset_x    = central_tendency_fun(offsets_2D(:,1));
 offset_y    = central_tendency_fun(offsets_2D(:,2));
 % calculate offset of centroid
 offset      = hypot(offset_x, offset_y);
-end
+
