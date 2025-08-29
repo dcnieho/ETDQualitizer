@@ -2,7 +2,7 @@ console.log("loading pyodide...");
 async function main() {
 
   pyodide = await loadPyodide({
-    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.3/full/",
+    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.28.2/full/",
   });
   await pyodide.loadPackage("pandas");
   console.log("Pyodide/python loaded");
