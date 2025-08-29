@@ -4,12 +4,12 @@
 \alias{data_loss}
 \title{Compute Data Loss Percentage}
 \usage{
-data_loss(x, y)
+data_loss(azi, ele)
 }
 \arguments{
-\item{x}{Azimuth values.}
+\item{azi}{Azimuth values.}
 
-\item{y}{Elevation values.}
+\item{ele}{Elevation values.}
 }
 \value{
 Percentage of missing samples.

@@ -1,4 +1,4 @@
-function [area, orientation, ax1, ax2, aspect_ratio] = bcea(x, y, P)
+function [area, orientation, ax1, ax2, aspect_ratio] = bcea(azi, ele, P)
 %BCEA Bivariate Contour Ellipse Area
 %
 %   result = BCEA(azi, ele, P) computes the BCEA and ellipse parameters
@@ -21,18 +21,18 @@ function [area, orientation, ax1, ax2, aspect_ratio] = bcea(x, y, P)
 %       result = bcea(randn(100,1), randn(100,1))
 
 arguments
-    x   (:,1) {mustBeNumeric}
-    y   (:,1) {mustBeNumeric}
+    azi (:,1) {mustBeNumeric}
+    ele (:,1) {mustBeNumeric}
     P   (1,1) {mustBeNumeric} = 0.68    % cumulative probability of area under the multivariate normal
 end
 
 k    = log(1/(1-P));
 
-valid   = ~(isnan(x) | isnan(y));
+valid   = ~(isnan(azi) | isnan(ele));
 
-std_x   = std(x,0,'omitnan');
-std_y   = std(y,0,'omitnan');
-xx      = corrcoef(x(valid), y(valid));
+std_x   = std(azi,0,'omitnan');
+std_y   = std(ele,0,'omitnan');
+xx      = corrcoef(azi(valid), ele(valid));
 rho     = xx(1,2);
 area    = 2*k*pi*std_x*std_y*sqrt(1-rho.^2);
 
@@ -43,7 +43,7 @@ area    = 2*k*pi*std_x*std_y*sqrt(1-rho.^2);
 % diameter of ellipse along that direction.
 % note that v and d outputs below are reordered versions of a
 % and c in [a,b,c]=pca([obj.x(qValid) obj.y(qValid)]);
-[v,d] = eig(cov(x(valid), y(valid)));
+[v,d] = eig(cov(azi(valid), ele(valid)));
 [~,i] = max(diag(d));
 orientation = atan2(v(2,i), v(1,i))/pi*180;
 ax1 = sqrt(k*d(i,i));

@@ -6,9 +6,9 @@ from .version import __version__, __url__, __author__, __email__, __description_
 
 N = typing.TypeVar("N", bound=int)
 
-def accuracy(x: np.ndarray[tuple[N], np.dtype[np.float64]],
-             y: np.ndarray[tuple[N], np.dtype[np.float64]],
-             target_x_deg: float, target_y_deg: float,
+def accuracy(azi: np.ndarray[tuple[N], np.dtype[np.float64]],
+             ele: np.ndarray[tuple[N], np.dtype[np.float64]],
+             target_azi: float, target_ele: float,
              central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
     """
     Compute Gaze Accuracy
@@ -17,13 +17,13 @@ def accuracy(x: np.ndarray[tuple[N], np.dtype[np.float64]],
 
     Parameters
     ----------
-    x : np.ndarray
+    azi : np.ndarray
         Gaze azimuth values in degrees.
-    y : np.ndarray
+    ele : np.ndarray
         Gaze elevation values in degrees.
-    target_x_deg : float
+    target_azi : float
         Target azimuth in degrees.
-    target_y_deg : float
+    target_ele : float
         Target elevation in degrees.
     central_tendency_fun : callable, optional
         Function to compute central tendency (default: np.nanmean).
@@ -31,7 +31,7 @@ def accuracy(x: np.ndarray[tuple[N], np.dtype[np.float64]],
     Returns
     -------
     tuple of float
-        A tuple with (offset, offset_x, offset_y), representing total, horizontal,
+        A tuple with (offset, offset_azi, offset_ele), representing total, horizontal,
         and vertical offset of gaze from the target (in degrees).
 
     Examples
@@ -40,20 +40,20 @@ def accuracy(x: np.ndarray[tuple[N], np.dtype[np.float64]],
     (2.1211587518891997, 1.4995429717992865, 1.5002284247552145)
     """
     # get unit vectors for gaze and target
-    g_x,g_y,g_z = Fick_to_vector(       x,            y)
-    t_x,t_y,t_z = Fick_to_vector(target_x_deg, target_y_deg)
+    g_x,g_y,g_z = Fick_to_vector(       azi,        ele)
+    t_x,t_y,t_z = Fick_to_vector(target_azi, target_ele)
     # calculate angular offset for each sample using dot product
     offsets     = np.arccos(np.dot(np.vstack((g_x,g_y,g_z)).T, np.array([t_x,t_y,t_z])))
     # calculate on-screen orientation so we can decompose offset into x and y
     direction   = np.arctan2(g_y/g_z-t_y/t_z, g_x/g_z-t_x/t_z)  # compute direction on tangent screen (divide by z to project to screen at 1m)
     offsets_2D  = np.degrees(offsets.reshape((-1,1))*np.array([np.cos(direction), np.sin(direction)]).T)
     # calculate mean horizontal and vertical offset
-    offset_x    = central_tendency_fun(offsets_2D[:,0])
-    offset_y    = central_tendency_fun(offsets_2D[:,1])
+    offset_azi  = central_tendency_fun(offsets_2D[:,0])
+    offset_ele  = central_tendency_fun(offsets_2D[:,1])
     # calculate offset of centroid
-    return float(np.hypot(offset_x, offset_y)), float(offset_x), float(offset_y)
+    return float(np.hypot(offset_azi, offset_ele)), float(offset_azi), float(offset_ele)
 
-def rms_s2s(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
+def rms_s2s(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[N], np.dtype[np.float64]], central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
     """
     RMS of Sample-to-Sample Differences
 
@@ -61,9 +61,9 @@ def rms_s2s(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N
 
     Parameters
     ----------
-    x : np.ndarray
+    azi : np.ndarray
         Azimuth values in degrees.
-    y : np.ndarray
+    ele : np.ndarray
         Elevation values in degrees.
     central_tendency_fun : callable, optional
         Function to compute central tendency (default: np.nanmean).
@@ -71,10 +71,10 @@ def rms_s2s(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N
     Returns
     -------
     tuple of float
-        A tuple with (rms, rms_x, rms_y), representing:
+        A tuple with (rms, rms_azi, rms_ele), representing:
         - rms: Total RMS of sample-to-sample distances.
-        - rms_x: RMS of azimuthal component.
-        - rms_y: RMS of elevation component.
+        - rms_azi: RMS of azimuthal component.
+        - rms_ele: RMS of elevation component.
         All values are in degrees.
 
     Examples
@@ -82,15 +82,15 @@ def rms_s2s(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N
     >>> rms_s2s(np.array([1, 2, 3]), np.array([1, 2, 3]))
     (1.4142135623730951, 1.0, 1.0)
     """
-    x_diff = np.diff(x)**2
-    y_diff = np.diff(y)**2
-    # N.B.: cannot simplify to np.hypot(rms_x, rms_y)
+    a_diff = np.diff(azi)**2
+    e_diff = np.diff(ele)**2
+    # N.B.: cannot simplify to np.hypot(rms_azi, rms_ele)
     # as that is only equivalent when mean() is used as central tendency estimator
-    return float(np.sqrt(central_tendency_fun(x_diff + y_diff))), \
-           float(np.sqrt(central_tendency_fun(x_diff))), \
-           float(np.sqrt(central_tendency_fun(y_diff)))
+    return float(np.sqrt(central_tendency_fun(a_diff + e_diff))), \
+           float(np.sqrt(central_tendency_fun(a_diff))), \
+           float(np.sqrt(central_tendency_fun(e_diff)))
 
-def std(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]]) -> tuple[float,float,float]:
+def std(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[N], np.dtype[np.float64]]) -> tuple[float,float,float]:
     """
     Standard Deviation of Gaze Samples
 
@@ -98,9 +98,9 @@ def std(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], n
 
     Parameters
     ----------
-    x : np.ndarray
+    azi : np.ndarray
         Azimuth values in degrees.
-    y : np.ndarray
+    ele : np.ndarray
         Elevation values in degrees.
 
     Returns
@@ -108,8 +108,8 @@ def std(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], n
     tuple of float
         A tuple containing:
         - std: Total standard deviation (combined azimuth and elevation).
-        - std_x: Standard deviation of azimuth.
-        - std_y: Standard deviation of elevation.
+        - std_azi: Standard deviation of azimuth.
+        - std_ele: Standard deviation of elevation.
         All values are in degrees.
 
     Examples
@@ -117,13 +117,13 @@ def std(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], n
     >>> std(np.array([1, 2, 3]), np.array([1, 2, 3]))
     (1.4142135623730951, 0.816496580927726, 0.816496580927726)
     """
-    std_x = np.nanstd(x, ddof=0)
-    std_y = np.nanstd(y, ddof=0)
-    return float(np.hypot(std_x, std_y)), \
-           float(std_x), \
-           float(std_y)
+    std_azi = np.nanstd(azi, ddof=0)
+    std_ele = np.nanstd(ele, ddof=0)
+    return float(np.hypot(std_azi, std_ele)), \
+           float(std_azi), \
+           float(std_ele)
 
-def bcea(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], P: float = 0.68) -> tuple[float,float,float,float,float]:
+def bcea(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[N], np.dtype[np.float64]], P: float = 0.68) -> tuple[float,float,float,float,float]:
     """
     Bivariate Contour Ellipse Area (BCEA)
 
@@ -131,9 +131,9 @@ def bcea(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], 
 
     Parameters
     ----------
-    x : np.ndarray
+    azi : np.ndarray
         Azimuth values in degrees.
-    y : np.ndarray
+    ele : np.ndarray
         Elevation values in degrees.
     P : float, optional
         Cumulative probability (default: 0.68).
@@ -154,14 +154,14 @@ def bcea(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], 
     (7.415178348580135, -7.406813335934995, 1.1929964622017741, 0.9892420685862205, 1.2059702069754776)
     """
     k = np.log(1./(1-P))    # turn cumulative probability of area under the multivariate normal into scale factor
-    x = np.delete(x, np.isnan(x))
-    y = np.delete(y, np.isnan(y))
-    std_x = np.std(x, ddof=1)
-    std_y = np.std(y, ddof=1)
-    rho = np.corrcoef(x, y)[0,1]
+    azi = np.delete(azi, np.isnan(azi))
+    ele = np.delete(ele, np.isnan(ele))
+    std_x = np.std(azi, ddof=1)
+    std_y = np.std(ele, ddof=1)
+    rho = np.corrcoef(azi, ele)[0,1]
     area = 2*k*np.pi*std_x*std_y*np.sqrt(1-rho**2)
     # compute major and minor axis radii, and orientation, of the BCEA ellipse
-    d,v = np.linalg.eig(np.cov(x,y))
+    d,v = np.linalg.eig(np.cov(azi,ele))
     i = np.argmax(d)
     orientation = np.degrees(np.arctan2(v[1,i], v[0,i]))
     ax1 = np.sqrt(k*d[i])
@@ -172,7 +172,7 @@ def bcea(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], 
     # 2*np.pi*ax1*ax2
     return float(area), float(orientation), float(ax1), float(ax2), float(aspect_ratio)
 
-def data_loss(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]]):
+def data_loss(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[N], np.dtype[np.float64]]):
     """
     Compute Data Loss Percentage
 
@@ -180,9 +180,9 @@ def data_loss(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple
 
     Parameters
     ----------
-    x : np.ndarray
+    azi : np.ndarray
         Azimuth values.
-    y : np.ndarray
+    ele : np.ndarray
         Elevation values.
 
     Returns
@@ -195,10 +195,10 @@ def data_loss(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple
     >>> data_loss(np.array([1, np.nan, 3]), np.array([1, 2, np.nan]))
     66.666
     """
-    missing = np.isnan(x) | np.isnan(y)
+    missing = np.isnan(azi) | np.isnan(ele)
     return np.sum(missing)/missing.size*100
 
-def data_loss_from_expected(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], duration: float, frequency: float):
+def data_loss_from_expected(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[N], np.dtype[np.float64]], duration: float, frequency: float):
     """
     Compute Data Loss from Expected Sample Count
 
@@ -206,9 +206,9 @@ def data_loss_from_expected(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np
 
     Parameters
     ----------
-    x : np.ndarray
+    azi : np.ndarray
         Azimuth values.
-    y : np.ndarray
+    ele : np.ndarray
         Elevation values.
     duration : float
         Duration in seconds.
@@ -225,10 +225,10 @@ def data_loss_from_expected(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np
     >>> data_loss_from_expected(np.array([1, np.nan, 3]), np.array([1, 2, np.nan]), duration=1, frequency=3)
     33.333
     """
-    N_valid = np.count_nonzero(~(np.isnan(x) | np.isnan(y)))
+    N_valid = np.count_nonzero(~(np.isnan(azi) | np.isnan(ele)))
     return (1-N_valid/(duration*frequency))*100
 
-def effective_frequency(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]], duration: float):
+def effective_frequency(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[N], np.dtype[np.float64]], duration: float):
     """
     Compute Effective Sampling Frequency
 
@@ -236,9 +236,9 @@ def effective_frequency(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.nda
 
     Parameters
     ----------
-    x : np.ndarray
+    azi : np.ndarray
         Azimuth values.
-    y : np.ndarray
+    ele : np.ndarray
         Elevation values.
     duration : float
         Duration in seconds.
@@ -253,11 +253,11 @@ def effective_frequency(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.nda
     >>> effective_frequency(np.array([1, np.nan, 3]), np.array([1, 2, np.nan]), duration=1)
     2.0
     """
-    N_valid = np.count_nonzero(~(np.isnan(x) | np.isnan(y)))
+    N_valid = np.count_nonzero(~(np.isnan(azi) | np.isnan(ele)))
     return N_valid/duration
 
 
-def precision_using_moving_window(x: np.ndarray[tuple[N], np.dtype[np.float64]], y: np.ndarray[tuple[N], np.dtype[np.float64]],
+def precision_using_moving_window(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[N], np.dtype[np.float64]],
                                   window_length: int, metric: str, aggregation_fun=np.nanmedian, **kwargs) -> float:
     """
     Precision Using Moving Window
@@ -266,9 +266,9 @@ def precision_using_moving_window(x: np.ndarray[tuple[N], np.dtype[np.float64]],
 
     Parameters
     ----------
-    x : np.ndarray
+    azi : np.ndarray
         Azimuth values.
-    y : np.ndarray
+    ele : np.ndarray
         Elevation values.
     window_length : int
         Window size in samples.
@@ -301,12 +301,12 @@ def precision_using_moving_window(x: np.ndarray[tuple[N], np.dtype[np.float64]],
             raise ValueError(f'metric "{metric}" is not understood')
 
     # get number of samples in data
-    ns  = x.shape[0]
+    ns  = azi.shape[0]
 
     if window_length < ns:  # if number of samples in data exceeds window size
         values = np.full((ns-window_length+1,), np.nan)  # pre-allocate
         for p in range(0,ns-window_length+1):
-            values[p] = fun(x[p:p+window_length], y[p:p+window_length], **kwargs)[0]
+            values[p] = fun(azi[p:p+window_length], ele[p:p+window_length], **kwargs)[0]
         precision = aggregation_fun(values)
     else:
         # if too few samples in data
@@ -601,7 +601,7 @@ class DataQuality:
         self.azi = gaze_x
         self.ele = gaze_y
 
-    def accuracy(self, target_x_deg: float, target_y_deg: float, central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
+    def accuracy(self, target_azi: float, target_ele: float, central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
         """
         Calculates the accuracy of gaze data relative to a known target location.
 
@@ -611,7 +611,7 @@ class DataQuality:
             Total, horizontal, and vertical accuracy in degrees.
         """
         # get unit vectors for gaze and target
-        return accuracy(self.azi, self.ele, target_x_deg, target_y_deg, central_tendency_fun)
+        return accuracy(self.azi, self.ele, target_azi, target_ele, central_tendency_fun)
 
     def precision_RMS_S2S(self, central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
         """

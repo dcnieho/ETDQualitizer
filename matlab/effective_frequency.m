@@ -1,14 +1,14 @@
-function freq = effective_frequency(x, y, duration)
+function freq = effective_frequency(azi, ele, duration)
 %EFFECTIVE_FREQUENCY Compute Effective Sampling Frequency
 %
 %   Calculates effective frequency based on valid samples.
 %
 %   Syntax:
-%       freq = effective_frequency(x, y, duration)
+%       freq = effective_frequency(azi, ele, duration)
 %
 %   Inputs:
-%       x        - Azimuth values (vector)
-%       y        - Elevation values (vector)
+%       azi      - Azimuth values (vector)
+%       ele      - Elevation values (vector)
 %       duration - Duration in seconds (scalar)
 %
 %   Output:
@@ -17,5 +17,5 @@ function freq = effective_frequency(x, y, duration)
 %   Example:
 %       freq = effective_frequency([1 NaN 3], [1 2 NaN], 1)
 
-N_valid = sum(~(isnan(x) | isnan(y)));
+N_valid = sum(~(isnan(azi) | isnan(ele)));
 freq    = N_valid/duration;

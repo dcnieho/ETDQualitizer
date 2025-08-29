@@ -4,12 +4,12 @@
 \alias{data_loss_from_expected}
 \title{Compute Data Loss from Expected Sample Count}
 \usage{
-data_loss_from_expected(x, y, duration, frequency)
+data_loss_from_expected(azi, ele, duration, frequency)
 }
 \arguments{
-\item{x}{Azimuth values.}
+\item{azi}{Azimuth values.}
 
-\item{y}{Elevation values.}
+\item{ele}{Elevation values.}
 
 \item{duration}{Duration in seconds.}
 

@@ -146,15 +146,15 @@ A new DataQuality object.
 \subsection{Method \code{accuracy()}}{
 Calculates the accuracy of gaze data relative to a known target location.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DataQuality$accuracy(target_x_deg, target_y_deg, central_tendency_fun = mean)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DataQuality$accuracy(target_azi, target_ele, central_tendency_fun = mean)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{target_x_deg}}{Target azimuth in degrees.}
+\item{\code{target_azi}}{Target azimuth in degrees.}
 
-\item{\code{target_y_deg}}{Target elevation in degrees.}
+\item{\code{target_ele}}{Target elevation in degrees.}
 
 \item{\code{central_tendency_fun}}{Function to compute central tendency (e.g., \code{mean}, \code{median}).}
 }

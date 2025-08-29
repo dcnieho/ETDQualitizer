@@ -1,4 +1,4 @@
-function [std_, std_x, std_y] = std_(x, y)
+function [std_, std_azi, std_ele] = std_(azi, ele)
 %STD_ Standard Deviation of Gaze Samples
 %
 %   result = STD_(azi, ele) computes the standard deviation of azimuth
@@ -18,10 +18,10 @@ function [std_, std_x, std_y] = std_(x, y)
 %       result = std_gaze([1, 2, 3], [1, 2, 3])
 
 arguments
-    x   (:,1) {mustBeNumeric}
-    y   (:,1) {mustBeNumeric}
+    azi (:,1) {mustBeNumeric}
+    ele (:,1) {mustBeNumeric}
 end
 
-std_x   = std(x,1,'omitnan');
-std_y   = std(y,1,'omitnan');
-std_    = hypot(std_x, std_y);
+std_azi = std(azi,1,'omitnan');
+std_ele = std(ele,1,'omitnan');
+std_    = hypot(std_azi, std_ele);

@@ -12,7 +12,7 @@ std(azi, ele)
 \item{ele}{Elevation values in degrees.}
 }
 \value{
-A list with \code{std}, \code{std_a}, and \code{std_e}, the total STD of sample-to-sample distances and that of the azimuthal and elevation components (all in degrees).
+A list with \code{std}, \code{std_azi}, and \code{std_ele}, the total STD of sample-to-sample distances and that of the azimuthal and elevation components (all in degrees).
 }
 \description{
 Computes standard deviation of azimuth and elevation.

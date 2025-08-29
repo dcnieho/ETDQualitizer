@@ -50,28 +50,28 @@ classdef DataQuality
         end
 
 
-        function [offset, offset_x, offset_y] = accuracy(obj, target_x_deg, target_y_deg, central_tendency_fun)
+        function [offset, offset_azi, offset_ele] = accuracy(obj, target_azi, target_ele, central_tendency_fun)
             % ACCURACY Calculates the accuracy of gaze data relative to a known target location.
             %
             % Inputs:
-            %   target_x_deg - Target azimuth in degrees
-            %   target_y_deg - Target elevation in degrees
+            %   target_azi - Target azimuth in degrees
+            %   target_ele - Target elevation in degrees
             %   central_tendency_fun - Function to compute central tendency (default: mean)
             %
             % Outputs:
             %   offset     - Total angular offset in degrees
-            %   offset_x   - Horizontal offset in degrees
-            %   offset_y   - Vertical offset in degrees
+            %   offset_azi - Horizontal offset in degrees
+            %   offset_ele - Vertical offset in degrees
             arguments
                 obj
-                target_x_deg        (1,1) {mustBeNumeric}
-                target_y_deg        (1,1) {mustBeNumeric}
+                target_azi          (1,1) {mustBeNumeric}
+                target_ele          (1,1) {mustBeNumeric}
                 central_tendency_fun(1,1) {mustBeA(central_tendency_fun,'function_handle')} = @(x) mean(x,'omitnan')
             end
-            [offset, offset_x, offset_y] = accuracy(obj.azi, obj.ele, target_x_deg, target_y_deg, central_tendency_fun);
+            [offset, offset_azi, offset_ele] = accuracy(obj.azi, obj.ele, target_azi, target_ele, central_tendency_fun);
         end
 
-        function [rms, rms_x, rms_y] = precision_RMS_S2S(obj, central_tendency_fun)
+        function [rms, rms_azi, rms_ele] = precision_RMS_S2S(obj, central_tendency_fun)
             % PRECISION_RMS_S2S Calculates precision as root mean square of sample-to-sample distances.
             %
             % Input:
@@ -79,23 +79,23 @@ classdef DataQuality
             %
             % Outputs:
             %   rms     - Total RMS precision in degrees
-            %   rms_x   - RMS of azimuthal component
-            %   rms_y   - RMS of elevation component
+            %   rms_azi - RMS of azimuthal component
+            %   rms_ele - RMS of elevation component
             arguments
                 obj
                 central_tendency_fun(1,1) {mustBeA(central_tendency_fun,'function_handle')} = @(x) mean(x,'omitnan')
             end
-            [rms, rms_x, rms_y] = rms_s2s(obj.azi, obj.ele, central_tendency_fun);
+            [rms, rms_azi, rms_ele] = rms_s2s(obj.azi, obj.ele, central_tendency_fun);
         end
 
-        function [std__, std_x, std_y] = precision_STD(obj)
+        function [std__, std_azi, std_ele] = precision_STD(obj)
             % PRECISION_STD Calculates precision as standard deviation of gaze positions.
             %
             % Outputs:
             %   std__   - Total standard deviation in degrees
-            %   std_x   - Standard deviation of azimuth
-            %   std_y   - Standard deviation of elevation
-            [std__, std_x, std_y] = std_(obj.azi, obj.ele);
+            %   std_azi - Standard deviation of azimuth
+            %   std_ele - Standard deviation of elevation
+            [std__, std_azi, std_ele] = std_(obj.azi, obj.ele);
         end
 
         function [area, orientation, ax1, ax2, aspect_ratio] = precision_BCEA(obj, P)

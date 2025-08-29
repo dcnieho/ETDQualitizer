@@ -63,20 +63,20 @@ vector_to_Fick <- function(x, y, z) {
 #'
 #' Calculates the angular offset between gaze and target directions.
 #'
-#' @param x Gaze azimuth in degrees.
-#' @param y Gaze elevation in degrees.
-#' @param target_x_deg Target azimuth in degrees.
-#' @param target_y_deg Target elevation in degrees.
+#' @param azi Gaze azimuth in degrees.
+#' @param ele Gaze elevation in degrees.
+#' @param target_azi Target azimuth in degrees.
+#' @param target_ele Target elevation in degrees.
 #' @param central_tendency_fun Function to compute central tendency (default: \code{mean}).
 #'
-#' @return A list with \code{offset}, \code{offset_x}, and \code{offset_y}, the total, horizontal and vertical offset of gaze from the target (in degrees).
+#' @return A list with \code{offset}, \code{offset_azi}, and \code{offset_ele}, the total, horizontal and vertical offset of gaze from the target (in degrees).
 #' @examples
 #' accuracy(c(1, 2), c(1, 2), 0, 0)
 #' @export
-accuracy <- function(x, y, target_x_deg, target_y_deg, central_tendency_fun = mean) {
+accuracy <- function(azi, ele, target_azi, target_ele, central_tendency_fun = mean) {
   # Get unit vectors from gaze directions
-  g <- Fick_to_vector(x, y)
-  t <- Fick_to_vector(target_x_deg, target_y_deg)
+  g <- Fick_to_vector(azi, ele)
+  t <- Fick_to_vector(target_azi, target_ele)
   # calculate angular offset for each sample using dot product
   dot_products <- g$x*t$x + g$y*t$y + g$z*t$z
   dot_products <- pmin(pmax(dot_products, -1), 1)  # Clamp to [-1,1]
@@ -85,11 +85,11 @@ accuracy <- function(x, y, target_x_deg, target_y_deg, central_tendency_fun = me
   direction    <- atan2(g$y/g$z-t$y/t$z, g$x/g$z-t$x/t$z)
   offsets_2D   <- offsets*cbind(cos(direction), sin(direction)) * 180/pi
   # calculate mean horizontal and vertical offsets
-  offset_x     <- central_tendency_fun(offsets_2D[, 1], na.rm = TRUE)
-  offset_y     <- central_tendency_fun(offsets_2D[, 2], na.rm = TRUE)
+  offset_azi   <- central_tendency_fun(offsets_2D[, 1], na.rm = TRUE)
+  offset_ele   <- central_tendency_fun(offsets_2D[, 2], na.rm = TRUE)
   # calculate offset of centroid
-  offset       <- sqrt(offset_x^2 + offset_y^2)
-  list(offset = offset, offset_x = offset_x, offset_y = offset_y)
+  offset       <- sqrt(offset_azi^2 + offset_ele^2)
+  list(offset = offset, offset_azi = offset_azi, offset_ele = offset_ele)
 }
 
 #' RMS of Sample-to-Sample Differences
@@ -100,17 +100,17 @@ accuracy <- function(x, y, target_x_deg, target_y_deg, central_tendency_fun = me
 #' @param ele Elevation values in degrees.
 #' @param central_tendency_fun Function to compute central tendency (default: \code{mean}).
 #'
-#' @return A list with \code{rms}, \code{rms_a}, and \code{rms_e}, the total RMS of sample-to-sample distances and that of the azimuthal and elevation components (all in degrees).
+#' @return A list with \code{rms}, \code{rms_azi}, and \code{rms_ele}, the total RMS of sample-to-sample distances and that of the azimuthal and elevation components (all in degrees).
 #' @examples
 #' rms_s2s(c(1, 2, 3), c(1, 2, 3))
 #' @export
 rms_s2s <- function(azi, ele, central_tendency_fun = mean) {
-  a_diff <- diff(azi)^2
-  e_diff <- diff(ele)^2
-  rms_a  <- sqrt(central_tendency_fun(a_diff, na.rm = TRUE))
-  rms_e  <- sqrt(central_tendency_fun(e_diff, na.rm = TRUE))
-  rms    <- sqrt(central_tendency_fun(a_diff + e_diff, na.rm = TRUE))
-  list(rms = rms, rms_a = rms_a, rms_e = rms_e)
+  a_diff  <- diff(azi)^2
+  e_diff  <- diff(ele)^2
+  rms_azi <- sqrt(central_tendency_fun(a_diff, na.rm = TRUE))
+  rms_ele <- sqrt(central_tendency_fun(e_diff, na.rm = TRUE))
+  rms     <- sqrt(central_tendency_fun(a_diff + e_diff, na.rm = TRUE))
+  list(rms = rms, rms_azi = rms_azi, rms_ele = rms_ele)
 }
 
 #' Standard Deviation of Gaze Samples
@@ -120,15 +120,15 @@ rms_s2s <- function(azi, ele, central_tendency_fun = mean) {
 #' @param azi Azimuth values in degrees.
 #' @param ele Elevation values in degrees.
 #'
-#' @return A list with \code{std}, \code{std_a}, and \code{std_e}, the total STD of sample-to-sample distances and that of the azimuthal and elevation components (all in degrees).
+#' @return A list with \code{std}, \code{std_azi}, and \code{std_ele}, the total STD of sample-to-sample distances and that of the azimuthal and elevation components (all in degrees).
 #' @examples
 #' std(c(1, 2, 3), c(1, 2, 3))
 #' @export
 std <- function(azi, ele) {
-  std_a <- pop_sd(azi)
-  std_e <- pop_sd(ele)
-  std   <- sqrt(std_a^2 + std_e^2)
-  list(std = std, std_a = std_a, std_e = std_e)
+  std_azi <- pop_sd(azi)
+  std_ele <- pop_sd(ele)
+  std     <- sqrt(std_azi^2 + std_ele^2)
+  list(std = std, std_a = std_azi, std_ele = std_ele)
 }
 #' Population Standard Deviation
 #'
@@ -197,15 +197,15 @@ bcea <- function(azi, ele, P = 0.68) {
 #'
 #' Calculates percentage of missing gaze samples.
 #'
-#' @param x Azimuth values.
-#' @param y Elevation values.
+#' @param azi Azimuth values.
+#' @param ele Elevation values.
 #'
 #' @return Percentage of missing samples.
 #' @examples
 #' data_loss(c(1, NA, 3), c(1, 2, NA))
 #' @export
-data_loss <- function(x, y) {
-  missing <- is.na(x) | is.na(y)
+data_loss <- function(azi, ele) {
+  missing <- is.na(azi) | is.na(ele)
   sum(missing)/length(missing)*100
 }
 
@@ -213,8 +213,8 @@ data_loss <- function(x, y) {
 #'
 #' Calculates data loss based on expected number of samples.
 #'
-#' @param x Azimuth values.
-#' @param y Elevation values.
+#' @param azi Azimuth values.
+#' @param ele Elevation values.
 #' @param duration Duration in seconds.
 #' @param frequency Sampling frequency in Hz.
 #'
@@ -222,8 +222,8 @@ data_loss <- function(x, y) {
 #' @examples
 #' data_loss_from_expected(c(1, NA, 3), c(1, 2, NA), duration = 1, frequency = 3)
 #' @export
-data_loss_from_expected <- function(x, y, duration, frequency) {
-  N_valid <- sum(!is.na(x) & !is.na(y))
+data_loss_from_expected <- function(azi, ele, duration, frequency) {
+  N_valid <- sum(!is.na(azi) & !is.na(ele))
   (1 - N_valid/(duration* frequency))*100
 }
 
@@ -231,16 +231,16 @@ data_loss_from_expected <- function(x, y, duration, frequency) {
 #'
 #' Calculates effective frequency based on valid samples.
 #'
-#' @param x Azimuth values.
-#' @param y Elevation values.
+#' @param azi Azimuth values.
+#' @param ele Elevation values.
 #' @param duration Duration in seconds.
 #'
 #' @return Effective frequency in Hz.
 #' @examples
 #' effective_frequency(c(1, NA, 3), c(1, 2, NA), duration = 1)
 #' @export
-effective_frequency <- function(x, y, duration) {
-  N_valid <- sum(!is.na(x) & !is.na(y))
+effective_frequency <- function(azi, ele, duration) {
+  N_valid <- sum(!is.na(azi) & !is.na(ele))
   N_valid/duration
 }
 
@@ -249,8 +249,8 @@ effective_frequency <- function(x, y, duration) {
 #'
 #' Computes gaze precision using a moving window and selected metric.
 #'
-#' @param x Azimuth values.
-#' @param y Elevation values.
+#' @param azi Azimuth values.
+#' @param ele Elevation values.
 #' @param window_length Window size in samples.
 #' @param metric Precision metric: \code{"RMS-S2S"}, \code{"STD"}, or \code{"BCEA"}.
 #' @param aggregation_fun Function to aggregate precision values across the windows (default: \code{median}).
@@ -261,7 +261,7 @@ effective_frequency <- function(x, y, duration) {
 #' precision_using_moving_window(rnorm(100), rnorm(100), 10, "STD")
 #' @export
 #' @importFrom stats median
-precision_using_moving_window <- function(x, y, window_length, metric, aggregation_fun = median, ...) {
+precision_using_moving_window <- function(azi, ele, window_length, metric, aggregation_fun = median, ...) {
   # Select the appropriate precision metric function
   fun <- switch(metric,
     "RMS-S2S" = rms_s2s,
@@ -271,13 +271,13 @@ precision_using_moving_window <- function(x, y, window_length, metric, aggregati
   )
 
   # Get number of samples in data
-  ns <- length(x)
+  ns <- length(azi)
 
   if (window_length < ns) {
     # If number of samples in data exceeds window size
     values <- rep(NA_real_, ns - window_length + 1)  # pre-allocate
     for (p in seq_len(ns - window_length + 1)) {
-      result <- fun(x[p:(p + window_length - 1)], y[p:(p + window_length - 1)], ...)
+      result <- fun(azi[p:(p + window_length - 1)], ele[p:(p + window_length - 1)], ...)
       values[p] <- result[[1]]  # extract first element (e.g., rms, std, or area)
     }
     precision <- aggregation_fun(values, na.rm = TRUE)
@@ -389,13 +389,13 @@ ScreenConfiguration <- R6Class("ScreenConfiguration",
     },
 
     #' @description Converts an angular gaze direction in degrees to pixel coordinates.
-    #' @param x Azimuth in degrees (Fick angles).
-    #' @param y Elevation in degrees (Fick angles).
+    #' @param azi Azimuth in degrees (Fick angles).
+    #' @param ele Elevation in degrees (Fick angles).
     #' @return A list with x and y in pixels.
     #' @examples
     #' sc$deg_to_pix(2, 1)
-    deg_to_pix = function(x, y) {
-      mm <- self$deg_to_mm(x, y)
+    deg_to_pix = function(azi, ele) {
+      mm <- self$deg_to_mm(azi, ele)
       self$mm_to_pix(mm$x, mm$y)
     },
 
@@ -468,14 +468,14 @@ DataQuality <- R6Class("DataQuality",
     },
 
     #' @description Calculates the accuracy of gaze data relative to a known target location.
-    #' @param target_x_deg Target azimuth in degrees.
-    #' @param target_y_deg Target elevation in degrees.
+    #' @param target_azi Target azimuth in degrees.
+    #' @param target_ele Target elevation in degrees.
     #' @param central_tendency_fun Function to compute central tendency (e.g., \code{mean}, \code{median}).
     #' @return Accuracy in degrees.
     #' @examples
     #' dq$accuracy(0, 0)
-    accuracy = function(target_x_deg, target_y_deg, central_tendency_fun = mean) {
-      accuracy(self$azi, self$ele, target_x_deg, target_y_deg, central_tendency_fun)
+    accuracy = function(target_azi, target_ele, central_tendency_fun = mean) {
+      accuracy(self$azi, self$ele, target_azi, target_ele, central_tendency_fun)
     },
 
     #' @description Calculates precision as root mean square of sample-to-sample distances

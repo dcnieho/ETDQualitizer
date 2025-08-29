@@ -4,21 +4,21 @@
 \alias{accuracy}
 \title{Compute Gaze Accuracy}
 \usage{
-accuracy(x, y, target_x_deg, target_y_deg, central_tendency_fun = mean)
+accuracy(azi, ele, target_azi, target_ele, central_tendency_fun = mean)
 }
 \arguments{
-\item{x}{Gaze azimuth in degrees.}
+\item{azi}{Gaze azimuth in degrees.}
 
-\item{y}{Gaze elevation in degrees.}
+\item{ele}{Gaze elevation in degrees.}
 
-\item{target_x_deg}{Target azimuth in degrees.}
+\item{target_azi}{Target azimuth in degrees.}
 
-\item{target_y_deg}{Target elevation in degrees.}
+\item{target_ele}{Target elevation in degrees.}
 
 \item{central_tendency_fun}{Function to compute central tendency (default: \code{mean}).}
 }
 \value{
-A list with \code{offset}, \code{offset_x}, and \code{offset_y}, the total, horizontal and vertical offset of gaze from the target (in degrees).
+A list with \code{offset}, \code{offset_azi}, and \code{offset_ele}, the total, horizontal and vertical offset of gaze from the target (in degrees).
 }
 \description{
 Calculates the angular offset between gaze and target directions.

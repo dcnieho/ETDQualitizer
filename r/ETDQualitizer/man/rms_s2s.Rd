@@ -14,7 +14,7 @@ rms_s2s(azi, ele, central_tendency_fun = mean)
 \item{central_tendency_fun}{Function to compute central tendency (default: \code{mean}).}
 }
 \value{
-A list with \code{rms}, \code{rms_a}, and \code{rms_e}, the total RMS of sample-to-sample distances and that of the azimuthal and elevation components (all in degrees).
+A list with \code{rms}, \code{rms_azi}, and \code{rms_ele}, the total RMS of sample-to-sample distances and that of the azimuthal and elevation components (all in degrees).
 }
 \description{
 Computes root mean square of differences between successive gaze samples.

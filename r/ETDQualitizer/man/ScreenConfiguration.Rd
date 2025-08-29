@@ -285,15 +285,15 @@ A list with x and y in millimeters.
 \subsection{Method \code{deg_to_pix()}}{
 Converts an angular gaze direction in degrees to pixel coordinates.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ScreenConfiguration$deg_to_pix(x, y)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ScreenConfiguration$deg_to_pix(azi, ele)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{Azimuth in degrees (Fick angles).}
+\item{\code{azi}}{Azimuth in degrees (Fick angles).}
 
-\item{\code{y}}{Elevation in degrees (Fick angles).}
+\item{\code{ele}}{Elevation in degrees (Fick angles).}
 }
 \if{html}{\out{</div>}}
 }

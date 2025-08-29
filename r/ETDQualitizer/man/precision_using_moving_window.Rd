@@ -5,8 +5,8 @@
 \title{Precision Using Moving Window}
 \usage{
 precision_using_moving_window(
-  x,
-  y,
+  azi,
+  ele,
   window_length,
   metric,
   aggregation_fun = median,
@@ -14,9 +14,9 @@ precision_using_moving_window(
 )
 }
 \arguments{
-\item{x}{Azimuth values.}
+\item{azi}{Azimuth values.}
 
-\item{y}{Elevation values.}
+\item{ele}{Elevation values.}
 
 \item{window_length}{Window size in samples.}
 
