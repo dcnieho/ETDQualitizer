@@ -1,6 +1,6 @@
 Package: ETDQualitizer
 Type: Package
-Title: Automated Eye Tracking Data Quality Determination for Screen-based Eye Trackers
+Title: Automated Eye Tracking Data Quality Determination for Screen-Based Eye Trackers
 Version: 0.9.0
 Authors@R: c(
     person(
@@ -22,8 +22,9 @@ URL: https://github.com/dcnieho/ETDQualitizer
 BugReports: https://github.com/dcnieho/ETDQualitizer/issues
 Encoding: UTF-8
 Imports:
-    R6
+  R6,
+  stats
 Suggests:
-    testthat (>= 3.0.0)
+  testthat (>= 3.0.0)
 Config/testthat/edition: 3
 RoxygenNote: 7.3.2

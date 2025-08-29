@@ -157,6 +157,7 @@ pop_sd <- function(x) {
 #' @examples
 #' bcea(rnorm(100), rnorm(100))
 #' @export
+#' @importFrom stats cor cov sd
 bcea <- function(azi, ele, P = 0.68) {
   # turn cumulative probability into scale factor
   k <- log(1 / (1 - P))
@@ -259,6 +260,7 @@ effective_frequency <- function(x, y, duration) {
 #' @examples
 #' precision_using_moving_window(rnorm(100), rnorm(100), 10, "STD")
 #' @export
+#' @importFrom stats median
 precision_using_moving_window <- function(x, y, window_length, metric, aggregation_fun = median, ...) {
   # Select the appropriate precision metric function
   fun <- switch(metric,
@@ -708,13 +710,14 @@ compute_data_quality_from_validation <- function(gaze, unit, screen = NULL, adva
 #' }
 #'
 #' @export
+#' @importFrom stats aggregate
 report_data_quality_table <- function(dq_table) {
   stopifnot(is.data.frame(dq_table))
 
   measures <- list()
 
   # Average over targets and eyes, grouped by file
-  grouped <- aggregate(. ~ file, data = subset(dq_table, select = -c(eye, target_id)), FUN = mean, na.rm = TRUE)
+  grouped <- aggregate(. ~ file, data = dq_table[, !(names(dq_table) %in% c("eye", "target_id"))], FUN = mean, na.rm = TRUE)
   measures$all <- grouped
 
   # Summary statistics
