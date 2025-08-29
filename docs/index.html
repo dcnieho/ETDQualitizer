@@ -275,7 +275,7 @@
             print(curfile)
             gaze = pd.read_csv(StringIO(tsv_data), sep='\t', dtype=defaultdict(lambda: float, {'target_id': int, 'tar_x': int, 'tar_y': int}))
 
-            dq_df = ETDQualitizer.compute_data_quality_from_validation(gaze, 'pixels', screen, advanced=False, include_data_loss=True)    # include_data_loss for testing, this is probably *not* what you want
+            dq_df = ETDQualitizer.compute_data_quality_from_validation(gaze, 'pixels', screen, advanced=False)
             all_dfs[curfile] = dq_df
 
             dq_html = dq_df.to_html()
