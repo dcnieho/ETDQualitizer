@@ -19,9 +19,9 @@ jobs:
       run: |
         mkdir ./dist/
         cp ./matlab/* ./dist/
-        cp ./test/matlab.m ./dist/test.m
+        cp ./example/matlab.m ./dist/example.m
         mkdir ./dist/data
-        cp ./test/data/* ./dist/data
+        cp ./example/data/* ./dist/data
         cp LICENSE ./dist/LICENSE
         cp README.md ./dist/README.md
 
