@@ -6,15 +6,21 @@ Authors@R: c(
     person(
       "Diederick", "Niehorster",
       email = "diederick_c.niehorster@humlab.lu.se",
-      role = c("aut", "cre")
+      role = c("aut", "cre", "cph"),
+      comment = c(ORCID = "0000-0002-4672-8756")
     )
   )
+Maintainer: Diederick Niehorster <diederick_c.niehorster@humlab.lu.se>
 Description: Compute common data quality metrics for accuracy, precision and data loss
   for screen-based eye trackers. Supports input data both in pixels on the screen and
   in degrees, output measures are (where appropriate) expressed as angles in degrees.
+  If you use this tool or any of the code in this repository, please cite: Niehorster,
+  D.C., Nyström, M., Hessels, R.S., Benjamins, J.S., Andersson, R. and Hooge, I.T.C.
+  (in prep). The fundamentals of eye tracking part 7: Data quality.
 License: MIT + file LICENSE
+URL: https://github.com/dcnieho/ETDQualitizer
+BugReports: https://github.com/dcnieho/ETDQualitizer/issues
 Encoding: UTF-8
-LazyData: true
 Imports:
     R6
 Suggests:
