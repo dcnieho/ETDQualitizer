@@ -1,14 +1,14 @@
-function loss_percentage = data_loss(azi, ele)
+function loss_percentage = data_loss(a, b)
 %DATA_LOSS Compute Data Loss Percentage
 %
 %   Calculates the percentage of missing gaze samples.
 %
 %   Syntax:
-%       loss_percentage = data_loss(azi, ele)
+%       loss_percentage = data_loss(a, b)
 %
 %   Inputs:
-%       azi - Azimuth values (vector)
-%       ele - Elevation values (vector)
+%       a - Horizontal gaze values (vector, e.g. azimuth or horizontal coordinate in pixels or mm).
+%       b - Vertical gaze values (vector, e.g. azimuth or horizontal coordinate in pixels or mm).
 %
 %   Output:
 %       loss_percentage - Percentage of missing samples
@@ -16,5 +16,5 @@ function loss_percentage = data_loss(azi, ele)
 %   Example:
 %       loss_percentage = data_loss([1 NaN 3], [1 2 NaN])
 
-missing         = isnan(azi) | isnan(ele);
+missing         = isnan(a) | isnan(b);
 loss_percentage = sum(missing)/length(missing)*100;

@@ -197,15 +197,15 @@ bcea <- function(azi, ele, P = 0.68) {
 #'
 #' Calculates percentage of missing gaze samples.
 #'
-#' @param azi Azimuth values.
-#' @param ele Elevation values.
+#' @param a Horizontal gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).
+#' @param b Vertical gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).
 #'
 #' @return Percentage of missing samples.
 #' @examples
 #' data_loss(c(1, NA, 3), c(1, 2, NA))
 #' @export
-data_loss <- function(azi, ele) {
-  missing <- is.na(azi) | is.na(ele)
+data_loss <- function(a, b) {
+  missing <- is.na(a) | is.na(b)
   sum(missing)/length(missing)*100
 }
 
@@ -213,8 +213,8 @@ data_loss <- function(azi, ele) {
 #'
 #' Calculates data loss based on expected number of samples.
 #'
-#' @param azi Azimuth values.
-#' @param ele Elevation values.
+#' @param a Horizontal gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).
+#' @param b Vertical gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).
 #' @param duration Duration in seconds.
 #' @param frequency Sampling frequency in Hz.
 #'
@@ -222,8 +222,8 @@ data_loss <- function(azi, ele) {
 #' @examples
 #' data_loss_from_expected(c(1, NA, 3), c(1, 2, NA), duration = 1, frequency = 3)
 #' @export
-data_loss_from_expected <- function(azi, ele, duration, frequency) {
-  N_valid <- sum(!is.na(azi) & !is.na(ele))
+data_loss_from_expected <- function(a, b, duration, frequency) {
+  N_valid <- sum(!is.na(a) & !is.na(b))
   (1 - N_valid/(duration* frequency))*100
 }
 
@@ -231,16 +231,16 @@ data_loss_from_expected <- function(azi, ele, duration, frequency) {
 #'
 #' Calculates effective frequency based on valid samples.
 #'
-#' @param azi Azimuth values.
-#' @param ele Elevation values.
+#' @param a Horizontal gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).
+#' @param b Vertical gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).
 #' @param duration Duration in seconds.
 #'
 #' @return Effective frequency in Hz.
 #' @examples
 #' effective_frequency(c(1, NA, 3), c(1, 2, NA), duration = 1)
 #' @export
-effective_frequency <- function(azi, ele, duration) {
-  N_valid <- sum(!is.na(azi) & !is.na(ele))
+effective_frequency <- function(a, b, duration) {
+  N_valid <- sum(!is.na(a) & !is.na(b))
   N_valid/duration
 }
 

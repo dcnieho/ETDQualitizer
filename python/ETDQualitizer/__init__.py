@@ -172,7 +172,7 @@ def bcea(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[
     # 2*np.pi*ax1*ax2
     return float(area), float(orientation), float(ax1), float(ax2), float(aspect_ratio)
 
-def data_loss(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[N], np.dtype[np.float64]]):
+def data_loss(a: np.ndarray[tuple[N], np.dtype[np.float64]], b: np.ndarray[tuple[N], np.dtype[np.float64]]):
     """
     Compute Data Loss Percentage
 
@@ -180,10 +180,10 @@ def data_loss(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[t
 
     Parameters
     ----------
-    azi : np.ndarray
-        Azimuth values.
-    ele : np.ndarray
-        Elevation values.
+    a : np.ndarray
+        Horizontal gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).
+    b : np.ndarray
+        Vertical gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).
 
     Returns
     -------
@@ -195,10 +195,10 @@ def data_loss(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[t
     >>> data_loss(np.array([1, np.nan, 3]), np.array([1, 2, np.nan]))
     66.666
     """
-    missing = np.isnan(azi) | np.isnan(ele)
+    missing = np.isnan(a) | np.isnan(b)
     return np.sum(missing)/missing.size*100
 
-def data_loss_from_expected(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[N], np.dtype[np.float64]], duration: float, frequency: float):
+def data_loss_from_expected(a: np.ndarray[tuple[N], np.dtype[np.float64]], b: np.ndarray[tuple[N], np.dtype[np.float64]], duration: float, frequency: float):
     """
     Compute Data Loss from Expected Sample Count
 
@@ -206,10 +206,10 @@ def data_loss_from_expected(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele
 
     Parameters
     ----------
-    azi : np.ndarray
-        Azimuth values.
-    ele : np.ndarray
-        Elevation values.
+    a : np.ndarray
+        Horizontal gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).
+    b : np.ndarray
+        Vertical gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).
     duration : float
         Duration in seconds.
     frequency : float
@@ -225,10 +225,10 @@ def data_loss_from_expected(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele
     >>> data_loss_from_expected(np.array([1, np.nan, 3]), np.array([1, 2, np.nan]), duration=1, frequency=3)
     33.333
     """
-    N_valid = np.count_nonzero(~(np.isnan(azi) | np.isnan(ele)))
+    N_valid = np.count_nonzero(~(np.isnan(a) | np.isnan(b)))
     return (1-N_valid/(duration*frequency))*100
 
-def effective_frequency(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[N], np.dtype[np.float64]], duration: float):
+def effective_frequency(a: np.ndarray[tuple[N], np.dtype[np.float64]], b: np.ndarray[tuple[N], np.dtype[np.float64]], duration: float):
     """
     Compute Effective Sampling Frequency
 
@@ -236,10 +236,10 @@ def effective_frequency(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np
 
     Parameters
     ----------
-    azi : np.ndarray
-        Azimuth values.
-    ele : np.ndarray
-        Elevation values.
+    a : np.ndarray
+        Horizontal gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).
+    b : np.ndarray
+        Vertical gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).
     duration : float
         Duration in seconds.
 
@@ -253,7 +253,7 @@ def effective_frequency(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np
     >>> effective_frequency(np.array([1, np.nan, 3]), np.array([1, 2, np.nan]), duration=1)
     2.0
     """
-    N_valid = np.count_nonzero(~(np.isnan(azi) | np.isnan(ele)))
+    N_valid = np.count_nonzero(~(np.isnan(a) | np.isnan(b)))
     return N_valid/duration
 
 

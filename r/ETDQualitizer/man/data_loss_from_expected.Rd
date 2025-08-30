@@ -4,12 +4,12 @@
 \alias{data_loss_from_expected}
 \title{Compute Data Loss from Expected Sample Count}
 \usage{
-data_loss_from_expected(azi, ele, duration, frequency)
+data_loss_from_expected(a, b, duration, frequency)
 }
 \arguments{
-\item{azi}{Azimuth values.}
+\item{a}{Horizontal gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).}
 
-\item{ele}{Elevation values.}
+\item{b}{Vertical gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).}
 
 \item{duration}{Duration in seconds.}
 

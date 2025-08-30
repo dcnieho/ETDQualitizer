@@ -4,12 +4,12 @@
 \alias{effective_frequency}
 \title{Compute Effective Sampling Frequency}
 \usage{
-effective_frequency(azi, ele, duration)
+effective_frequency(a, b, duration)
 }
 \arguments{
-\item{azi}{Azimuth values.}
+\item{a}{Horizontal gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).}
 
-\item{ele}{Elevation values.}
+\item{b}{Vertical gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).}
 
 \item{duration}{Duration in seconds.}
 }

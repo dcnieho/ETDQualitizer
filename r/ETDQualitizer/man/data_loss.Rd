@@ -4,12 +4,12 @@
 \alias{data_loss}
 \title{Compute Data Loss Percentage}
 \usage{
-data_loss(azi, ele)
+data_loss(a, b)
 }
 \arguments{
-\item{azi}{Azimuth values.}
+\item{a}{Horizontal gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).}
 
-\item{ele}{Elevation values.}
+\item{b}{Vertical gaze values (e.g. azimuth or horizontal coordinate in pixels or mm).}
 }
 \value{
 Percentage of missing samples.
