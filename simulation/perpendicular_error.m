@@ -2,16 +2,15 @@ close all
 
 % Often, eye trackers report gaze position as a location on the screen.
 % When converting this position to an eye orientation, this position is
-% first transformed to a distance from a reference position and this
-% on-screen distance is then transformed to an eye orientation using
-% trigonometry. This calculation has the assumptions that 1) the reference
-% position is right in front of the eye and 2) that the axis from the eye
-% to the reference position is perpendicular to the screen orientation.
-% These assumptions in practice often do not hold, for instance because the
-% reference position is not right ahead of the eye but shifted vertically,
-% or because the screen is tilted around a horizontal axis. With this
-% simulation we calculate the error that violation of either of these
-% assumptions introduces in the computed gaze angle.
+% first transformed to a vector with respect to a reference position and
+% this on-screen vector is then transformed to an eye orientation using
+% trigonometry. This calculation has the assumption that the axis from the
+% observer's eye to the reference position on the screen is perpendicular
+% to the screen. These assumptions in practice often do not hold, for
+% instance because the reference position is not right ahead of the eye but
+% shifted vertically, or because the screen is tilted around a horizontal
+% axis. With this simulation we calculate the error that violation of
+% this assumption introduces in the estimated gaze angle.
 %
 % We perform this simulation in 1D (imagine vertical) as that is
 % sufficient to illustrate the magnitude of errors introduced.
@@ -19,22 +18,24 @@ close all
 % What we compute is the following. We take a fixed on-screen gaze position
 % on the screen as indicated by an eye tracker. The position corresponds to
 % a 10 deg gaze angle with respect to the reference position (screen
-% center) if the assumptions hold, i.e., the eye is positioned right in
-% front of the reference position and the screen is not tilted. We then
-% either shift or tilt the screen and compute what the required _actual_
-% gaze angle is that would produce the same on-screen gaze position. The
-% difference between the gaze angle that would be computed given the screen
-% position (always 10 deg) and the actual gaze position that would produce
-% this gaze position is the error due to violation of the given assumption.
+% center) in the condition where the assumption holds, i.e., the eye is
+% positioned right in front of the reference position and the screen is not
+% tilted. We then either shift or tilt the screen and compute what the
+% required _actual_ gaze angle is that would produce the same on-screen
+% gaze position. The difference between the gaze angle that would be
+% computed given the screen position (always 10 deg) and the actual gaze
+% position that would produce this gaze position is the error due to
+% violation of the given assumption.
 
 
 screenDistance = 650;   % the screen is positioned 650 mm aways from the eye
 gazeDirection = 10;     % the gaze direction is 10 deg below the reference position on the screen
 
-shiftRange = 250;       % the screen is shifted vertically by up to 200 mm
-tiltRange = 45;         % the screen is titled along a horizontal axis by up to 45 degrees
+shiftRange = 200;       % the screen is shifted vertically by up to 200 mm
+tiltRange = 20;         % the screen is titled along a horizontal axis by up to 20 degrees
 
 nstep = 151;
+ylims = [-1.3 .2];
 
 % compute the gazePosition on the screen w.r.t. the reference position if
 % the assumptions hold
@@ -56,20 +57,28 @@ tiltAngles = asind(gazePosition*sind(90+tilts)./viewingDistance);   % using law 
 
 % plot actual gaze directions when the screen is shifted
 figure
-plot(shifts([1 end]),gazeDirection*[1 1],'Color',[.7 .7 .7],'LineStyle','--','LineWidth',1.2)
+plot(shifts([1 end]),[0 0],'Color',[.7 .7 .7],'LineStyle','--','LineWidth',1.2)
 hold on
-plot([0 0],[min(shiftAngles) max(shiftAngles)],'Color',[.7 .7 .7],'LineStyle','--','LineWidth',1.2)
-plot(shifts,shiftAngles,'k','LineWidth',2)
+plot(shifts,shiftAngles-gazeDirection,'k','LineWidth',2)
 axis tight
 ax = gca;
-ax.YAxis.TickLabelFormat = '%.1f';
 box off
+ax.YAxis.TickLabelFormat = '%.1f';
 ax.XLabel.FontSize = 16;
-ax.XRuler.FontSize = 13;
+ax.XAxis.FontSize = 13;
 ax.YLabel.FontSize = 16;
-ax.YRuler.FontSize = 13;
+ax.YAxis.FontSize = 13;
 xlabel('Screen shift (mm)')
-ylabel('Actual gaze angle (deg)')
+ylabel('Error in estimated gaze angle (deg)')
+ylim(ylims)
+yyaxis right
+ylabel('Error in estimated gaze angle (%)')
+ax.YLabel.FontSize = 16;
+ax.YAxis(2).TickLabelFormat = '% .0f';
+ax.YAxis(2).FontSize = 13;
+ax.YAxis(2).Color = [0 0 0];
+ylim(ylims/gazeDirection*100)
+print('error_shift.png','-dpng','-r300')
 
 % illustrate the geometry of the two extreme cases and the case when the
 % assumption holds
@@ -114,20 +123,28 @@ ylim([-screen+min(shifts) screen+max(shifts)])
 
 % plot actual gaze directions when the screen is tilted
 figure
-plot(tilts([1 end]),gazeDirection*[1 1],'Color',[.7 .7 .7],'LineStyle','--','LineWidth',1.2)
+plot(tilts([1 end]),[0 0],'Color',[.7 .7 .7],'LineStyle','--','LineWidth',1.2)
 hold on
-plot([0 0],[min(tiltAngles) max(tiltAngles)],'Color',[.7 .7 .7],'LineStyle','--','LineWidth',1.2)
-plot(tilts,tiltAngles,'k','LineWidth',2)
+plot(tilts,tiltAngles-gazeDirection,'k','LineWidth',2)
 axis tight
 ax = gca;
-ax.YAxis.TickLabelFormat = '%.1f';
 box off
+ax.YAxis.TickLabelFormat = '%.1f';
 ax.XLabel.FontSize = 16;
-ax.XRuler.FontSize = 13;
+ax.XAxis.FontSize = 13;
 ax.YLabel.FontSize = 16;
-ax.YRuler.FontSize = 13;
+ax.YAxis.FontSize = 13;
 xlabel('Screen tilt (deg)')
-ylabel('Actual gaze angle (deg)')
+ylabel('Error in estimated gaze angle (deg)')
+ylim(ylims)
+yyaxis right
+ylabel('Error in estimated gaze angle (%)')
+ax.YLabel.FontSize = 16;
+ax.YAxis(2).TickLabelFormat = '% .0f';
+ax.YAxis(2).FontSize = 13;
+ax.YAxis(2).Color = [0 0 0];
+ylim(ylims/gazeDirection*100)
+print('error_tilt.png','-dpng','-r300')
 
 % illustrate the geometry of the two extreme cases and the case when the
 % assumption holds
