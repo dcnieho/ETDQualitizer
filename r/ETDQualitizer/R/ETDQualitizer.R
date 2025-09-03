@@ -128,7 +128,7 @@ std <- function(azi, ele) {
   std_azi <- pop_sd(azi)
   std_ele <- pop_sd(ele)
   std     <- sqrt(std_azi^2 + std_ele^2)
-  list(std = std, std_a = std_azi, std_ele = std_ele)
+  list(std = std, std_azi = std_azi, std_ele = std_ele)
 }
 #' Population Standard Deviation
 #'
