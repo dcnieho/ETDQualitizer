@@ -31,11 +31,11 @@ close all
 screenDistance = 650;   % the screen is positioned 650 mm aways from the eye
 gazeDirection = 10;     % the gaze direction is 10 deg below the reference position on the screen
 
-shiftRange = 200;       % the screen is shifted vertically by up to 200 mm
-tiltRange = 20;         % the screen is titled along a horizontal axis by up to 20 degrees
+shiftRange = 100;       % the screen is shifted vertically by up to 200 mm
+tiltRange = 10;         % the screen is titled along a horizontal axis by up to 20 degrees
 
 nstep = 151;
-ylims = [-1.3 .2];
+ylims = [-0.5 .20001];
 
 % compute the gazePosition on the screen w.r.t. the reference position if
 % the assumptions hold
