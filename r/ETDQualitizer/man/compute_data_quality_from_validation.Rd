@@ -43,7 +43,7 @@ It evaluates accuracy, precision, and optionally data loss and effective samplin
 }
 \details{
 This function uses the following methods in the `DataQuality` class to compute the returned results:
-`accuracy()`, `precision_RMS_S2S()`, `precision_STD()`, `precision_BCEA()`, `data_loss()`, and `effective_frequency()`.
+`accuracy()`, `precision_RMS_S2S()`, `precision_STD()`, `precision_BCEA()`, `data_loss_from_invalid()`, and `effective_frequency()`.
 }
 \examples{
 \dontrun{

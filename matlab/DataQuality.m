@@ -139,12 +139,12 @@ classdef DataQuality
             precision = precision_using_moving_window(obj.azi, obj.ele, window_length, metric, input_args, aggregation_fun);
         end
 
-        function loss_percentage = data_loss(obj)
-            % DATA_LOSS Calculates the proportion of missing data (coded as NaN).
+        function loss_percentage = data_loss_from_invalid(obj)
+            % DATA_LOSS_FROM_INVALID Calculates the proportion of missing data (coded as NaN).
             %
             % Output:
             %   loss_percentage - Percentage of missing samples
-            loss_percentage = data_loss(obj.azi, obj.ele);
+            loss_percentage = data_loss_from_invalid(obj.azi, obj.ele);
         end
 
         function loss_percentage = data_loss_from_expected(obj, frequency)

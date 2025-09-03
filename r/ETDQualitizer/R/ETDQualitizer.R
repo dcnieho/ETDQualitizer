@@ -193,7 +193,7 @@ bcea <- function(azi, ele, P = 0.68) {
   )
 }
 
-#' Compute Data Loss Percentage
+#' Compute Data Loss from number of invalid samples.
 #'
 #' Calculates percentage of missing gaze samples.
 #'
@@ -202,9 +202,9 @@ bcea <- function(azi, ele, P = 0.68) {
 #'
 #' @return Percentage of missing samples.
 #' @examples
-#' data_loss(c(1, NA, 3), c(1, 2, NA))
+#' data_loss_from_invalid(c(1, NA, 3), c(1, 2, NA))
 #' @export
-data_loss <- function(a, b) {
+data_loss_from_invalid <- function(a, b) {
   missing <- is.na(a) | is.na(b)
   sum(missing)/length(missing)*100
 }
@@ -424,7 +424,7 @@ ScreenConfiguration <- R6Class("ScreenConfiguration",
 #' dq <- DataQuality$new(gaze_x, gaze_y, timestamps, unit = "pixels", screen = sc)
 #' dq$accuracy(0, 0)
 #' dq$precision_RMS_S2S()
-#' dq$data_loss()
+#' dq$data_loss_from_invalid()
 #'
 #' @export
 #' @importFrom R6 R6Class
@@ -507,9 +507,9 @@ DataQuality <- R6Class("DataQuality",
     #' @description Calculates the proportion of missing data (coded as NA).
     #' @return Proportion of missing samples.
     #' @examples
-    #' dq$data_loss()
-    data_loss = function() {
-      data_loss(self$azi, self$ele)
+    #' dq$data_loss_from_invalid()
+    data_loss_from_invalid = function() {
+      data_loss_from_invalid(self$azi, self$ele)
     },
 
     #' @description Estimates data loss based on expected number of samples given the duration and sampling frequency.
@@ -580,7 +580,7 @@ DataQuality <- R6Class("DataQuality",
 #'
 #' @details
 #' This function uses the following methods in the `DataQuality` class to compute the returned results:
-#' `accuracy()`, `precision_RMS_S2S()`, `precision_STD()`, `precision_BCEA()`, `data_loss()`, and `effective_frequency()`.
+#' `accuracy()`, `precision_RMS_S2S()`, `precision_STD()`, `precision_BCEA()`, `data_loss_from_invalid()`, and `effective_frequency()`.
 #'
 #' @examples
 #' \dontrun{
@@ -661,7 +661,7 @@ compute_data_quality_from_validation <- function(gaze, unit, screen = NULL, adva
       dq[oi, c("bcea", "bcea_orientation", "bcea_ax1", "bcea_ax2", "bcea_aspect_ratio")] <- dq_calc$precision_BCEA()
 
       if (include_data_loss) {
-        dq$data_loss[oi] <- dq_calc$data_loss()
+        dq$data_loss[oi] <- dq_calc$data_loss_from_invalid()
         dq$effective_frequency[oi] <- dq_calc$effective_frequency()
       }
     }

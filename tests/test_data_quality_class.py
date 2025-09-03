@@ -80,9 +80,9 @@ class TestDataQualityClass(unittest.TestCase):
         s = dq.precision_using_moving_window(50, 'STD')
         self.assertLessEqual(s, np.sqrt(2))     # std of whole sequence is about sqrt(2), when taking it in smaller windows it'll come out a bit smaller even though generation process is stationary
 
-    def test_data_loss(self):
+    def test_data_loss_from_invalid(self):
         dq = DataQuality(self.azi, self.ele, self.timestamps, 'degrees')
-        self.assertEqual(dq.data_loss(), 0)
+        self.assertEqual(dq.data_loss_from_invalid(), 0)
 
     def test_data_loss_from_expected(self):
         dq = DataQuality(self.azi, self.ele, self.timestamps, 'degrees')

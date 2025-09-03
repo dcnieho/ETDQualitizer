@@ -70,7 +70,7 @@ for (file in tsv_files) {
                 dq_calc$precision_using_moving_window(window_len, "RMS-S2S")))
 
     # data loss and effective frequency
-    cat(sprintf("Data loss (%s eye): %.1f%%\n", eye, dq_calc$data_loss()))
+    cat(sprintf("Data loss from invalid samples (%s eye): %.1f%%\n", eye, dq_calc$data_loss_from_invalid()))
     cat(sprintf("Data loss from expected #samples (%s eye): %.1f%%\n", eye, dq_calc$data_loss_from_expected(fs)))
     cat(sprintf("Effective frequency (%s eye): %.1f Hz\n", eye, dq_calc$effective_frequency()))
   }

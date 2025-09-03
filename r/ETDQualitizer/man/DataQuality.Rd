@@ -14,7 +14,7 @@ timestamps <- c(0, 1, 2)
 dq <- DataQuality$new(gaze_x, gaze_y, timestamps, unit = "pixels", screen = sc)
 dq$accuracy(0, 0)
 dq$precision_RMS_S2S()
-dq$data_loss()
+dq$data_loss_from_invalid()
 
 
 ## ------------------------------------------------
@@ -48,10 +48,10 @@ dq$precision_STD()
 dq$precision_BCEA()
 
 ## ------------------------------------------------
-## Method `DataQuality$data_loss`
+## Method `DataQuality$data_loss_from_invalid`
 ## ------------------------------------------------
 
-dq$data_loss()
+dq$data_loss_from_invalid()
 
 ## ------------------------------------------------
 ## Method `DataQuality$data_loss_from_expected`
@@ -96,7 +96,7 @@ dq$precision_using_moving_window(0.2, "RMS-S2S")
 \item \href{#method-DataQuality-precision_RMS_S2S}{\code{DataQuality$precision_RMS_S2S()}}
 \item \href{#method-DataQuality-precision_STD}{\code{DataQuality$precision_STD()}}
 \item \href{#method-DataQuality-precision_BCEA}{\code{DataQuality$precision_BCEA()}}
-\item \href{#method-DataQuality-data_loss}{\code{DataQuality$data_loss()}}
+\item \href{#method-DataQuality-data_loss_from_invalid}{\code{DataQuality$data_loss_from_invalid()}}
 \item \href{#method-DataQuality-data_loss_from_expected}{\code{DataQuality$data_loss_from_expected()}}
 \item \href{#method-DataQuality-effective_frequency}{\code{DataQuality$effective_frequency()}}
 \item \href{#method-DataQuality-get_duration}{\code{DataQuality$get_duration()}}
@@ -250,12 +250,12 @@ BCEA in degrees-squared.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-DataQuality-data_loss"></a>}}
-\if{latex}{\out{\hypertarget{method-DataQuality-data_loss}{}}}
-\subsection{Method \code{data_loss()}}{
+\if{html}{\out{<a id="method-DataQuality-data_loss_from_invalid"></a>}}
+\if{latex}{\out{\hypertarget{method-DataQuality-data_loss_from_invalid}{}}}
+\subsection{Method \code{data_loss_from_invalid()}}{
 Calculates the proportion of missing data (coded as NA).
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DataQuality$data_loss()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DataQuality$data_loss_from_invalid()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
@@ -263,7 +263,7 @@ Proportion of missing samples.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{dq$data_loss()
+\preformatted{dq$data_loss_from_invalid()
 }
 \if{html}{\out{</div>}}
 

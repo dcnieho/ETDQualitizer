@@ -56,10 +56,10 @@ classdef TestDataQualityMetrics < matlab.unittest.TestCase
             testCase.verifyEqual(rms_y, sqrt(mean(diff(y).^2)));
         end
 
-        function testDataLoss(testCase)
+        function testDataLossFromInvalid(testCase)
             x = [1; NaN; 3];
             y = [4; 5; NaN];
-            loss = data_loss(x, y);
+            loss = data_loss_from_invalid(x, y);
             testCase.verifyEqual(loss, 2/3*100);
         end
 

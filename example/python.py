@@ -40,7 +40,7 @@ for f in (pathlib.Path(__file__).parent / 'data').glob('*.tsv'):
         print(f'RMS-S2S using moving window ({e} eye): {dq.precision_using_moving_window(window_len,"RMS-S2S"):.4f} deg')
 
         # data loss and effective frequency
-        print(f'Data loss ({e} eye): {dq.data_loss():.1f}%')
+        print(f'Data loss from invalid samples ({e} eye): {dq.data_loss_from_invalid():.1f}%')
         print(f'Data loss from expected #samples ({e} eye): {dq.data_loss_from_expected(fs):.1f}%')
         print(f'Effective frequency ({e} eye): {dq.effective_frequency():.1f} Hz')
 

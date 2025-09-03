@@ -88,7 +88,7 @@ test_that("precision STD using moving window returns reasonable value", {
 
 test_that("data loss is zero for complete data", {
   dq <- DataQuality$new(rnorm(1000), rnorm(1000), seq(0, 10, length.out = 1000), "degrees")
-  expect_equal(dq$data_loss(), 0)
+  expect_equal(dq$data_loss_from_invalid(), 0)
 })
 
 test_that("data loss from expected is zero for complete data", {

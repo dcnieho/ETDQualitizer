@@ -98,9 +98,9 @@ classdef TestDataQualityClass < matlab.unittest.TestCase
             testCase.verifyLessThanOrEqual(s, sqrt(2)); % std of whole sequence is about sqrt(2), when taking it in smaller windows it'll come out a bit smaller even though generation process is stationary
         end
 
-        function testDataLoss(testCase)
+        function testDataLossFromInvalid(testCase)
             dq = DataQuality(testCase.azi, testCase.ele, testCase.timestamps, 'degrees');
-            loss = dq.data_loss();
+            loss = dq.data_loss_from_invalid();
             testCase.verifyEqual(loss, 0);
         end
 

@@ -172,9 +172,9 @@ def bcea(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[
     # 2*np.pi*ax1*ax2
     return float(area), float(orientation), float(ax1), float(ax2), float(aspect_ratio)
 
-def data_loss(a: np.ndarray[tuple[N], np.dtype[np.float64]], b: np.ndarray[tuple[N], np.dtype[np.float64]]):
+def data_loss_from_invalid(a: np.ndarray[tuple[N], np.dtype[np.float64]], b: np.ndarray[tuple[N], np.dtype[np.float64]]):
     """
-    Compute Data Loss Percentage
+    Compute Data Loss from number of invalid samples.
 
     Calculates the percentage of missing gaze samples.
 
@@ -580,7 +580,7 @@ class DataQuality:
     >>> dq = DataQuality([0, 1, -1], [0, 1, -1], [0, 1, 2], unit="pixels", screen=sc)
     >>> dq.accuracy(0, 0)
     >>> dq.precision_RMS_S2S()
-    >>> dq.data_loss()
+    >>> dq.data_loss_from_invalid()
     """
     def __init__(self,
                  gaze_x     : np.ndarray[tuple[N], np.dtype[np.float64]],
@@ -651,7 +651,7 @@ class DataQuality:
         """
         return bcea(self.azi, self.ele, P)
 
-    def data_loss(self):
+    def data_loss_from_invalid(self):
         """
         Calculates the proportion of missing data (coded as NaN).
 
@@ -660,7 +660,7 @@ class DataQuality:
         float
             Percentage of missing samples.
         """
-        return data_loss(self.azi, self.ele)
+        return data_loss_from_invalid(self.azi, self.ele)
 
     def data_loss_from_expected(self, frequency):
         """
@@ -761,7 +761,7 @@ def compute_data_quality_from_validation(gaze               : pd.DataFrame,
             for k,v in zip(('bcea','bcea_orientation','bcea_ax1','bcea_ax2','bcea_aspect_ratio'),dq.precision_BCEA()):
                 row[k] = v
             if include_data_loss:
-                row['data_loss'] = dq.data_loss()
+                row['data_loss'] = dq.data_loss_from_invalid()
                 row['effective_frequency'] = dq.effective_frequency()
             rows.append(row)
 

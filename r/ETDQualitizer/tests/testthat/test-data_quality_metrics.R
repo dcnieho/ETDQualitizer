@@ -53,10 +53,10 @@ test_that("rms_s2s returns correct RMS values", {
   expect_equal(result$rms_ele, sqrt(mean(diff(y)^2)))
 })
 
-test_that("data_loss computes correct percentage", {
+test_that("data_loss_from_invalid computes correct percentage", {
   x <- c(1, NA, 3)
   y <- c(4, 5, NA)
-  loss <- data_loss(x, y)
+  loss <- data_loss_from_invalid(x, y)
   expect_equal(loss, 2 / 3 * 100)
 })
 

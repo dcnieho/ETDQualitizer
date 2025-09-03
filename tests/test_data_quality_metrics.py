@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from ETDQualitizer import accuracy, std, bcea, rms_s2s, data_loss, data_loss_from_expected, effective_frequency
+from ETDQualitizer import accuracy, std, bcea, rms_s2s, data_loss_from_invalid, data_loss_from_expected, effective_frequency
 
 class TestDataQualityMetrics(unittest.TestCase):
     def test_accuracy(self):
@@ -51,10 +51,10 @@ class TestDataQualityMetrics(unittest.TestCase):
         self.assertAlmostEqual(rms_x, np.sqrt(np.mean(np.diff(x)**2)))
         self.assertAlmostEqual(rms_y, np.sqrt(np.mean(np.diff(y)**2)))
 
-    def test_data_loss(self):
+    def test_data_loss_from_invalid(self):
         x = np.array([1, np.nan, 3])
         y = np.array([4, 5, np.nan])
-        loss = data_loss(x, y)
+        loss = data_loss_from_invalid(x, y)
         self.assertAlmostEqual(loss, 2/3*100)
 
     def test_data_loss_from_expected(self):
