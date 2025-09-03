@@ -3,8 +3,8 @@ test_that("accuracy returns zero offset for symmetric gaze around target", {
   y <- c(0, 1, -1)
   result <- accuracy(x, y, 0, 0)
   expect_equal(result$offset, 0, tolerance = 1e-8)
-  expect_equal(result$offset_x, 0, tolerance = 1e-8)
-  expect_equal(result$offset_y, 0, tolerance = 1e-8)
+  expect_equal(result$offset_azi, 0, tolerance = 1e-8)
+  expect_equal(result$offset_ele, 0, tolerance = 1e-8)
 })
 
 test_that("accuracy works with custom central tendency function", {
@@ -12,16 +12,16 @@ test_that("accuracy works with custom central tendency function", {
   y <- c(0, 1, -1)
   result <- accuracy(x, y, 0, 0, central_tendency_fun = median)
   expect_equal(result$offset, 0, tolerance = 1e-8)
-  expect_equal(result$offset_x, 0, tolerance = 1e-8)
-  expect_equal(result$offset_y, 0, tolerance = 1e-8)
+  expect_equal(result$offset_azi, 0, tolerance = 1e-8)
+  expect_equal(result$offset_ele, 0, tolerance = 1e-8)
 })
 
 test_that("std returns correct values", {
   x <- c(1, 2, 3)
   y <- c(4, 5, 6)
   result <- std(x, y)
-  expect_equal(result$std_a, sqrt(mean((x - mean(x))^2)))
-  expect_equal(result$std_e, sqrt(mean((y - mean(y))^2)))
+  expect_equal(result$std_azi, sqrt(mean((x - mean(x))^2)))
+  expect_equal(result$std_ele, sqrt(mean((y - mean(y))^2)))
   expect_equal(result$std, sqrt(result$std_a^2 + result$std_e^2))
 })
 
@@ -29,8 +29,8 @@ test_that("std returns correct values (with NA)", {
   x <- c(1, 2, NA, 3)
   y <- c(4, 5, NA, 6)
   result <- std(x, y)
-  expect_equal(result$std_a, sqrt(mean((x - mean(x, na.rm = TRUE))^2, na.rm = TRUE)))
-  expect_equal(result$std_e, sqrt(mean((y - mean(y, na.rm = TRUE))^2, na.rm = TRUE)))
+  expect_equal(result$std_azi, sqrt(mean((x - mean(x, na.rm = TRUE))^2, na.rm = TRUE)))
+  expect_equal(result$std_ele, sqrt(mean((y - mean(y, na.rm = TRUE))^2, na.rm = TRUE)))
   expect_equal(result$std, sqrt(result$std_a^2 + result$std_e^2))
 })
 
@@ -49,8 +49,8 @@ test_that("rms_s2s returns correct RMS values", {
   y <- c(4, 5, 6)
   result <- rms_s2s(x, y)
   expect_gte(result$rms, 0)
-  expect_equal(result$rms_a, sqrt(mean(diff(x)^2)))
-  expect_equal(result$rms_e, sqrt(mean(diff(y)^2)))
+  expect_equal(result$rms_azi, sqrt(mean(diff(x)^2)))
+  expect_equal(result$rms_ele, sqrt(mean(diff(y)^2)))
 })
 
 test_that("data_loss computes correct percentage", {

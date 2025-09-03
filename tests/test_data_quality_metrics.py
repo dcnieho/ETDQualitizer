@@ -31,8 +31,8 @@ class TestDataQualityMetrics(unittest.TestCase):
         x = np.array([1, 2, np.nan, 3])
         y = np.array([4, 5, np.nan, 6])
         s, sx, sy = std(x, y)
-        self.assertAlmostEqual(sx, np.std(x))
-        self.assertAlmostEqual(sy, np.std(y))
+        self.assertAlmostEqual(sx, np.nanstd(x))
+        self.assertAlmostEqual(sy, np.nanstd(y))
         self.assertAlmostEqual(s, np.hypot(sx, sy))
 
     def test_bcea(self):

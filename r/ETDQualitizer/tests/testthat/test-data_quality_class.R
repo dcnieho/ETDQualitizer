@@ -33,16 +33,16 @@ test_that("accuracy returns near-zero offset for symmetric data", {
   dq <- DataQuality$new(c(0, 1, -1), c(0, 1, -1), c(0, 1, 2), "degrees")
   result <- dq$accuracy(0, 0)
   expect_equal(result$offset, 0, tolerance = 0.1)
-  expect_equal(result$offset_x, 0, tolerance = 0.1)
-  expect_equal(result$offset_y, 0, tolerance = 0.1)
+  expect_equal(result$offset_azi, 0, tolerance = 0.1)
+  expect_equal(result$offset_ele, 0, tolerance = 0.1)
 })
 
 test_that("precision RMS with large dataset", {
   dq <- DataQuality$new(rnorm(100000), rnorm(100000), seq(0, 1000, length.out = 100000), "degrees")
   result <- dq$precision_RMS_S2S()
   expect_equal(result$rms, 2, tolerance = 0.1)
-  expect_equal(result$rms_a, sqrt(2), tolerance = 0.1)
-  expect_equal(result$rms_e, sqrt(2), tolerance = 0.1)
+  expect_equal(result$rms_azi, sqrt(2), tolerance = 0.1)
+  expect_equal(result$rms_ele, sqrt(2), tolerance = 0.1)
 })
 
 test_that("precision RMS with one axis varying", {
@@ -50,8 +50,8 @@ test_that("precision RMS with one axis varying", {
   result <- dq$precision_RMS_S2S()
   expected_rms <- sqrt(mean(c(1, 2)^2))
   expect_gte(result$rms, expected_rms)
-  expect_gte(result$rms_a, expected_rms)
-  expect_gte(result$rms_e, 0)
+  expect_gte(result$rms_azi, expected_rms)
+  expect_gte(result$rms_ele, 0)
 })
 
 test_that("precision RMS with both axes varying", {
@@ -60,16 +60,16 @@ test_that("precision RMS with both axes varying", {
   expected_rms_xy <- sqrt(mean(c(1, 2)^2))
   expected_rms <- sqrt(2) * expected_rms_xy
   expect_gte(result$rms, expected_rms)
-  expect_gte(result$rms_a, expected_rms_xy)
-  expect_gte(result$rms_e, expected_rms_xy)
+  expect_gte(result$rms_azi, expected_rms_xy)
+  expect_gte(result$rms_ele, expected_rms_xy)
 })
 
 test_that("precision STD returns expected values", {
   dq <- DataQuality$new(rnorm(100000, sd = 1), rnorm(100000, sd = 1), seq(0, 1000, length.out = 100000), "degrees")
   result <- dq$precision_STD()
   expect_equal(result$std, sqrt(2), tolerance = 0.1)
-  expect_equal(result$std_a, 1, tolerance = 0.1)
-  expect_equal(result$std_e, 1, tolerance = 0.1)
+  expect_equal(result$std_azi, 1, tolerance = 0.1)
+  expect_equal(result$std_ele, 1, tolerance = 0.1)
 })
 
 test_that("precision BCEA returns valid values", {
