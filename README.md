@@ -9,7 +9,7 @@ ETDQualitizer is a toolbox for automated eye tracking data quality determination
 1. A [tool for collecting validation data](#collecting-validation-data) in a format that is suitable for automated determination and reporting of data quality for screen-based eye trackers. This tool is available in the form of a standalone Python script using [PsychoPy](https://www.psychopy.org/) or an integratable module that can be added to an exisiting PsychoPy experiment using a single line of code.
 2. A [tool for determining and reporting eye-tracking data quality](#determining-data-quality) using recordings made by the first tool, or any data formatted according to the same format. These tools are available for MATLAB, Python and R.
 
-Note that for wearable eye trackers, the [glassesValidator](www.github.com/dcnieho/glassesValidator) and [gazeMapper](www.github.com/dcnieho/gazeMapper) tools are available.
+Note that for wearable eye trackers, the [glassesValidator](https://github.com/dcnieho/glassesValidator) and [gazeMapper](https://github.com/dcnieho/gazeMapper) tools are available.
 
 Please cite:
 Niehorster, D.C., Nyström, M., Hessels, R.S., Benjamins, J.S., Andersson, R. & Hooge, I.T.C. (in prep). The fundamentals of eye tracking part 7: Data quality
