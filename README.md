@@ -18,6 +18,19 @@ For questions, bug reports or to check for updates, please visit
 www.github.com/dcnieho/ETDQualitizer.
 
 # Collecting validation data
+The procedure for collecting validation data is available from [the `/python/ETDQualitizer/validator` subfolder](/python/ETDQualitizer/validator).
 
+## How to acquire
+The validation procedure is not available as an installable package. The user is recommended to download [the `/python/ETDQualitizer/validator` subfolder](/python/ETDQualitizer/validator) from github and add it to their experiment.
 
 # Determining Data Quality
+Example scripts for using the MATLAB, Python and R implementations, as well as example data are available from [the `/example` subfolder](/example). 
+
+## How to acquire
+While the [MATLAB](/matlab), [Python](/python/ETDQualitizer) and [R](/r/ETDQualitizer) implementations can be directly downloaded from their respective subfolders in this repository, the recommended installation method is to use the respective platform's package manager:
+### MATLAB
+Search for and install the ETDQualitizer package from the MATLAB Add-Ons manager.
+### Python
+Execute `pip install ETDQualitizer`
+### R
+Execute `install.packages("ETDQualitizer")`
