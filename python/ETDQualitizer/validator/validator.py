@@ -193,7 +193,7 @@ def parse_target_msg(message: str):
 
 def get_eye_tracker_wrapper(tracker):
     track_qual_name = f"{tracker.__module__}.{tracker.__class__.__qualname__}"
-    
+
     if track_qual_name=="titta.Tobii.myTobii":
         return TobiiEyeTracker(tracker)
     elif track_qual_name=="eyelink.eyelink.Connect":
@@ -346,7 +346,8 @@ def show_validation(win: visual.Window, config: dict, refresh_rate: int, task_va
 
         # move to next target
         fixation_target.set_size(config["targets"]["move"]["diameter"])
-        cue.pos = pos
+        if have_cue:
+            cue.pos = pos
         for p in tar_pos:
             task_vars['background'].draw()
             if have_cue:
@@ -403,7 +404,7 @@ def open_demo_screen(config: dict) -> visual.Window:
     mon = monitors.Monitor('temp')
     mon.setWidth(config["screen"]["width"])
     mon.setDistance(config["screen"]["viewing_distance"])
-    mon.setSizePix(config["screen"]["resolution"]) 
+    mon.setSizePix(config["screen"]["resolution"])
     win = visual.Window(monitor=mon,
                         fullscr=True,
                         color=config["screen"]["background_color"],
@@ -417,5 +418,5 @@ def open_demo_screen(config: dict) -> visual.Window:
         raise RuntimeError(f'expected resolution of {config["screen"]["resolution"]}, but got {win.size}')
     if 1/win.monitorFramePeriod<config["screen"]["refresh_rate"]-2 or 1/win.monitorFramePeriod>config["screen"]["refresh_rate"]+2:  # check within 2 Hz
         raise RuntimeError(f'expected framerate of {config["screen"]["refresh_rate"]}, but got {1/win.monitorFramePeriod}')
-    
+
     return win
