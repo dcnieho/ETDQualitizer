@@ -31,11 +31,12 @@ The procedure (e.g., position of the validation targets, and duration for which 
 
 ### `targetPositions.csv`
 The `targetPositions.csv` file contains the positions (and associated ID) for the validation targets. It contains the following columns:
-|name||description|
+|name|description|
 | --- | --- |
 | `ID` | Unique identifier of the validation target. |
 | `x` | Horizontal position of the center of the validation target. |
 | `y` | Vertical position of the center of the validation target. |
+
 Validation target coordinates are in PsychoPy's `'pix'` coordinate system. That is, they are in pixels with respect to the center of the screen, with the positive y direction being upward.
 
 ## Output data format
