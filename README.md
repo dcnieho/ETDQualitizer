@@ -75,9 +75,22 @@ The `setup.json` file contains information about the screen and configuration fo
 All sizes are in pixels, and all durations in seconds. Ensure that the screen information is correctly filled out or the timing or positioning of validation targets may be incorrect.
 
 ## Output data format
+The data files output by the validator contain raw gaze data (indvidual samples) with the following columns:
+|name|description|
+| --- | --- |
+| `timestamp` | Timestamp of the sample, in ms |
+| `left_x` | Horizontal position of the gaze point of the left eye, in pixels |
+| `left_y` | Vertical position of the gaze point of the left eye, in pixels |
+| `right_x` | Horizontal position of the gaze point of the right eye, in pixels |
+| `right_y` | Vertical position of the gaze point of the right eye, in pixels |
+| `target_id` | ID of the target at which the participant looked. -1 for samples that should not be included in the data quality calculations, an integer ID (see description of [`targetPositions.csv`](#targetpositionscsv)) for intervals to be included |
+| `tar_x` | Horizontal screen position of the center of the target, in pixels |
+| `tar_y` | Vertical screen position of the center of the target, in pixels |
+
+Note that positions in this file _do not_ use PsychoPy's `'pix'` coordinate system where the positive y direction is upward. Like in most other conventions, the positive y direction is downward. Positions of both gaze and targets are expressed with respect to the center of the screen. Note that it is possible a file contains data from only the left or only the right eye, in which case the other columns should be missing.
 
 ## Adding your own eye tracker
-
+The validator provides out of the box support for EyeLink, SMI and Tobii eye trackers. To add support for other eye trackers, users should add a class wrapping communication with their eye tracker in [`validator.py`](/python/ETDQualitizer/validator/validator.py). This class should derive from the `EyeTrackerBase` class in that file, and implement the methods `start_recording`, `send_message`, `stop_recording`, and `save_data`. See the `EyeLinkTracker`, `SMIEyeTracker`, and `TobiiEyeTracker` classes for examples.
 
 # Determining Data Quality
 Example scripts for using the MATLAB, Python and R implementations, as well as example data are available from [the `/example` subfolder](/example).
