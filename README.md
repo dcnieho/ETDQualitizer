@@ -36,8 +36,43 @@ The `targetPositions.csv` file contains the positions (and associated ID) for th
 | `ID` | Unique identifier of the validation target. |
 | `x` | Horizontal position of the center of the validation target. |
 | `y` | Vertical position of the center of the validation target. |
+| `color` | Optional column allowing to set the color of the target place holder for this target. |
 
 Validation target coordinates are in PsychoPy's `'pix'` coordinate system. That is, they are in pixels with respect to the center of the screen, with the positive y direction being upward.
+
+### `setup.json`
+The `setup.json` file contains information about the screen and configuration for the validation procedure. The below table describes the options. It is a nested json file; nesting levels are indicated with `.` in the table.
+|name|description|
+| --- | --- |
+| `screen.which_monitor` | Which monitor the validation screen will be shown on (only used for standalone operation) |
+| `screen.width` | The width of the monitor (its display area to be exact) in cm |
+| `screen.viewing_distance` | The distance from which the monitor is viewed |
+| `screen.refresh_rate` | The refresh rate of the monitor |
+| `screen.resolution` | The pixel resolution of the monitor |
+| `screen.background_color` | The background color to use for the validation display |
+|||
+| `instruction_text.height` | The size of lines of the instruction text |
+| `instruction_text.color` | The color of the instruction text |
+|||
+| `validation.n_repetitions` | The number of times each validation target should be shown during a single validation session |
+| `validation.targets.file` | The name of the file containing the validation targets, probably [`targetPositions.csv`](#targetpositionscsv) |
+| `validation.targets.duration` | The duration of gaze data to capture for each target |
+| `validation.targets.randomize_order` | Boolean indicating whether the target presentation order should be shuffled or as in the file |
+| `validation.targets.placeholder.color` | Color of the placeholder to be shown at all fixation target locations (`null`, Python's `None` to disable) |
+| `validation.targets.placeholder.diameter` | Diameter of the placeholder circle |
+| `validation.targets.cue.color` | Color of the cue to be shown as the fixation marker is traveling to a next fixation target location (`null`, Python's `None` to disable) |
+| `validation.targets.cue.diameter` | Diameter of the cue circle |
+| `validation.targets.move.duration` | Duration it would take for the fixation target to move from one end of the screen to the other, horizontally. This duration is scaled by the actual distance between the current and the next fixation target location |
+| `validation.targets.move.diameter` | Diameter of the fixation target as it is moving |
+| `validation.targets.move.min_duration` | Minimum duration of move from the current to next fixation target location |
+| `validation.targets.move.move_with_acceleration` | Boolean indicating whether the target should accelerate and decelerate as it moves between the current and next fixation target locations, or move at a constant speed |
+| `validation.targets.shrink.duration` | Duration of interval during which the target shrinks after it has arrived at the locaiton of the upcoming fixation target |
+| `validation.targets.look.diameter_min` | Diameter at the start of the shrinking interval |
+| `validation.targets.look.diameter_max` | Diameter at the end of the shrinking interval|
+| `validation.targets.look.outer_color` | Color of the large and small circles in the fixation target |
+| `validation.targets.look.inner_color` | Color of the cross in the fixation target |
+
+All sizes are in pixels, and all durations in seconds. Ensure that the screen information is correctly filled out or the timing or positioning of validation targets may be incorrect.
 
 ## Output data format
 
