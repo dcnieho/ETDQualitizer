@@ -752,7 +752,7 @@ def compute_data_quality_from_validation(gaze               : pd.DataFrame,
             is_target = gaze['target_id'].values==t_id
             dq = DataQuality(gaze[f'{e}_x'][is_target], gaze[f'{e}_y'][is_target], gaze['timestamp'][is_target]/1000, unit, screen) # timestamps are in ms in the file
             row = {'eye': e, 'target_id': t_id}
-            for k,v in zip(('offset','offset_x','offset_y'),dq.accuracy(*target_locations[i])):
+            for k,v in zip(('accuracy','accuracy_x','accuracy_y'),dq.accuracy(*target_locations[i])):
                 row[k] = v
             for k,v in zip(('rms_s2s','rms_s2s_x','rms_s2s_y'),dq.precision_RMS_S2S()):
                 row[k] = v
@@ -767,7 +767,7 @@ def compute_data_quality_from_validation(gaze               : pd.DataFrame,
 
     dq_df = pd.DataFrame.from_records(rows).set_index(['eye','target_id'])
     if not advanced:
-        dq_df = dq_df.drop(columns=[c for c in dq_df.columns if c not in ('eye', 'target_id', 'offset', 'rms_s2s', 'std', 'bcea', 'data_loss', 'effective_frequency')])
+        dq_df = dq_df.drop(columns=[c for c in dq_df.columns if c not in ('eye', 'target_id', 'accuracy', 'rms_s2s', 'std', 'bcea', 'data_loss', 'effective_frequency')])
     return dq_df
 
 
@@ -793,7 +793,7 @@ def report_data_quality_table(dq_table: pd.DataFrame) -> tuple[str,dict[str,pd.D
     n_subj   = measures['all'].shape[0]
     txt = (
         f"For {n_subj} participants, the average inaccuracy in the data determined from a {n_target}-point validation procedure using ETDQualitizer v{__version__} (Niehorster et al., in prep) "
-        f"was {measures['summary'].loc['mean'].offset:.2f}° (SD={measures['summary'].loc['std'].offset:.2f}°, range={measures['summary'].loc['min'].offset:.2f}°--{measures['summary'].loc['max'].offset:.2f}°). "
+        f"was {measures['summary'].loc['mean'].accuracy:.2f}° (SD={measures['summary'].loc['std'].accuracy:.2f}°, range={measures['summary'].loc['min'].accuracy:.2f}°--{measures['summary'].loc['max'].accuracy:.2f}°). "
         f"Average RMS-S2S precision was {measures['summary'].loc['mean'].rms_s2s:.3f}° (SD={measures['summary'].loc['std'].rms_s2s:.3f}°, range={measures['summary'].loc['min'].rms_s2s:.3f}°--{measures['summary'].loc['max'].rms_s2s:.3f}°) "
         f"and STD precision {measures['summary'].loc['mean']['std']:.3f}° (SD={measures['summary'].loc['std']['std']:.3f}°, range={measures['summary'].loc['min']['std']:.3f}°--{measures['summary'].loc['max']['std']:.3f}°)."
     )

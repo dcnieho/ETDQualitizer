@@ -36,7 +36,7 @@ for e=1:length(eyes)
 end
 eyes = eyes(have_eye);
 % create table we'll fill
-vars = {'eye','target_id','offset','offset_x','offset_y','rms_s2s','rms_s2s_x','rms_s2s_y','std','std_x','std_y','bcea','bcea_orientation','bcea_ax1','bcea_ax2','bcea_aspect_ratio'};
+vars = {'eye','target_id','accuracy','accuracy_x','accuracy_y','rms_s2s','rms_s2s_x','rms_s2s_y','std','std_x','std_y','bcea','bcea_orientation','bcea_ax1','bcea_ax2','bcea_aspect_ratio'};
 if include_data_loss
     vars = [vars {'data_loss','effective_frequency'}];
 end
@@ -53,7 +53,7 @@ for e=1:length(eyes)
 
         dq.eye(oi) = eyes{e};
         dq.target_id(oi) = targets(t);
-        [dq.offset(oi),dq.offset_x(oi),dq.offset_y(oi)]    = dq_calc.accuracy(target_locations(t,1), target_locations(t,2));
+        [dq.accuracy(oi),dq.accuracy_x(oi),dq.accuracy_y(oi)]    = dq_calc.accuracy(target_locations(t,1), target_locations(t,2));
         [dq.rms_s2s(oi),dq.rms_s2s_x(oi),dq.rms_s2s_y(oi)] = dq_calc.precision_RMS_S2S();
         [dq.std(oi),dq.std_x(oi),dq.std_y(oi)] = dq_calc.precision_STD();
         [dq.bcea(oi),dq.bcea_orientation(oi),dq.bcea_ax1(oi),dq.bcea_ax2(oi),dq.bcea_aspect_ratio(oi)] = dq_calc.precision_BCEA();
@@ -65,6 +65,6 @@ for e=1:length(eyes)
 end
 
 if ~advanced
-    to_drop = ~ismember(dq.Properties.VariableNames,{'eye', 'target_id', 'offset', 'rms_s2s', 'std', 'bcea', 'data_loss', 'effective_frequency'});
+    to_drop = ~ismember(dq.Properties.VariableNames,{'eye', 'target_id', 'accuracy', 'rms_s2s', 'std', 'bcea', 'data_loss', 'effective_frequency'});
     dq = removevars(dq,dq.Properties.VariableNames(to_drop));
 end

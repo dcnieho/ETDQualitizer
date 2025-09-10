@@ -572,7 +572,7 @@ DataQuality <- R6Class("DataQuality",
 #'
 #' @return A `data.frame` with one row per eye-target combination, containing computed metrics:
 #'   - `eye`, `target_id`: identifiers
-#'   - `offset`, `offset_x`, `offset_y`: accuracy metrics (`offset_x`, `offset_y` only if `advanced` is `TRUE`)
+#'   - `accuracy`, `accuracy_x`, `accuracy_y`: accuracy metrics (`accuracy_x`, `accuracy_y` only if `advanced` is `TRUE`)
 #'   - `rms_s2s`, `rms_s2s_x`, `rms_s2s_y`: precision (RMS sample-to-sample) (`rms_s2s_x`, `rms_s2s_y` only if `advanced` is `TRUE`)
 #'   - `std`, `std_x`, `std_y`: precision (standard deviation) (`std_x`, `std_y` only if `advanced` is `TRUE`)
 #'   - `bcea`, `bcea_orientation`, `bcea_ax1`, `bcea_ax2`, `bcea_aspect_ratio`: precision (BCEA metrics) (`bcea_orientation`, `bcea_ax1`, `bcea_ax2`, `bcea_aspect_ratio` only if `advanced` is `TRUE`)
@@ -621,7 +621,7 @@ compute_data_quality_from_validation <- function(gaze, unit, screen = NULL, adva
   eyes <- eyes[have_eye]
 
   # Prepare output table
-  vars <- c("eye", "target_id", "offset", "offset_x", "offset_y",
+  vars <- c("eye", "target_id", "accuracy", "accuracy_x", "accuracy_y",
             "rms_s2s", "rms_s2s_x", "rms_s2s_y",
             "std", "std_x", "std_y",
             "bcea", "bcea_orientation", "bcea_ax1", "bcea_ax2", "bcea_aspect_ratio")
@@ -655,7 +655,7 @@ compute_data_quality_from_validation <- function(gaze, unit, screen = NULL, adva
 
       dq$eye[oi] <- eye
       dq$target_id[oi] <- t_id
-      dq[oi, c("offset", "offset_x", "offset_y")] <- dq_calc$accuracy(target_locations[t, 1], target_locations[t, 2])
+      dq[oi, c("accuracy", "accuracy_x", "accuracy_y")] <- dq_calc$accuracy(target_locations[t, 1], target_locations[t, 2])
       dq[oi, c("rms_s2s", "rms_s2s_x", "rms_s2s_y")] <- dq_calc$precision_RMS_S2S()
       dq[oi, c("std", "std_x", "std_y")] <- dq_calc$precision_STD()
       dq[oi, c("bcea", "bcea_orientation", "bcea_ax1", "bcea_ax2", "bcea_aspect_ratio")] <- dq_calc$precision_BCEA()
@@ -669,7 +669,7 @@ compute_data_quality_from_validation <- function(gaze, unit, screen = NULL, adva
 
   # Drop advanced metrics if not requested
   if (!advanced) {
-    keep_vars <- c("eye", "target_id", "offset", "rms_s2s", "std", "bcea")
+    keep_vars <- c("eye", "target_id", "accuracy", "rms_s2s", "std", "bcea")
     if (include_data_loss) {
       keep_vars <- c(keep_vars, "data_loss", "effective_frequency")
     }
@@ -685,7 +685,7 @@ compute_data_quality_from_validation <- function(gaze, unit, screen = NULL, adva
 #' This function summarizes data quality metrics from a validation procedure by computing averages per participant and generating descriptive statistics across participants.
 #' It also returns a formatted textual summary suitable for reporting.
 #'
-#' @param dq_table A `data.frame` containing data quality metrics. Must include columns `file`, `eye`, `target_id`, and relevant numeric metrics such as `offset`, `rms_s2s`, and `std`.
+#' @param dq_table A `data.frame` containing data quality metrics. Must include columns `file`, `eye`, `target_id`, and relevant numeric metrics such as `accuracy`, `rms_s2s`, and `std`.
 #'  This would generally be created by concatenating the output of the compute_data_quality_from_validation() for multiple files.
 #'
 #' @return A named list with two elements:
@@ -735,7 +735,7 @@ report_data_quality_table <- function(dq_table) {
   txt <- sprintf(
     "For %d participants, the average inaccuracy in the data determined from a %d-point validation procedure using ETDQualitizer v%s (Niehorster et al., in prep) was %.2f\u00b0 (SD=%.2f\u00b0, range=%.2f\u00b0--%.2f\u00b0). Average RMS-S2S precision was %.3f\u00b0 (SD=%.3f\u00b0, range=%.3f\u00b0--%.3f\u00b0) and STD precision %.3f\u00b0 (SD=%.3f\u00b0, range=%.3f\u00b0--%.3f\u00b0).",
     n_subj, n_target, version,
-    measures$mean["offset"], measures$std["offset"], measures$min["offset"], measures$max["offset"],
+    measures$mean["accuracy"], measures$std["accuracy"], measures$min["accuracy"], measures$max["accuracy"],
     measures$mean["rms_s2s"], measures$std["rms_s2s"], measures$min["rms_s2s"], measures$max["rms_s2s"],
     measures$mean["std"], measures$std["std"], measures$min["std"], measures$max["std"]
   )
