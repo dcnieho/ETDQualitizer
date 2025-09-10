@@ -8,7 +8,7 @@
     <meta http-equiv="expires" content="0">
     <meta http-equiv="pragma" content="no-cache">
     <!-- end force no cahche-->
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.27.3/full/pyodide.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.28.2/full/pyodide.js"></script>
     <title>ETDQualitizer</title>
     <link rel="stylesheet" href="etdqualitizer.css">
   </head>
@@ -23,8 +23,8 @@
       <ol>
       <li>Select one or more files for which you want to calculate data quality</li>
       <li>Enter the geometry of your setup</li>
-      <li>Calculate the data quality measures by clicking the “Do it” button.</li>
-      <li>Once calculated, a table with the results will appear on this page, and it can be downloaded by clicking “<a id="linkdl2" onclick="nodataYet()" href="#">download CSV</a>”.</li>
+      <li>Calculate the data quality measures by clicking the “Calculate” button. Optionally data quality can be calculated per validation target per file as well (default off, use checkbox next to Calculate)</li>
+      <li>Once calculated, a table with the results will appear on this page, and it can be downloaded by clicking “<a id="linkdl2" onclick="nodataYet()" href="#">download results</a>”.</li>
       </ol>
       <span id="etdqVersion">Version loaded: ...</span>
       <br/><br/>
@@ -40,18 +40,6 @@
         <input id="bestand" style="display:none;" type="file" disabled multiple>
       </div>
     </div>
-    <div id="knop2" style="top:180px; position: relative">
-      <div id="knopadd">
-        <label for="bestandadd" id="lblbestandadd" style="background-color:dimgray; color:darkgray; padding: 10px; width: 130px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Add Data File(s)</label>
-        <input id="bestandadd" style="display:none;" type="file" disabled multiple>
-      </div>
-    </div> 
-    <div id="knop3" style="top:200px; position: relative">
-      <div id="knopreplace">
-        <label for="bestandreplace" id="lblbestandreplace" style="background-color:dimgray; color:darkgray; padding: 10px; width: 150px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Replace Data File(s)</label>
-        <input id="bestandreplace" style="display:none;" type="file" disabled multiple>
-      </div>
-    </div>  
     <div id="lijst" style="top: 210px; position: relative; font-style: italic;">Files:</div>
 
     <div id="screenparams" style="top:230px; position: relative;"><b>Setup measurements:</b><br/>
@@ -61,22 +49,43 @@
       <label for="screenypixm" id="lblscreenypix" style="display: inline-block; width:280px;">Screen resolution, vertical, in pixels: </label><input type="number" id="screenypix" step="1.0" value="1080" style="position: relative; left:20px;"><br/>
       <label for="screendist" id="lblscreendist" style="display: inline-block; width:280px;">Distance to screen in mm: </label><input type="number" id="screendist" step="0.1" value="650.0" style="position: relative; left:20px;"><br/>
     </div>
-    <div id="knop2" style="top:250px; position: relative">
+    <div id="knop4" style="top:250px; position: relative">
       <div id="knopdoehet">
-        <label for="doehet" id="lbldoehet" style="background-color: darkgray; color: lightgray; padding: 10px; width: 35px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Do it</label>
+        <label for="doehet" id="lbldoehet" style="background-color: darkgray; color: lightgray; padding: 10px; width: 65px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Calculate</label>
         <input id="doehet" style="display:none;" type="button" disabled>
       </div>
+      <div style="top:-45px; left:100px; position: relative;">
+        <label for="toggle" id="toggleLabel" style="background-color: darkgray; color: lightgray; padding: 10px; width: 170px; height: 25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0,0,0,0.6); border-radius: 7px; text-align:center; cursor:pointer;">per validation target &#10006;</label>
+        <input type="checkbox" id="toggle" style="display:none;" checked="false">
+      </div>
+      <div id="downloadbestand" style="top:-90px; left:305px; position: relative;">
+        <label for="dlknop" id="lbldl" style="background-color: darkgray; color: lightgray; padding: 10px; width: 125px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Download results</label>
+        <input id="dlknop" style="display:none;" type="button" onclick="tableToCSV()" disabled>
+      </div>
     </div>
-    <div id="downloadbestand" style="top:280px; position: relative;">
-      <label for="dlknop" id="lbldl" style="background-color: darkgray; color: lightgray; padding: 10px; width: 105px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Download CSV</label>
-      <input id="dlknop" style="display:none;" type="button" onclick="tableToCSV()" disabled>
-    </div>
-    <div id="resheader" style="top: 300px; position: relative;">A data quality table will appear below (<a id="linkdl1" onclick="nodataYet()" href="#">downloable as CSV</a>):<br/></div>
-    <div id="resultaat" style="top: 310px; position: relative;">&nbsp;</div>
-    <div id="inhoudbestand" style="top:320px; position: relative; display: none; height: 1px; width: 1px;">this should show content of the data file after loading (will disappear under the hood later)</div>
+    
+    <div id="resultaat" style="top: 240px; position: relative;">&nbsp;</div>
+    <div id="inhoudbestand" style="top:290px; position: relative; display: none; height: 1px; width: 1px;">this should show content of the data file after loading (will disappear under the hood later)</div>
     
     <script src="etdqualitizer.js"></script>
     <script>
+        let raw_checked = false;
+        const toggle = document.getElementById("toggle");
+        const lbltoggle = document.getElementById("toggleLabel");
+
+        toggle.addEventListener("change", () => {
+            raw_checked = toggle.checked;
+            if (raw_checked) {
+                lbltoggle.innerHTML = "per validation target &#10004;"; // checkmark
+                lbltoggle.style.backgroundColor = "orange";
+                lbltoggle.style.color = "white";
+            } else {
+                lbltoggle.innerHTML = "per validation target &#10006;"; // cross
+                lbltoggle.style.backgroundColor = "darkgray";
+                lbltoggle.style.color = "lightgray";
+            }
+        });
+
         function nodataYet() {
           alert("Select data first, then Do it, then download it");
           console.log("Select data first, then Do it, then download it");
@@ -88,8 +97,8 @@
         }
 
         const bestanden = document.getElementById('bestand');
-        const bestandenadd = document.getElementById('bestandadd');
-        const bestandenreplace = document.getElementById('bestandreplace');
+        // const bestandenadd = document.getElementById('bestandadd');
+        // const bestandenreplace = document.getElementById('bestandreplace');
         const doit = document.getElementById('doehet');
         const dldata = document.getElementById('dlknop');
         const inhoudbestanden = document.getElementById('inhoudbestand');
@@ -108,8 +117,13 @@
         
         // this button function loads the data and puts in a hidden div to be retrieved by the do it button
         bestanden.addEventListener("change", () => {
-          // clear the filelist
+          // clear the filelist etc every time button is pressed
           bestandlijst.innerHTML ='Loaded files:<br/>';
+          resblokbig.innerHTML = '';
+          dldata.disabled = false;
+          document.getElementById('lbldl').style.backgroundColor ="darkgrey";
+          document.getElementById('lbldl').style.color = "lightgrey";
+          inhoudbestanden.innerHTML = '';
           const files = bestanden.files;
           Array.from(files).forEach((file) => {
             const reader = new FileReader();
@@ -134,96 +148,25 @@
           document.getElementById('lbldoehet').style.backgroundColor = "green";
           document.getElementById('lbldoehet').style.color = "white";
           doit.disabled = false;
-          bestandenadd.disabled = false;
-          document.getElementById('lblbestandadd').style.backgroundColor = "cadetblue";
-          document.getElementById('lblbestandadd').style.color = "aliceblue";
-          bestandenreplace.disabled = false;
-          document.getElementById('lblbestandreplace').style.backgroundColor = "cadetblue";
-          document.getElementById('lblbestandreplace').style.color = "aliceblue";
+        //   bestandenadd.disabled = false;
+        //   document.getElementById('lblbestandadd').style.backgroundColor = "cadetblue";
+        //   document.getElementById('lblbestandadd').style.color = "aliceblue";
+        //   bestandenreplace.disabled = false;
+        //   document.getElementById('lblbestandreplace').style.backgroundColor = "cadetblue";
+        //   document.getElementById('lblbestandreplace').style.color = "aliceblue";
         //   return fileContent;
         //   return reader;
-          bestanden.disabled = true;
-          document.getElementById('lblbestand').style.backgroundColor = "dimgray";
-          document.getElementById('lblbestand').style.color = "darkgray";
+        //   bestanden.disabled = true;
+        //   document.getElementById('lblbestand').style.backgroundColor = "dimgray";
+        //   document.getElementById('lblbestand').style.color = "darkgray";
           
-        });
-
-        bestandenadd.addEventListener("change", () => {
-          // clear the filelist
-          // bestandlijst.innerHTML ='Loaded files:<br/>';
-          const files = bestandenadd.files;
-          Array.from(files).forEach((file) => {
-            const reader = new FileReader();
-
-            reader.onload = (event) => {
-              const fileContent = event.target.result;
-
-              // Display content (for text files) and file list
-              const datablok = document.createElement("div");
-              const bestandsnaam = document.createElement("div");
-              datablok.innerHTML = `<h4>${file.name}</h4><pre>${fileContent}</pre>`;
-              bestandsnaam.innerHTML = `${file.name}`;
-              inhoudbestanden.appendChild(datablok);
-              bestandlijst.appendChild(bestandsnaam);
-            };
-            reader.onerror = (error) => {
-              console.error("Error reading file:", error);
-            };
-            // Read the file as text
-            reader.readAsText(file);
-          });
-          document.getElementById('lbldoehet').style.backgroundColor = "green";
-          document.getElementById('lbldoehet').style.color = "white";
-          doit.disabled = false;
-          document.getElementById('lbldl').style.backgroundColor = "darkgray";
-          document.getElementById('lbldl').style.color = "lightgray";
-          document.getElementById('linkdl1').onclick = dataAddedReplaced;
-          document.getElementById('linkdl2').onclick = dataAddedReplaced;
-          dldata.disabled = true;
-        //   return fileContent;
-        //   return reader;
-        });
-
-        bestandenreplace.addEventListener("change", () => {
-          // clear the filelist
-          bestandlijst.innerHTML ='Loaded files:<br/>';
-          inhoudbestanden.innerHTML = '';
-          resoutput.innerHTML = '';
-          const files = bestandenreplace.files;
-          Array.from(files).forEach((file) => {
-            const reader = new FileReader();
-
-            reader.onload = (event) => {
-              const fileContent = event.target.result;
-
-              // Display content (for text files) and file list
-              const datablok = document.createElement("div");
-              const bestandsnaam = document.createElement("div");
-              datablok.innerHTML = `<h4>${file.name}</h4><pre>${fileContent}</pre>`;
-              bestandsnaam.innerHTML = `${file.name}`;
-              inhoudbestanden.appendChild(datablok);
-              bestandlijst.appendChild(bestandsnaam);
-            };
-            reader.onerror = (error) => {
-              console.error("Error reading file:", error);
-            };
-            // Read the file as text
-            reader.readAsText(file);
-          });
-          document.getElementById('lbldoehet').style.backgroundColor = "green";
-          document.getElementById('lbldoehet').style.color = "white";
-          doit.disabled = false;
-          document.getElementById('lbldl').style.backgroundColor = "darkgray";
-          document.getElementById('lbldl').style.color = "lightgray";
-          document.getElementById('linkdl1').onclick = dataAddedReplaced;
-          document.getElementById('linkdl2').onclick = dataAddedReplaced;
-          dldata.disabled = true;
-        //   return fileContent;
-        //   return reader;
         });
 
         doit.addEventListener("click", () => {
           document.getElementById('lbldoehet').style.backgroundColor = "orange";
+          document.getElementById('lbldl').style.backgroundColor ="darkgrey";
+          document.getElementById('lbldl').style.color = "lightgray";
+          dldata.disabled = true;
 
           setTimeout(() => {
           datteksten = document.getElementsByTagName('pre');
@@ -275,7 +218,7 @@
             print(curfile)
             gaze = pd.read_csv(StringIO(tsv_data), sep='\t', dtype=defaultdict(lambda: float, {'target_id': int, 'tar_x': int, 'tar_y': int}))
 
-            dq_df = ETDQualitizer.compute_data_quality_from_validation(gaze, 'pixels', screen, advanced=False)
+            dq_df = ETDQualitizer.compute_data_quality_from_validation(gaze, 'pixels', screen, advanced=False, include_data_loss=True) 
             all_dfs[curfile] = dq_df
 
             dq_html = dq_df.to_html()
@@ -285,6 +228,12 @@
             all_df = pd.concat(all_dfs, names=['file'])
             all_df_html = all_df.to_html()
             all_df_csv = all_df.to_csv()
+
+            dq_txt, summary_dq = ETDQualitizer.report_data_quality_table(all_df)
+            dq_txt_html = dq_txt
+            summary_dq_sum_html = summary_dq['summary'].to_html()
+            summary_dq_all_html = summary_dq['all'].to_html()
+            summary_dq_all_csv = summary_dq['all'].to_csv()
             `;
             // =======================================
           
@@ -298,22 +247,38 @@
 
                 if (i == (max-1)) {
                   const resultConcat = pyodide.runPython(pythonCodeConcat);
-                  resblokbig.innerHTML = `<h3>Data quality results :</h3>` + pyodide.globals.get('all_df_html');
+                  if (raw_checked) {
+                    resblokbig.innerHTML = `<h3>Data quality:</h3>`
+                    + '<h3>Summary:</h3><p>'
+                    + pyodide.globals.get('dq_txt_html')
+                    // + '</p><h3>Summary Table:</h3>'
+                    // + pyodide.globals.get('summary_dq_sum_html') 
+                    + '</p><h3>Per file per validation target results:</h3>' 
+                    + pyodide.globals.get('all_df_html');
+                  } else {
+                    resblokbig.innerHTML = `<h3>Data quality:</h3>`
+                    + '<h3>Summary:</h3><p>'
+                    + pyodide.globals.get('dq_txt_html')
+                    + '</p><h3>Summary Table:</h3>'
+                    + pyodide.globals.get('summary_dq_sum_html') 
+                    + '</p><h3>Per file results:</h3>' 
+                    + pyodide.globals.get('summary_dq_all_html');
+                  }
                   resoutput.appendChild(resblokbig);
-                  cleanupHTMLtableheader();
                   dldata.disabled = false;
-                  document.getElementById('lbldoehet').style.backgroundColor = "darkgrey";
-                  document.getElementById('linkdl1').onclick = tableToCSV;
+                  document.getElementById('lbldoehet').style.backgroundColor = "green";
                   document.getElementById('linkdl2').onclick = tableToCSV;
                   document.getElementById('lbldl').style.backgroundColor ="green";
                   document.getElementById('lbldl').style.color = "white";
-                  
+                  bestanden.disabled = false;
+                  document.getElementById('lblbestand').style.backgroundColor ='cadetblue';
+                  document.getElementById('lblbestand').style.color ='aliceblue';
                 }
             } catch (err) {
                 resoutput.innerHTML = `Error: ${err}`;
             }
           }
-        },10)
+        },30)
         });
 
         function tableToCSV() {
@@ -321,7 +286,12 @@
             // Variable to store the final csv data
             let csv_data = [];
 
-            csv_data = pyodide.globals.get('all_df_csv');
+            if (raw_checked){
+                csv_data = pyodide.globals.get('all_df_csv');
+            } else {
+                csv_data = pyodide.globals.get('summary_dq_all_csv');
+            }
+            console.log(csv_data);
 
             // Call this function to download csv file  
             downloadCSVFile(csv_data);
@@ -341,7 +311,11 @@
             let temp_link = document.createElement('a');
 
             // Download csv file
-            temp_link.download = "qualitydata.csv";
+            if (raw_checked){
+                temp_link.download = "qualitydata_per_file_per_target.csv";
+            } else {
+                temp_link.download = "qualitydata_per_file.csv";
+            }
             let url = window.URL.createObjectURL(CSVFile);
             temp_link.href = url;
 

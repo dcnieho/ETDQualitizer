@@ -51,6 +51,10 @@ table tfoot td {
   font-size: 14px;
 }
 
+p {
+  width: 850px;
+}
+
 h4 {
     visibility: hidden;
     height: 1px;
