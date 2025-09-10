@@ -584,6 +584,9 @@ DataQuality <- R6Class("DataQuality",
 #'
 #' @examples
 #' \dontrun{
+#' # NB: this example requires a gaze data table to run. See the complete example at
+#' # https://github.com/dcnieho/ETDQualitizer/blob/master/example/R.R for how to prepare
+#' # the input data for this function
 #' dq <- compute_data_quality_from_validation(gaze_data, unit = "pixels", screen = my_screen_config)
 #' }
 #'
@@ -704,6 +707,9 @@ compute_data_quality_from_validation <- function(gaze, unit, screen = NULL, adva
 #'
 #' @examples
 #' \dontrun{
+#' # NB: this example requires a gaze data table to run. See the complete example at
+#' # https://github.com/dcnieho/ETDQualitizer/blob/master/example/R.R for how to prepare
+#' # the input data for this function
 #' result <- report_data_quality_table(dq_table)
 #' cat(result$txt)
 #' head(result$measures$all)

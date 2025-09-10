@@ -7,7 +7,7 @@
 report_data_quality_table(dq_table)
 }
 \arguments{
-\item{dq_table}{A `data.frame` containing data quality metrics. Must include columns `file`, `eye`, `target_id`, and relevant numeric metrics such as `offset`, `rms_s2s`, and `std`.
+\item{dq_table}{A `data.frame` containing data quality metrics. Must include columns `file`, `eye`, `target_id`, and relevant numeric metrics such as `accuracy`, `rms_s2s`, and `std`.
 This would generally be created by concatenating the output of the compute_data_quality_from_validation() for multiple files.}
 }
 \value{
@@ -31,6 +31,9 @@ The summary text excludes BCEA and data loss metrics. BCEA is considered a niche
 }
 \examples{
 \dontrun{
+# NB: this example requires a gaze data table to run. See the complete example at
+# https://github.com/dcnieho/ETDQualitizer/blob/master/example/R.R for how to prepare
+# the input data for this function
 result <- report_data_quality_table(dq_table)
 cat(result$txt)
 head(result$measures$all)

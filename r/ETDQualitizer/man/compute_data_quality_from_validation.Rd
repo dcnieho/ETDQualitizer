@@ -29,7 +29,7 @@ Required if `unit == "pixels"`.}
 \value{
 A `data.frame` with one row per eye-target combination, containing computed metrics:
   - `eye`, `target_id`: identifiers
-  - `offset`, `offset_x`, `offset_y`: accuracy metrics (`offset_x`, `offset_y` only if `advanced` is `TRUE`)
+  - `accuracy`, `accuracy_x`, `accuracy_y`: accuracy metrics (`accuracy_x`, `accuracy_y` only if `advanced` is `TRUE`)
   - `rms_s2s`, `rms_s2s_x`, `rms_s2s_y`: precision (RMS sample-to-sample) (`rms_s2s_x`, `rms_s2s_y` only if `advanced` is `TRUE`)
   - `std`, `std_x`, `std_y`: precision (standard deviation) (`std_x`, `std_y` only if `advanced` is `TRUE`)
   - `bcea`, `bcea_orientation`, `bcea_ax1`, `bcea_ax2`, `bcea_aspect_ratio`: precision (BCEA metrics) (`bcea_orientation`, `bcea_ax1`, `bcea_ax2`, `bcea_aspect_ratio` only if `advanced` is `TRUE`)
@@ -47,6 +47,9 @@ This function uses the following methods in the `DataQuality` class to compute t
 }
 \examples{
 \dontrun{
+# NB: this example requires a gaze data table to run. See the complete example at
+# https://github.com/dcnieho/ETDQualitizer/blob/master/example/R.R for how to prepare
+# the input data for this function
 dq <- compute_data_quality_from_validation(gaze_data, unit = "pixels", screen = my_screen_config)
 }
 
