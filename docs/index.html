@@ -21,10 +21,10 @@
       This tool below allows you to calculate data quality for validations, collected with <a href="https://github.com/dcnieho/ETDQualitizer/tree/master/python/ETDQualitizer/stim" target="_blank">our PsychoPy procedure</a>,
       locally in your browser (data is not uploaded to the cloud). Do as follows:
       <ol>
-      <li>Select one or more files for which you want to calculate data quality</li>
-      <li>Enter the geometry of your setup</li>
-      <li>Calculate the data quality measures by clicking the “Calculate” button. Optionally data quality can be calculated per validation target per file as well (default off, use checkbox next to Calculate)</li>
-      <li>Once calculated, a table with the results will appear on this page, and it can be downloaded by clicking “<a id="linkdl2" onclick="nodataYet()" href="#">download results</a>”.</li>
+      <li>Select one or more files for which you want to calculate data quality (Once a selection is made, you can add files to/fully replace the current list of loaded files).</li>
+      <li>Enter the geometry of your setup.</li>
+      <li>Calculate the data quality measures by clicking the “Calculate” button. Optionally data quality can be calculated per validation target per file as well (default off, use checkbox next to Calculate).</li>
+      <li>Once calculated, a table with the results will appear on this page, and it can be downloaded by clicking “<a id="linkdl2" onclick="noDataYet()" href="#">download results</a>”.</li>
       </ol>
       <span id="etdqVersion">Version loaded: ...</span>
       <br/><br/>
@@ -39,17 +39,25 @@
         <label for="bestand" id="lblbestand" style="background-color:dimgray; color:darkgray; padding: 10px; width: 130px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Select Data File(s)</label>
         <input id="bestand" style="display:none;" type="file" disabled multiple>
       </div>
+      <div id="knopadd" style="top:-45px; left:165px; position: relative;">
+        <label for="bestandadd" id="lblbestandadd" style="background-color:dimgray; color:darkgray; padding: 10px; width: 130px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Add Data File(s)</label>
+        <input id="bestandadd" style="display:none;" type="file" disabled multiple>
+      </div>
+      <div id="knopreplace" style="top:-90px; left:330px; position: relative;">
+        <label for="bestandreplace" id="lblbestandreplace" style="background-color:dimgray; color:darkgray; padding: 10px; width: 150px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Replace Data File(s)</label>
+        <input id="bestandreplace" style="display:none;" type="file" disabled multiple>
+      </div>
     </div>
-    <div id="lijst" style="top: 210px; position: relative; font-style: italic;">Files:</div>
+    <div id="lijst" style="top:100px; position: relative; font-style: italic;">Files:</div>
 
-    <div id="screenparams" style="top:230px; position: relative;"><b>Setup measurements:</b><br/>
+    <div id="screenparams" style="top:130px; position: relative;"><b>Setup measurements:</b><br/>
       <label for="screenxmm" id="lblscreenxmm" style="display: inline-block; width:280px;">Screen size, horizontal, in mm: </label><input type="number" id="screenxmm" step="0.1" value="528.0" style="position: relative; left:20px;"><br/>
       <label for="screenymm" id="lblscreenymm" style="display: inline-block; width:280px;">Screen size, vertical, in mm: </label><input type="number" id="screenymm" step="0.1" value="269.9" style="position: relative; left:20px;"><br/>
       <label for="screenxpix" id="lblscreenxpix" style="display: inline-block; width:280px;">Screen resolution, horizontal, in pixels: </label><input type="number" id="screenxpix" step="1.0" value="1920" style="position: relative; left:20px;"><br/>
       <label for="screenypixm" id="lblscreenypix" style="display: inline-block; width:280px;">Screen resolution, vertical, in pixels: </label><input type="number" id="screenypix" step="1.0" value="1080" style="position: relative; left:20px;"><br/>
       <label for="screendist" id="lblscreendist" style="display: inline-block; width:280px;">Distance to screen in mm: </label><input type="number" id="screendist" step="0.1" value="650.0" style="position: relative; left:20px;"><br/>
     </div>
-    <div id="knop4" style="top:250px; position: relative">
+    <div id="knop4" style="top:160px; position: relative">
       <div id="knopdoehet">
         <label for="doehet" id="lbldoehet" style="background-color: darkgray; color: lightgray; padding: 10px; width: 65px; height:25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6); border-radius: 7px;">Calculate</label>
         <input id="doehet" style="display:none;" type="button" disabled>
@@ -64,41 +72,20 @@
       </div>
     </div>
     
-    <div id="resultaat" style="top: 240px; position: relative;">&nbsp;</div>
-    <div id="inhoudbestand" style="top:290px; position: relative; display: none; height: 1px; width: 1px;">this should show content of the data file after loading (will disappear under the hood later)</div>
+    <div id="resultaat" style="top: 80px; position: relative;">&nbsp;</div>
+    <div id="inhoudbestand" style="top:1000px; position: relative; display: none; height: 1px; width: 1px;">this should show content of the data file after loading (will disappear under the hood later)</div>
     
     <script src="etdqualitizer.js"></script>
     <script>
+        // set parameters
         let raw_checked = false;
+        let calculated = false;
+        // get elements
         const toggle = document.getElementById("toggle");
         const lbltoggle = document.getElementById("toggleLabel");
-
-        toggle.addEventListener("change", () => {
-            raw_checked = toggle.checked;
-            if (raw_checked) {
-                lbltoggle.innerHTML = "per validation target &#10004;"; // checkmark
-                lbltoggle.style.backgroundColor = "orange";
-                lbltoggle.style.color = "white";
-            } else {
-                lbltoggle.innerHTML = "per validation target &#10006;"; // cross
-                lbltoggle.style.backgroundColor = "darkgray";
-                lbltoggle.style.color = "lightgray";
-            }
-        });
-
-        function nodataYet() {
-          alert("Select data first, then Do it, then download it");
-          console.log("Select data first, then Do it, then download it");
-        }
-
-        function dataAddedReplaced() {
-          alert("You added or replaced data, first run Do it again.");
-          console.log("You added or replaced data, first run Do it again.");
-        }
-
         const bestanden = document.getElementById('bestand');
-        // const bestandenadd = document.getElementById('bestandadd');
-        // const bestandenreplace = document.getElementById('bestandreplace');
+        const bestandenadd = document.getElementById('bestandadd');
+        const bestandenreplace = document.getElementById('bestandreplace');
         const doit = document.getElementById('doehet');
         const dldata = document.getElementById('dlknop');
         const inhoudbestanden = document.getElementById('inhoudbestand');
@@ -110,19 +97,66 @@
         const screenypix = document.getElementById('screenypix').value;
         const screendist = document.getElementById('screendist').value;
         const resblokbig = document.createElement("div");
+        // clean start
         resblokbig.innerHTML = '';
         let fileContent = '';
         let tekst = '';
         let result = '';
+ 
+        // per file / per file per target toggle
+        toggle.addEventListener("change", () => {
+            raw_checked = toggle.checked;
+            if (raw_checked) {
+                lbltoggle.innerHTML = "per validation target &#10004;"; // checkmark
+                lbltoggle.style.backgroundColor = "orange";
+                lbltoggle.style.color = "white";
+                // if already calculated also toggle results, otherwise just toggle button + status
+                if (calculated) {
+                  resblokbig.innerHTML = '';
+                  resblokbig.innerHTML = `<h3>Data quality:</h3>`
+                  + '<h3>Summary:</h3><p>'
+                  + pyodide.globals.get('dq_txt_html')
+                  + '</p><h3>Per file per validation target results:</h3>' 
+                  + pyodide.globals.get('all_df_html');
+                }
+            } else {
+                lbltoggle.innerHTML = "per validation target &#10006;"; // cross
+                lbltoggle.style.backgroundColor = "darkgray";
+                lbltoggle.style.color = "lightgray";
+                // if already calculated also toggle results, otherwise just toggle button + status
+                if (calculated) {
+                  resblokbig.innerHTML = '';
+                  resblokbig.innerHTML = `<h3>Data quality:</h3>`
+                  + '<h3>Summary:</h3><p>'
+                  + pyodide.globals.get('dq_txt_html')
+                  + '</p><h3>Summary Table:</h3>'
+                  + pyodide.globals.get('summary_dq_sum_html') 
+                  + '</p><h3>Per file results:</h3>' 
+                  + pyodide.globals.get('summary_dq_all_html');
+                }
+            }
+        });
+
+        // to prevent errors when clicking calculate before data is available
+        function noDataYet() {
+          alert("Select files first, then Calculate, then download");
+          console.log("Select files first, then Calculate, then download");
+        }
+
+        // to prevent errors when click linked test after file addition /replacement
+        function dataAddedReplaced() {
+          alert("You added or replaced data, first run Calculate again, then download results.");
+          console.log("You added or replaced data, first run Calculate again, then download results.");
+        }
         
-        // this button function loads the data and puts in a hidden div to be retrieved by the do it button
+        // this button function loads the data and puts in a hidden div to be retrieved by the calculate button
         bestanden.addEventListener("change", () => {
           // clear the filelist etc every time button is pressed
           bestandlijst.innerHTML ='Loaded files:<br/>';
           resblokbig.innerHTML = '';
-          dldata.disabled = false;
-          document.getElementById('lbldl').style.backgroundColor ="darkgrey";
-          document.getElementById('lbldl').style.color = "lightgrey";
+          // dldata.disabled = false;
+          // document.getElementById('lbldl').style.backgroundColor ="darkgrey";
+          // document.getElementById('lbldl').style.color = "lightgrey";
           inhoudbestanden.innerHTML = '';
           const files = bestanden.files;
           Array.from(files).forEach((file) => {
@@ -148,153 +182,242 @@
           document.getElementById('lbldoehet').style.backgroundColor = "green";
           document.getElementById('lbldoehet').style.color = "white";
           doit.disabled = false;
-        //   bestandenadd.disabled = false;
-        //   document.getElementById('lblbestandadd').style.backgroundColor = "cadetblue";
-        //   document.getElementById('lblbestandadd').style.color = "aliceblue";
-        //   bestandenreplace.disabled = false;
-        //   document.getElementById('lblbestandreplace').style.backgroundColor = "cadetblue";
-        //   document.getElementById('lblbestandreplace').style.color = "aliceblue";
-        //   return fileContent;
-        //   return reader;
-        //   bestanden.disabled = true;
-        //   document.getElementById('lblbestand').style.backgroundColor = "dimgray";
-        //   document.getElementById('lblbestand').style.color = "darkgray";
+          bestandenadd.disabled = false;
+          document.getElementById('lblbestandadd').style.backgroundColor = "cadetblue";
+          document.getElementById('lblbestandadd').style.color = "aliceblue";
+          bestandenreplace.disabled = false;
+          document.getElementById('lblbestandreplace').style.backgroundColor = "cadetblue";
+          document.getElementById('lblbestandreplace').style.color = "aliceblue";
+          return fileContent;
+          bestanden.disabled = true;
+          document.getElementById('lblbestand').style.backgroundColor = "dimgray";
+          document.getElementById('lblbestand').style.color = "darkgray";
+          dldata.disabled = true;
           
+        });
+
+        bestandenadd.addEventListener("change", () => {
+          // clear the filelist
+          // bestandlijst.innerHTML ='Loaded files:<br/>';
+          resblokbig.innerHTML = '';
+          const files = bestandenadd.files;
+          Array.from(files).forEach((file) => {
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+              const fileContent = event.target.result;
+
+              // Display content (for text files) and file list
+              const datablok = document.createElement("div");
+              const bestandsnaam = document.createElement("div");
+              datablok.innerHTML = `<h4>${file.name}</h4><pre>${fileContent}</pre>`;
+              bestandsnaam.innerHTML = `${file.name}`;
+              inhoudbestanden.appendChild(datablok);
+              bestandlijst.appendChild(bestandsnaam);
+            };
+            reader.onerror = (error) => {
+              console.error("Error reading file:", error);
+            };
+            // Read the file as text
+            reader.readAsText(file);
+          });
+          document.getElementById('lbldoehet').style.backgroundColor = "green";
+          document.getElementById('lbldoehet').style.color = "white";
+          doit.disabled = false;
+          document.getElementById('lbldl').style.backgroundColor = "darkgray";
+          document.getElementById('lbldl').style.color = "lightgray";
+          // document.getElementById('linkdl1').onclick = dataAddedReplaced;
+          document.getElementById('linkdl2').onclick = dataAddedReplaced;
+          dldata.disabled = true;
+        });
+
+        bestandenreplace.addEventListener("change", () => {
+          // clear the filelist
+          bestandlijst.innerHTML ='Loaded files:<br/>';
+          inhoudbestanden.innerHTML = '';
+          resblokbig.innerHTML = '';
+          const files = bestandenreplace.files;
+          Array.from(files).forEach((file) => {
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+              const fileContent = event.target.result;
+
+              // Display content (for text files) and file list
+              const datablok = document.createElement("div");
+              const bestandsnaam = document.createElement("div");
+              datablok.innerHTML = `<h4>${file.name}</h4><pre>${fileContent}</pre>`;
+              bestandsnaam.innerHTML = `${file.name}`;
+              inhoudbestanden.appendChild(datablok);
+              bestandlijst.appendChild(bestandsnaam);
+            };
+            reader.onerror = (error) => {
+              console.error("Error reading file:", error);
+            };
+            // Read the file as text
+            reader.readAsText(file);
+          });
+          document.getElementById('lbldoehet').style.backgroundColor = "green";
+          document.getElementById('lbldoehet').style.color = "white";
+          doit.disabled = false;
+          document.getElementById('lbldl').style.backgroundColor = "darkgray";
+          document.getElementById('lbldl').style.color = "lightgray";
+          // document.getElementById('linkdl1').onclick = dataAddedReplaced;
+          document.getElementById('linkdl2').onclick = dataAddedReplaced;
+          dldata.disabled = true;
         });
 
         doit.addEventListener("click", () => {
-          document.getElementById('lbldoehet').style.backgroundColor = "orange";
-          document.getElementById('lbldl').style.backgroundColor ="darkgrey";
-          document.getElementById('lbldl').style.color = "lightgray";
-          dldata.disabled = true;
 
-          setTimeout(() => {
-          datteksten = document.getElementsByTagName('pre');
-          bestandsnamen = document.getElementsByTagName('H4');
+            // set button to orange while calculating, and trigger rest of code a few ms later to allow this animation
+            document.getElementById('lbldoehet').style.backgroundColor = "orange";
+            document.getElementById('lbldl').style.backgroundColor ="darkgrey";
+            document.getElementById('lbldl').style.color = "lightgray";
+            dldata.disabled = true;
 
-          const pythonCodeInit = `
-            # run this stuff once ===
-            import pathlib
-            import numpy as np
-            import pandas as pd
-            from io import StringIO
-            from collections import defaultdict
+            // actual code, slightly timed-out        
+            setTimeout(() => {
+            datteksten = document.getElementsByTagName('pre');
+            bestandsnamen = document.getElementsByTagName('H4');
+            
+            // initialize python code before first file
+            const pythonCodeInit = `
+              # run this stuff once ===
+              import pathlib
+              import numpy as np
+              import pandas as pd
+              from io import StringIO
+              from collections import defaultdict
 
-            import ETDQualitizer
+              import ETDQualitizer
 
-            from importlib.metadata import version
-            etdqver = version('ETDQualitizer')
+              from importlib.metadata import version
+              etdqver = version('ETDQualitizer')
 
-            # screen = ETDQualitizer.ScreenConfiguration(screen_size_x_mm = 528.0, screen_size_y_mm = 296.9997253417969, screen_res_x_pix = 1920, screen_res_y_pix = 1080, viewing_distance_mm = 650)
-            screen_size_x_mm = float(screen_size_x_mm)
-            screen_size_y_mm = float(screen_size_y_mm)
-            screen_res_x_pix = float(screen_res_x_pix)
-            screen_res_y_pix = float(screen_res_y_pix)
-            viewing_distance_mm = float(viewing_distance_mm)
-            screen = ETDQualitizer.ScreenConfiguration(screen_size_x_mm, screen_size_y_mm, screen_res_x_pix, screen_res_y_pix, viewing_distance_mm)
+              # screen = ETDQualitizer.ScreenConfiguration(screen_size_x_mm = 528.0, screen_size_y_mm = 296.9997253417969, screen_res_x_pix = 1920, screen_res_y_pix = 1080, viewing_distance_mm = 650)
+              screen_size_x_mm = float(screen_size_x_mm)
+              screen_size_y_mm = float(screen_size_y_mm)
+              screen_res_x_pix = float(screen_res_x_pix)
+              screen_res_y_pix = float(screen_res_y_pix)
+              viewing_distance_mm = float(viewing_distance_mm)
+              screen = ETDQualitizer.ScreenConfiguration(screen_size_x_mm, screen_size_y_mm, screen_res_x_pix, screen_res_y_pix, viewing_distance_mm)
 
-            all_dfs: dict[str,pd.DataFrame] = {}
-          `;
-
-          for(var i = 0, max = datteksten.length; i < max; i++) {
-            tekst = datteksten[i].innerHTML
-            huidigbestand = bestandsnamen[i].innerHTML
-
-            pyodide.globals.set("tsv_data", tekst);
-            pyodide.globals.set("curfile",huidigbestand)
-
-            pyodide.globals.set("screen_size_x_mm", screenxmm);
-            pyodide.globals.set("screen_size_y_mm",screenymm)
-            pyodide.globals.set("screen_res_x_pix", screenxpix);
-            pyodide.globals.set("screen_res_y_pix",screenypix);
-            pyodide.globals.set("viewing_distance_mm", screendist);
-        
-            // here'd be the D's magic, lines 96, 98, 105-108 ==============
-
-
-            const pythonCodeFile = `
-            # run below for each files
-            # Read TSV data into DataFrame
-            print(curfile)
-            gaze = pd.read_csv(StringIO(tsv_data), sep='\t', dtype=defaultdict(lambda: float, {'target_id': int, 'tar_x': int, 'tar_y': int}))
-
-            dq_df = ETDQualitizer.compute_data_quality_from_validation(gaze, 'pixels', screen, advanced=False)
-            all_dfs[curfile] = dq_df
-
-            dq_html = dq_df.to_html()
+              all_dfs: dict[str,pd.DataFrame] = {}
             `;
+            
+            // last concatenate steps in python, only to be run on last iteration
+              const pythonCodeConcat = `
+              all_df = pd.concat(all_dfs, names=['file'])
+              all_df_html = all_df.to_html()
+              all_df_csv = all_df.to_csv()
 
-            const pythonCodeConcat = `
-            all_df = pd.concat(all_dfs, names=['file'])
-            all_df_html = all_df.to_html()
-            all_df_csv = all_df.to_csv()
+              dq_txt, summary_dq = ETDQualitizer.report_data_quality_table(all_df)
+              dq_txt_html = dq_txt
+              summary_dq_sum_html = summary_dq['summary'].to_html()
+              summary_dq_all_html = summary_dq['all'].to_html()
+              summary_dq_all_csv = summary_dq['all'].to_csv()
+              `;
 
-            dq_txt, summary_dq = ETDQualitizer.report_data_quality_table(all_df)
-            dq_txt_html = dq_txt
-            summary_dq_sum_html = summary_dq['summary'].to_html()
-            summary_dq_all_html = summary_dq['all'].to_html()
-            summary_dq_all_csv = summary_dq['all'].to_csv()
-            `;
-            // =======================================
+            // set python variable content from HTML
+            for(var i = 0, max = datteksten.length; i < max; i++) {
+              tekst = datteksten[i].innerHTML
+              huidigbestand = bestandsnamen[i].innerHTML
+
+              pyodide.globals.set("tsv_data", tekst);
+              pyodide.globals.set("curfile",huidigbestand)
+
+              pyodide.globals.set("screen_size_x_mm", screenxmm);
+              pyodide.globals.set("screen_size_y_mm",screenymm)
+              pyodide.globals.set("screen_res_x_pix", screenxpix);
+              pyodide.globals.set("screen_res_y_pix",screenypix);
+              pyodide.globals.set("viewing_distance_mm", screendist);
           
-            try {
-                if (i==0) {
-                  const resultInit = pyodide.runPython(pythonCodeInit);
-                  const resultFile = pyodide.runPython(pythonCodeFile);
-                } else {
-                  const resultFile = pyodide.runPython(pythonCodeFile);
-                }
+              // set per file python code
+              const pythonCodeFile = `
+              # run below for each files
+              # Read TSV data into DataFrame
+              print(curfile)
+              gaze = pd.read_csv(StringIO(tsv_data), sep='\t', dtype=defaultdict(lambda: float, {'target_id': int, 'tar_x': int, 'tar_y': int}))
 
-                if (i == (max-1)) {
-                  const resultConcat = pyodide.runPython(pythonCodeConcat);
-                  if (raw_checked) {
-                    resblokbig.innerHTML = `<h3>Data quality:</h3>`
-                    + '<h3>Summary:</h3><p>'
-                    + pyodide.globals.get('dq_txt_html')
-                    // + '</p><h3>Summary Table:</h3>'
-                    // + pyodide.globals.get('summary_dq_sum_html') 
-                    + '</p><h3>Per file per validation target results:</h3>' 
-                    + pyodide.globals.get('all_df_html');
+              dq_df = ETDQualitizer.compute_data_quality_from_validation(gaze, 'pixels', screen, advanced=False, include_data_loss=False)
+              all_dfs[curfile] = dq_df
+
+              dq_html = dq_df.to_html()
+              `;
+              
+              // ==== RUN PYTHON ===================================
+            
+              try {
+                  // on first iteration, also run initialize python code
+                  if (i==0) {
+                    const resultInit = pyodide.runPython(pythonCodeInit);
+                    const resultFile = pyodide.runPython(pythonCodeFile);
                   } else {
-                    resblokbig.innerHTML = `<h3>Data quality:</h3>`
-                    + '<h3>Summary:</h3><p>'
-                    + pyodide.globals.get('dq_txt_html')
-                    + '</p><h3>Summary Table:</h3>'
-                    + pyodide.globals.get('summary_dq_sum_html') 
-                    + '</p><h3>Per file results:</h3>' 
-                    + pyodide.globals.get('summary_dq_all_html');
+                    const resultFile = pyodide.runPython(pythonCodeFile);
                   }
-                  resoutput.appendChild(resblokbig);
-                  dldata.disabled = false;
-                  document.getElementById('lbldoehet').style.backgroundColor = "green";
-                  document.getElementById('linkdl2').onclick = tableToCSV;
-                  document.getElementById('lbldl').style.backgroundColor ="green";
-                  document.getElementById('lbldl').style.color = "white";
-                  bestanden.disabled = false;
-                  document.getElementById('lblbestand').style.backgroundColor ='cadetblue';
-                  document.getElementById('lblbestand').style.color ='aliceblue';
-                }
-            } catch (err) {
-                resoutput.innerHTML = `Error: ${err}`;
+
+                  // on last iteration concatenate and populate HTML
+                  if (i == (max-1)) {
+                    const resultConcat = pyodide.runPython(pythonCodeConcat);
+                    calculated = true;
+                    if (raw_checked) {
+                      resblokbig.innerHTML = '';
+                      resblokbig.innerHTML = `<h3>Data quality:</h3>`
+                      + '<h3>Summary:</h3><p>'
+                      + pyodide.globals.get('dq_txt_html')
+                      + '</p><h3>Per file per validation target results:</h3>' 
+                      + pyodide.globals.get('all_df_html');
+                    } else {
+                      resblokbig.innerHTML = '';
+                      resblokbig.innerHTML = `<h3>Data quality:</h3>`
+                      + '<h3>Summary:</h3><p>'
+                      + pyodide.globals.get('dq_txt_html')
+                      + '</p><h3>Summary Table:</h3>'
+                      + pyodide.globals.get('summary_dq_sum_html') 
+                      + '</p><h3>Per file results:</h3>' 
+                      + pyodide.globals.get('summary_dq_all_html');
+                    }
+                    resoutput.appendChild(resblokbig);
+                    // diable Calculate button
+                    doit.disabled = true;
+                    document.getElementById('lbldoehet').style.backgroundColor = "darkgrey";
+                    document.getElementById('lbldoehet').style.color = "lightgrey";
+                    // enable download button
+                    dldata.disabled = false;
+                    document.getElementById('linkdl2').onclick = tableToCSV;
+                    document.getElementById('lbldl').style.backgroundColor ="green";
+                    document.getElementById('lbldl').style.color = "white";
+                    // disable file selection button after first run, add or replace can be use from now on.
+                    bestanden.disabled = true;
+                    document.getElementById('lblbestand').style.backgroundColor ='dimgray';
+                    document.getElementById('lblbestand').style.color ='darkgrey';
+                  }
+              } catch (err) {
+                  resoutput.innerHTML = `Error: ${err}`;
+              }
             }
-          }
-        },30)
+          },30)
+        
         });
 
+        // fetch data from python directly in CSV format
         function tableToCSV() {
+          if (calculated) {
+              // Variable to store the final csv data base on toggle
+              let csv_data = [];
 
-            // Variable to store the final csv data
-            let csv_data = [];
+              if (raw_checked){
+                  csv_data = pyodide.globals.get('all_df_csv');
+              } else {
+                  csv_data = pyodide.globals.get('summary_dq_all_csv');
+              }
+              console.log(csv_data);
 
-            if (raw_checked){
-                csv_data = pyodide.globals.get('all_df_csv');
-            } else {
-                csv_data = pyodide.globals.get('summary_dq_all_csv');
-            }
-            console.log(csv_data);
-
-            // Call this function to download csv file  
-            downloadCSVFile(csv_data);
+              // Call this function to download csv file  
+              downloadCSVFile(csv_data);
+          } else {
+              noDataYet();
+          }
 
         }
 
@@ -310,7 +433,7 @@
             // download process
             let temp_link = document.createElement('a');
 
-            // Download csv file
+            // Download csv file based on toggle
             if (raw_checked){
                 temp_link.download = "qualitydata_per_file_per_target.csv";
             } else {
@@ -328,37 +451,6 @@
             temp_link.click();
             document.body.removeChild(temp_link);
         }
-
-        function cleanupHTMLtableheader() {
-          const table = document.getElementsByClassName("dataframe")[0];
-          const thead = table.querySelector("thead");
-          const firstRow = thead.rows[0];
-          const secondRow = thead.rows[1];
-
-          // Merge first three columns: copy content from secondRow, and set rowspan
-          for (let i = 0; i < 3; i++) {
-            const topCell = firstRow.cells[i];
-            const bottomCell = secondRow.cells[i];
-            topCell.textContent = bottomCell.textContent;
-            topCell.rowSpan = 2;
-          }
-
-          // Remove first three cells from second row (already merged)
-          for (let i = 0; i < 3; i++) {
-            secondRow.deleteCell(0);
-          }
-
-          // Remove the second row entirely, since everything is merged
-          thead.deleteRow(1);
-          
-          const newfirstRow = table.querySelector("thead").rows[0];
-
-          // Set rowspan back to 1 for the first three header cells
-          for (let i = 0; i < 9; i++) {
-            newfirstRow.cells[i].rowSpan = 1;
-          }
-        }
-
     </script>
   </body>
 </html>
