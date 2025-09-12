@@ -63,7 +63,7 @@
         <input id="doehet" style="display:none;" type="button" disabled>
       </div>
       <div style="top:-45px; left:100px; position: relative;">
-        <label for="toggle" id="toggleLabel" style="background-color: darkgray; color: lightgray; padding: 10px; width: 170px; height: 25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0,0,0,0.6); border-radius: 7px; text-align:center; cursor:pointer;">per validation target &#10006;</label>
+        <label for="toggle" id="toggleLabel" style="background-color: darkgray; color: lightgray; padding: 10px; width: 210px; height: 25px; display: inline-block; box-shadow: 3px 3px 5px rgba(0,0,0,0.6); border-radius: 7px; text-align:center; cursor:pointer;">Show per validation target &#10006;</label>
         <input type="checkbox" id="toggle" style="display:none;" checked="false">
       </div>
       <div id="downloadbestand" style="top:-90px; left:305px; position: relative;">
@@ -107,7 +107,7 @@
         toggle.addEventListener("change", () => {
             raw_checked = toggle.checked;
             if (raw_checked) {
-                lbltoggle.innerHTML = "per validation target &#10004;"; // checkmark
+                lbltoggle.innerHTML = "Show per validation target &#10004;"; // checkmark
                 lbltoggle.style.backgroundColor = "orange";
                 lbltoggle.style.color = "white";
                 // if already calculated also toggle results, otherwise just toggle button + status
@@ -120,7 +120,7 @@
                   + pyodide.globals.get('all_df_html');
                 }
             } else {
-                lbltoggle.innerHTML = "per validation target &#10006;"; // cross
+                lbltoggle.innerHTML = "Show per validation target &#10006;"; // cross
                 lbltoggle.style.backgroundColor = "darkgray";
                 lbltoggle.style.color = "lightgray";
                 // if already calculated also toggle results, otherwise just toggle button + status
