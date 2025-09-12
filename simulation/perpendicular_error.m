@@ -59,6 +59,7 @@ tiltAngles = asind(gazePosition*sind(90+tilts)./viewingDistance);   % using law 
 figure
 plot(shifts([1 end]),[0 0],'Color',[.7 .7 .7],'LineStyle','--','LineWidth',1.2)
 hold on
+plot([0 0],ylims,'Color',[.7 .7 .7],'LineStyle','--','LineWidth',1.2)
 plot(shifts,shiftAngles-gazeDirection,'k','LineWidth',2)
 axis tight
 ax = gca;
@@ -68,7 +69,7 @@ ax.XLabel.FontSize = 16;
 ax.XAxis.FontSize = 13;
 ax.YLabel.FontSize = 16;
 ax.YAxis.FontSize = 13;
-xlabel('Screen shift (mm)')
+xlabel('Shift (mm)')
 ylabel('Error in estimated gaze angle (deg)')
 ylim(ylims)
 yyaxis right
@@ -125,6 +126,7 @@ ylim([-screen+min(shifts) screen+max(shifts)])
 figure
 plot(tilts([1 end]),[0 0],'Color',[.7 .7 .7],'LineStyle','--','LineWidth',1.2)
 hold on
+plot([0 0],ylims,'Color',[.7 .7 .7],'LineStyle','--','LineWidth',1.2)
 plot(tilts,tiltAngles-gazeDirection,'k','LineWidth',2)
 axis tight
 ax = gca;
@@ -134,7 +136,7 @@ ax.XLabel.FontSize = 16;
 ax.XAxis.FontSize = 13;
 ax.YLabel.FontSize = 16;
 ax.YAxis.FontSize = 13;
-xlabel('Screen tilt (deg)')
+xlabel('Tilt (deg)')
 ylabel('Error in estimated gaze angle (deg)')
 ylim(ylims)
 yyaxis right
