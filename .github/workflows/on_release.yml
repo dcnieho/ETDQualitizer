@@ -30,7 +30,7 @@ jobs:
         7z a -r ./matlab.zip ./dist/*
 
     - name: Upload zip as workflow artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: matlab_zip
         path: ./matlab.zip
@@ -71,7 +71,7 @@ jobs:
         --outdir dist/
 
     - name: Upload wheel as workflow artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: wheel
         path: ./dist/*.whl

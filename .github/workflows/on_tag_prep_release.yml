@@ -24,7 +24,7 @@ jobs:
           command: addpath([pwd filesep 'packaging']); createETDQ_MLTBX('packaging/ETDQualitizer.prj','${{  github.ref_name }}')
 
       - name: Upload mltbx as workflow artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: matlab_mltbx
           path: ./${{  github.ref_name }}.mltbx
