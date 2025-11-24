@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v2
@@ -45,7 +45,7 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
     steps:
       - name: Clone repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - uses: r-lib/actions/setup-r@v2
         with:
