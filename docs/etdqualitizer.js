@@ -2,7 +2,7 @@ console.log("loading pyodide...");
 async function main() {
 
   pyodide = await loadPyodide({
-    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.28.2/full/",
+    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.29.3/full/",
   });
   await pyodide.loadPackage("pandas");
   console.log("Pyodide/python loaded");
@@ -26,7 +26,7 @@ async function main() {
     document.getElementById('bestand').disabled = false;
     document.getElementById('lblbestand').style.backgroundColor ='cadetblue';
     document.getElementById('lblbestand').style.color ='aliceblue';
-    document.getElementById('lijst').innerHTML = document.getElementById('lijst').innerHTML + ' please select one or more files from your PyschoPy procedure, enter your<br/>setup geometry below and click Calculate.';
+    document.getElementById('lijst').innerHTML = document.getElementById('lijst').innerHTML + ' please select one or more data files in <a href="https://github.com/dcnieho/ETDQualitizer/blob/master/README.md#output-data-format">ETDQualitizer format</a>, enter your<br/>setup geometry below and click Calculate.';
     document.getElementById('lblbestand').style.backgroundColor ='cadetblue';
   } catch (error) {
     document.getElementById('pyodideinfo').innerHTML = document.getElementById('pyodideinfo').innerHTML +  " and ETDQualitizer failed to install";
