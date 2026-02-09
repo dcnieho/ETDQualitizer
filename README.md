@@ -143,3 +143,9 @@ Niehorster, D.C., Nyström, M., Hessels, R.S., Benjamins, J.S., Andersson, R. & 
     Year = {in prep},
     doi = {}
 }
+```
+
+# Developer information
+## Release process
+1. First make a new tag and push it. This will trigger the on_tag_prep_release.yml workflow, which will build the needed Matlab FEX and CRAN packages and then prepare a release.
+2. Edit the prepared release and finalize it. This will trigger upload to PyPI and Matlab FEX. CRAN uploads have to be done manually.
