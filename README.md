@@ -5,17 +5,23 @@
 [![](http://cranlogs.r-pkg.org/badges/grand-total/ETDQualitizer?color=green)](https://cran.r-project.org/package=ETDQualitizer)
 
 # ETDQualitizer v0.9.0
-ETDQualitizer is a toolbox for automated eye tracking data quality determination for screen-based eye trackers. This repository offers two tools:
-1. A [tool for collecting validation data](#collecting-validation-data) in a format that is suitable for automated determination and reporting of data quality for screen-based eye trackers. This tool is available in the form of a standalone Python script using [PsychoPy](https://www.psychopy.org/) or an integratable module that can be added to an exisiting PsychoPy experiment using a single line of code.
-2. A [tool for determining and reporting eye-tracking data quality](#determining-data-quality) using recordings made by the first tool, or any data formatted according to the same format. These tools are available for MATLAB, Python and R. This tool is furthermore available [as a webpage](https://dcnieho.github.io/ETDQualitizer/).
+ETDQualitizer is a toolbox for automated eye tracking data quality determination for screen-based eye trackers. This repository consists of two parts:
+1. The Validator module: A [Python module for collecting validation data](#collecting-validation-data) in a format that is suitable for automated determination and reporting of data quality for screen-based eye trackers. This module can both be run as a standalone Python script using [PsychoPy](https://www.psychopy.org/) or an integratable module that can be added to an exisiting PsychoPy experiment using a single line of code.
+2. ETDQualitizer: a [tool for determining and reporting eye-tracking data quality](#determining-data-quality) using recordings made by the Validator script, or any data formatted according to the same format. ETDQualitizer is available for MATLAB, Python and R, and can furthermore be run [as a webpage](https://dcnieho.github.io/ETDQualitizer/).
 
-Note that for wearable eye trackers, the [glassesValidator](https://github.com/dcnieho/glassesValidator) and [gazeMapper](https://github.com/dcnieho/gazeMapper) tools are available.
+Note that for determining data quality for recordings made with wearable eye trackers, the [glassesValidator](https://github.com/dcnieho/glassesValidator) tool is available (which is also integrated in [gazeMapper](https://github.com/dcnieho/gazeMapper)).
 
 Please cite:
-Niehorster, D.C., Nyström, M., Hessels, R.S., Benjamins, J.S., Andersson, R. & Hooge, I.T.C. (in prep). The fundamentals of eye tracking part 7: Data quality
+Niehorster, D.C., Nyström, M., Hessels, R.S., Benjamins, J.S., Andersson, R. & Hooge, I.T.C. (in prep). The fundamentals of eye tracking part 7: Determining data quality
 
 For questions, bug reports or to check for updates, please visit
 www.github.com/dcnieho/ETDQualitizer.
+
+# Content
+Below, the following topics are discussed:
+1. [The Validator module, its configuration, and its output data format](#collecting-validation-data).
+2. [The ETDQualitizer tool for determining and reporting eye-tracking data quality](#determining-data-quality).
+3. [A complete walkthrough using the Validator script and ETDQualitizer](#walkthrough).
 
 # Collecting validation data
 The procedure for collecting validation data is available from [the `/python/ETDQualitizer/validator` subfolder](/python/ETDQualitizer/validator). In this manual, we will refer to this script as the validator.
@@ -24,16 +30,16 @@ The procedure for collecting validation data is available from [the `/python/ETD
 The validator is not available as an installable package. The user is recommended to download [the `/python/ETDQualitizer/validator` subfolder](/python/ETDQualitizer/validator) from github and add it to their experiment.
 
 ## Documentation
-Several files are contained in [the `/python/ETDQualitizer/validator` subfolder](/python/ETDQualitizer/validator) that together comprise the validator. First, the validator can be run in two ways, either as a standalone script, or integrated into an existing PsychoPy script. By default, support is included for EyeLink, SMI and Tobii eye trackers. To run as a standalone script, simply run the `run_for_eyelink.py`, `run_for_smi.py`, or `run_for_tobii.py` scripts. To integrate the validator into an existing script, simply call the `run_validation()` function inside `validator.py`.
+Several files are contained in [the `/python/ETDQualitizer/validator` subfolder](/python/ETDQualitizer/validator) that together comprise the validator. The validator can be run in two ways, either as a standalone script, or integrated into an existing PsychoPy script. By default, support is included for EyeLink, SMI and Tobii eye trackers. To run as a standalone script, simply run the `run_for_eyelink.py`, `run_for_smi.py`, or `run_for_tobii.py` scripts. To integrate the validator into an existing script, simply call the `run_validation()` function inside the `validator.py` module in your existing PsychoPy script at appropriate time(s).
 
 ## Configuration files
-The procedure (e.g., position of the validation targets, and duration for which they are shown) is configured using two configuration files.
+The procedure (e.g., position of the validation targets, and duration for which they are shown) is configured using the following two configuration files.
 
 ### `targetPositions.csv`
 The `targetPositions.csv` file contains the positions (and associated ID) for the validation targets. It contains the following columns:
 |name|description|
 | --- | --- |
-| `ID` | Unique identifier of the validation target. |
+| `ID` | Unique identifier of the validation target (integer). |
 | `x` | Horizontal position of the center of the validation target. |
 | `y` | Vertical position of the center of the validation target. |
 | `color` | Optional column allowing to set the color of the target place holder for this target. |
@@ -109,11 +115,14 @@ The documentation is integrated with the code and accessible using the `help` fu
 - Basic functions: the package provides the following functions used for determining data quality of a segment of eye tracking data: `accuracy`, `rms_s2s`, `std`, `bcea`, `data_loss_from_invalid`, `data_loss_from_expected`, `effective_frequency`. Furthermore, the function `precision_using_moving_window` is provided for determining RMS-S2S, STD or BCEA using a moving window approach. The algorithm implemented in each of these functions is described in Niehorster et al. (in prep).
 - Coordinate transformation class and functions: the package provides the `ScreenConfiguration` class, which can be used to convert data represented as pixels on a monitor to physical distances in the world (e.g., mm) and to angular gaze directions (using Fick angles), and vice-versa. Further available are the functions `Fick_to_vector` and `vector_to_Fick` that turn angular gaze directions into gaze vectors, and vice versa.
 - Data quality computation class: the package provides the `DataQuality` class, which is a wrapper around the basic functions above. It is constructed using a segment of eye tracking data (optionally converted to gaze angles if they are not already expressed as such). The various data quality measures can then be directly computed on the segment by using the class methods.
-- Wrapper functions: finally, the package provides two higher-level wrapper functions, `compute_data_quality_from_validation` and `report_data_quality_table`. `compute_data_quality_from_validation` can be used to take a segment of eye tracking formatted according to [the format produced by the validation tool](#output-data-format) and calculate the various data quality metrics for each presented target in this segment. The `report_data_quality_table` then takes one or multiple tables output by `compute_data_quality_from_validation` and provides an overall summary of data quality across targets and (if multiple tables are provided) recordings/participants, along with a textual report that can be directly pasted into a paper.
+- Wrapper functions: finally, the package provides two higher-level wrapper functions, `compute_data_quality_from_validation` and `report_data_quality_table`. `compute_data_quality_from_validation` can be used to take a segment of eye tracking formatted according to [the format produced by the Validator module](#output-data-format) and calculate the various data quality metrics for each presented target in this segment. The `report_data_quality_table` then takes one or multiple tables output by `compute_data_quality_from_validation` and provides an overall summary of data quality across targets and (if multiple tables are provided) recordings/participants, along with a textual report that can be directly pasted into a paper.
+
+# Walkthrough
+This walkthrough will help you become familiar with how to use the Validator script and the ETDQualitizer package to determine the data quality of an eye tracking recording. It uses the [standalone Validator script for a Tobii] as an example, along with the [ETDQualitizer tool packaged as a webpage](https://dcnieho.github.io/ETDQualitizer/). Users who prefer to use ETDQualitizer from their own MATLAB, Python or R script are referred to the [respective example scripts](/example)
 
 # Citation
 If you use this tool or any of the code in this repository, please cite:<br>
-Niehorster, D.C., Nyström, M., Hessels, R.S., Benjamins, J.S., Andersson, R. & Hooge, I.T.C. (in prep). The fundamentals of eye tracking part 7: Data quality
+Niehorster, D.C., Nyström, M., Hessels, R.S., Benjamins, J.S., Andersson, R. & Hooge, I.T.C. (in prep). The fundamentals of eye tracking part 7: Determining data quality
 
 ## BibTeX
 ```latex
@@ -126,7 +135,7 @@ Niehorster, D.C., Nyström, M., Hessels, R.S., Benjamins, J.S., Andersson, R. & 
               Hooge, Ignace T. C.},
     Journal = {},
     Number = {},
-    Title = {The fundamentals of eye tracking part 7: Data quality},
+    Title = {The fundamentals of eye tracking part 7: Determining data quality},
     Year = {in prep},
     doi = {}
 }
