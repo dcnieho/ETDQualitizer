@@ -1,7 +1,7 @@
 Package: ETDQualitizer
 Type: Package
 Title: Automated Eye Tracking Data Quality Determination for Screen-Based Eye Trackers
-Version: 0.10.0
+Version: 0.10.1
 Authors@R: c(
     person(
       "Diederick", "Niehorster",

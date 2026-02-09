@@ -13,7 +13,7 @@ library(stats)
 #'
 #' @export
 ETDQ_version <- function() {
-  return("0.10.0")
+  return("0.10.1")
 }
 
 
