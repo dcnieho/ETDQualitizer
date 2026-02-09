@@ -118,7 +118,11 @@ The documentation is integrated with the code and accessible using the `help` fu
 - Wrapper functions: finally, the package provides two higher-level wrapper functions, `compute_data_quality_from_validation` and `report_data_quality_table`. `compute_data_quality_from_validation` can be used to take a segment of eye tracking formatted according to [the format produced by the Validator module](#output-data-format) and calculate the various data quality metrics for each presented target in this segment. The `report_data_quality_table` then takes one or multiple tables output by `compute_data_quality_from_validation` and provides an overall summary of data quality across targets and (if multiple tables are provided) recordings/participants, along with a textual report that can be directly pasted into a paper.
 
 # Walkthrough
-This walkthrough will help you become familiar with how to use the Validator script and the ETDQualitizer package to determine the data quality of an eye tracking recording. It uses the [standalone Validator script for a Tobii] as an example, along with the [ETDQualitizer tool packaged as a webpage](https://dcnieho.github.io/ETDQualitizer/). Users who prefer to use ETDQualitizer from their own MATLAB, Python or R script are referred to the [respective example scripts](/example)
+This walkthrough will help you become familiar with how to use the Validator script and the ETDQualitizer package to determine the data quality of an eye tracking recording. It uses the [standalone Validator script for a Tobii] as an example, along with the [ETDQualitizer tool packaged as a webpage](https://dcnieho.github.io/ETDQualitizer/). Users who prefer to use ETDQualitizer from their own MATLAB, Python or R script are referred to the [respective example scripts](/example). The walkthrough is organized in two parts, 1) acquiring gaze data that is suitable for determining data quality and 2) determining eye tracking data quality from this gaze data using ETDQualitizer. If one only wishes to learn how to determine data quality using ETDQualitizer, one can skip to this section and use the provided [example data](/example/data).
+
+## Collecting gaze data for data quality assessment using the Validator script
+
+## Determining data quality for screen-based eye tracker recordings using ETDQualitizer
 
 # Citation
 If you use this tool or any of the code in this repository, please cite:<br>
