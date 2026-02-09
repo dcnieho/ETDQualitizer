@@ -4,7 +4,7 @@
 [![CRAN](https://www.r-pkg.org/badges/version/ETDQualitizer?color=green)](https://cran.r-project.org/package=ETDQualitizer)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/ETDQualitizer?color=green)](https://cran.r-project.org/package=ETDQualitizer)
 
-# ETDQualitizer v0.9.0
+# ETDQualitizer v0.10.0
 ETDQualitizer is a toolbox for automated eye tracking data quality determination for screen-based eye trackers. This repository consists of two parts:
 1. The Validator module: A [Python module for collecting validation data](#collecting-validation-data) in a format that is suitable for automated determination and reporting of data quality for screen-based eye trackers. This module can both be run as a standalone Python script using [PsychoPy](https://www.psychopy.org/) or an integratable module that can be added to an exisiting PsychoPy experiment using a single line of code.
 2. ETDQualitizer: a [tool for determining and reporting eye-tracking data quality](#determining-data-quality) using recordings made by the Validator script, or any data formatted according to the same format. ETDQualitizer is available for MATLAB, Python and R, and can furthermore be run [as a webpage](https://dcnieho.github.io/ETDQualitizer/).
