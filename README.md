@@ -123,6 +123,12 @@ This walkthrough will help you become familiar with how to use the Validator scr
 ## Collecting gaze data for data quality assessment using the Validator script
 
 ## Determining data quality for screen-based eye tracker recordings using ETDQualitizer
+For this section of the walkthrough, we'll use the the [webpage version of the ETDQualitizer tool](https://dcnieho.github.io/ETDQualitizer/), please open it in another browser window. This version of the tool does not require to install anything or know how Python etc work. Importantly, using it, all data i kept locally in the browser, nothing is uploaded to the internet. As such, there are no privacy or data protection concerns when using this version of the tool.
+1. First, data files in [the output format produced by the Validator module](#output-data-format) need to be loaded in the tool. One or multiple files can be processed at the same time, and if you process multiple files, the tool also provides overall statistics across all the processed data files. To get these data files, you can:
+   1. Run the Validator script as per the first part of this walkthrough. Its output is a file that can be directly loaded into the web interface.
+   2. Take data you already have and format it according to [the required format](#output-data-format), e.g. using Excel or your own script.
+   3. Use the [example data](/example/data) available in this repository.
+2. Load your selected data file(s) into the webpage using the "Select Data File(s)" button. If you already have data loaded, you can add more files using the "Add Data File(s)" button, and you can clear all loaded files and load new ones using the "Replace Data File(s)" button.
 
 # Citation
 If you use this tool or any of the code in this repository, please cite:<br>
@@ -147,5 +153,5 @@ Niehorster, D.C., Nyström, M., Hessels, R.S., Benjamins, J.S., Andersson, R. & 
 
 # Developer information
 ## Release process
-1. First make a new tag and push it. This will trigger the on_tag_prep_release.yml workflow, which will build the needed Matlab FEX and CRAN packages and then prepare a release.
+1. First make a new tag and push it. This will trigger the `on_tag_prep_release.yml` workflow, which will build the needed Matlab FEX and CRAN packages and then prepare a release.
 2. Edit the prepared release and finalize it. This will trigger upload to PyPI and Matlab FEX. CRAN uploads have to be done manually.
