@@ -3,7 +3,7 @@ import traceback
 import pathlib
 from eyelink import eyelink
 
-from validator import run_validation, open_demo_screen
+from validator import run_validation, open_screen
 
 def main():
     # read protocol setup
@@ -12,7 +12,7 @@ def main():
 
     try:
         # Open window, check
-        win = open_demo_screen(config)
+        win = open_screen(config)
 
         # set up the EyeLink eye tracker to use
         settings = eyelink.Settings()

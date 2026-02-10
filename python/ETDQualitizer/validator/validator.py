@@ -399,7 +399,7 @@ def run_validation(win: visual.Window, config: dict, tracker) -> str:
     return tracker.save_data(None, win.monitor)
 
 
-def open_demo_screen(config: dict) -> visual.Window:
+def open_screen(config: dict) -> visual.Window:
     # Open window, check
     mon = monitors.Monitor('temp')
     mon.setWidth(config["screen"]["width"])
