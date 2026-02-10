@@ -129,6 +129,14 @@ For this section of the walkthrough, we'll use the the [webpage version of the E
    2. Take data you already have and format it according to [the required format](#output-data-format), e.g. using Excel or your own script.
    3. Use the [example data](/example/data) available in this repository.
 2. Load your selected data file(s) into the webpage using the "Select Data File(s)" button. If you already have data loaded, you can add more files using the "Add Data File(s)" button, and you can clear all loaded files and load new ones using the "Replace Data File(s)" button.
+3. In the setup measurements section, ensure that the setup geometry (screen size and resolution, and viewing distance of the participant to the screen) are correctly set.
+4. Once you have the data files loaded and the geometry correctly set up, click the "Calculate" button.
+5. After a while, the output of the tool will appear underneath the "Calculate" button. In this output, you will find:
+   1. A summary text
+   2. A summary table with the same information as in the summary text
+   3. A table with data quality values per loaded file, averaged over fixation targets
+   4. If you want to have more detailed output, press the "Show per validation target" button.
+6. You can download the output tables to csv files by pressing the "Download results" button. When you are in the summary view, the table with data quality values per loaded file is downloaded. If you are viewing the detailed table with data quality values per fixation target, then the button downloads this more detailed table.
 
 # Citation
 If you use this tool or any of the code in this repository, please cite:<br>
