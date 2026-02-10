@@ -14,7 +14,7 @@ def main():
         # Open window, check
         win = open_demo_screen(config)
 
-        # for demo purposes, use an EyeLink eye tracker
+        # set up the EyeLink eye tracker to use
         settings = eyelink.Settings()
         settings.FILENAME = 'test'
         tracker = eyelink.Connect(settings, use_sample_buffer=True, sample_buffer_length=None)

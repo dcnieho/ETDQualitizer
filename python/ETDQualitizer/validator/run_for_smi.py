@@ -14,7 +14,7 @@ def main():
         # Open window, check
         win = open_demo_screen(config)
 
-        # use a Tobii eye tracker
+        # set up which SMI eye tracker to use
         settings = SMITE.get_defaults('RED')
         settings.autoaccept = 1
         settings.n_cal_points = 5

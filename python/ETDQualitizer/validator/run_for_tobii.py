@@ -14,7 +14,7 @@ def main():
         # Open window, check
         win = open_demo_screen(config)
 
-        # use a Tobii eye tracker
+        # set up which Tobii eye tracker to use
         settings = Titta.get_defaults('Tobii Pro Spectrum')
         tracker = Titta.Connect(settings)
         tracker.init()
