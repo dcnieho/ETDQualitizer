@@ -16,7 +16,7 @@ screen = ETDQualitizer.ScreenConfiguration(
 all_dfs: dict[str,pd.DataFrame] = {}
 for f in (pathlib.Path(__file__).parent / 'data').glob('*.tsv'):
     print(f'----------\n{f.name}')
-    gaze = pd.read_csv(f, sep='\t', dtype=defaultdict(lambda: float, {'target_id': int, 'tar_x': int, 'tar_y': int}))
+    gaze = pd.read_csv(f, sep='\t', dtype=defaultdict(lambda: float, {'target_id': int, 'tar_x': float, 'tar_y': float}))
 
     # automatically compute data quality measures per target
     dq_df = ETDQualitizer.compute_data_quality_from_validation(gaze, 'pixels', screen, advanced=False, include_data_loss=True)    # include_data_loss for testing, this is probably *not* what you want
