@@ -733,7 +733,7 @@ def compute_data_quality_from_validation(gaze               : pd.DataFrame,
                                          include_data_loss  : bool = False) -> pd.DataFrame:
     # get all targets
     targets         = sorted([t for t in gaze['target_id'].unique() if t!=-1])
-    target_locations= np.array([gaze.loc[gaze.index[(gaze['target_id'].values==t).argmax()], ['tar_x','tar_y']] for t in targets])
+    target_locations= np.array([gaze.loc[gaze.index[(gaze['target_id'].values==t).argmax()], ['tar_x','tar_y']] for t in targets]).astype(float)
 
     # ensure we have target locations in degrees
     if unit=='pixels':
