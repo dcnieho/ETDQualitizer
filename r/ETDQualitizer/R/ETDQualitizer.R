@@ -61,34 +61,51 @@ vector_to_Fick <- function(x, y, z) {
 
 #' Compute Gaze Accuracy
 #'
-#' Calculates the angular offset between gaze and target directions.
+#' Calculates the angular offset between gaze and target directions by first
+#' computing a central gaze direction in 3D and then expressing this direction
+#' relative to the target.
 #'
 #' @param azi Gaze azimuth in degrees.
 #' @param ele Gaze elevation in degrees.
 #' @param target_azi Target azimuth in degrees.
 #' @param target_ele Target elevation in degrees.
-#' @param central_tendency_fun Function to compute central tendency (default: \code{mean}).
+#' @param central_tendency_fun Function to compute central tendency of the Cartesian gaze components (default: \code{mean}).
 #'
 #' @return A list with \code{offset}, \code{offset_azi}, and \code{offset_ele}, the total, horizontal and vertical offset of gaze from the target (in degrees).
 #' @examples
 #' accuracy(c(1, 2), c(1, 2), 0, 0)
 #' @export
-accuracy <- function(azi, ele, target_azi, target_ele, central_tendency_fun = mean) {
-  # Get unit vectors from gaze directions
+accuracy <- function(azi, ele, target_azi, target_ele, central_tendency_fun = function(x) mean(x, na.rm = TRUE)) {
+  # convert gaze directions to unit vectors
   g <- Fick_to_vector(azi, ele)
-  t <- Fick_to_vector(target_azi, target_ele)
-  # calculate angular offset for each sample using dot product
-  dot_products <- g$x*t$x + g$y*t$y + g$z*t$z
-  dot_products <- pmin(pmax(dot_products, -1), 1)  # Clamp to [-1,1]
-  offsets      <- acos(dot_products)
-  # calculate on-screen orientation so we can decompose offset into x and y
-  direction    <- atan2(g$y/g$z-t$y/t$z, g$x/g$z-t$x/t$z)
-  offsets_2D   <- offsets*cbind(cos(direction), sin(direction)) * 180/pi
-  # calculate mean horizontal and vertical offsets
-  offset_azi   <- central_tendency_fun(offsets_2D[, 1], na.rm = TRUE)
-  offset_ele   <- central_tendency_fun(offsets_2D[, 2], na.rm = TRUE)
-  # calculate offset of centroid
-  offset       <- sqrt(offset_azi^2 + offset_ele^2)
+
+  # compute central gaze direction in 3D
+  g_vec <- c(
+    central_tendency_fun(g$x),
+    central_tendency_fun(g$y),
+    central_tendency_fun(g$z)
+  )
+
+  # normalize to unit vector
+  g_vec <- g_vec / sqrt(sum(g_vec^2))
+
+  # precompute trigonometric terms for target orientation
+  ca <- cos(target_azi * pi/180); sa <- sin(target_azi * pi/180)
+  ce <- cos(target_ele * pi/180); se <- sin(target_ele * pi/180)
+
+  # express central gaze direction in a target-centered frame
+  x_rel <-  ca*g_vec[1] - sa*g_vec[3]
+  y_rel <-  ce*g_vec[2] - se*(sa*g_vec[1] + ca*g_vec[3])
+  z_rel <-  se*g_vec[2] + ce*(sa*g_vec[1] + ca*g_vec[3])
+
+  # decompose relative direction into Fick components
+  f <- vector_to_Fick(x_rel, y_rel, z_rel)
+  offset_azi <- f$azi
+  offset_ele <- f$ele
+
+  # compute total angular offset
+  offset <- atan2(sqrt(x_rel^2 + y_rel^2), z_rel) * 180/pi
+
   list(offset = offset, offset_azi = offset_azi, offset_ele = offset_ele)
 }
 

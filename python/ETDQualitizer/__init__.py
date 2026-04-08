@@ -13,7 +13,9 @@ def accuracy(azi: np.ndarray[tuple[N], np.dtype[np.float64]],
     """
     Compute Gaze Accuracy
 
-    Calculates the angular offset between gaze and target directions.
+    Calculates the angular offset between gaze and target directions by first
+    computing a central gaze direction in 3D and then expressing this direction
+    relative to the target.
 
     Parameters
     ----------
@@ -26,32 +28,49 @@ def accuracy(azi: np.ndarray[tuple[N], np.dtype[np.float64]],
     target_ele : float
         Target elevation in degrees.
     central_tendency_fun : callable, optional
-        Function to compute central tendency (default: np.nanmean).
+        Function to compute central tendency of the Cartesian gaze components
+        (default: np.nanmean).
 
     Returns
     -------
     tuple of float
-        A tuple with (offset, offset_azi, offset_ele), representing total, horizontal,
-        and vertical offset of gaze from the target (in degrees).
+        A tuple with (offset, offset_azi, offset_ele), representing total,
+        horizontal, and vertical offset of gaze from the target (in degrees).
 
     Examples
     --------
     >>> accuracy(np.array([1, 2]), np.array([1, 2]), 0, 0)
     (2.1211587518891997, 1.4995429717992865, 1.5002284247552145)
     """
-    # get unit vectors for gaze and target
-    g_x,g_y,g_z = Fick_to_vector(       azi,        ele)
-    t_x,t_y,t_z = Fick_to_vector(target_azi, target_ele)
-    # calculate angular offset for each sample using dot product
-    offsets     = np.arccos(np.dot(np.vstack((g_x,g_y,g_z)).T, np.array([t_x,t_y,t_z])))
-    # calculate on-screen orientation so we can decompose offset into x and y
-    direction   = np.arctan2(g_y/g_z-t_y/t_z, g_x/g_z-t_x/t_z)  # compute direction on tangent screen (divide by z to project to screen at 1m)
-    offsets_2D  = np.degrees(offsets.reshape((-1,1))*np.array([np.cos(direction), np.sin(direction)]).T)
-    # calculate mean horizontal and vertical offset
-    offset_azi  = central_tendency_fun(offsets_2D[:,0])
-    offset_ele  = central_tendency_fun(offsets_2D[:,1])
-    # calculate offset of centroid
-    return float(np.hypot(offset_azi, offset_ele)), float(offset_azi), float(offset_ele)
+    # convert gaze directions to unit vectors
+    g_x, g_y, g_z = Fick_to_vector(azi, ele)
+
+    # compute central gaze direction in 3D
+    g = np.array([
+        central_tendency_fun(g_x),
+        central_tendency_fun(g_y),
+        central_tendency_fun(g_z)
+    ], dtype=float)
+
+    # normalize to unit vector
+    g = g / np.linalg.norm(g)
+
+    # precompute trigonometric terms for target orientation
+    ca, sa = np.cos(np.deg2rad(target_azi)), np.sin(np.deg2rad(target_azi))
+    ce, se = np.cos(np.deg2rad(target_ele)), np.sin(np.deg2rad(target_ele))
+
+    # express central gaze direction in a target-centered frame
+    x_rel =  ca*g[0] - sa*g[2]
+    y_rel =  ce*g[1] - se*(sa*g[0] + ca*g[2])
+    z_rel =  se*g[1] + ce*(sa*g[0] + ca*g[2])
+
+    # decompose relative direction into Fick components
+    offset_azi, offset_ele = vector_to_Fick(x_rel, y_rel, z_rel)
+
+    # compute total angular offset
+    offset = np.degrees(np.arctan2(np.hypot(x_rel, y_rel), z_rel))
+
+    return float(offset), float(offset_azi), float(offset_ele)
 
 def rms_s2s(azi: np.ndarray[tuple[N], np.dtype[np.float64]], ele: np.ndarray[tuple[N], np.dtype[np.float64]], central_tendency_fun=np.nanmean) -> tuple[float,float,float]:
     """

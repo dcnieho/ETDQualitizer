@@ -25,17 +25,29 @@ arguments
     central_tendency_fun(1,1) {mustBeA(central_tendency_fun,'function_handle')} = @(x) mean(x,'omitnan')
 end
 
-% get unit vectors for gaze and target
-[g_x,g_y,g_z] = Fick_to_vector(       azi    ,        ele);
-[t_x,t_y,t_z] = Fick_to_vector(target_azi, target_ele);
-% calculate angular offset for each sample using dot product
-offsets     = acos(dot([g_x,g_y,g_z], repmat([t_x,t_y,t_z],length(g_x),1),2));
-% calculate on-screen orientation so we can decompose offset into x and y
-direction   = atan2(g_y./g_z-t_y./t_z, g_x./g_z-t_x./t_z);   % compute direction on tangent screen (divide by z to project to screen at 1m)
-offsets_2D  = offsets.*[cos(direction), sin(direction)]*180/pi;
-% calculate mean horizontal and vertical offset
-offset_azi  = central_tendency_fun(offsets_2D(:,1));
-offset_ele  = central_tendency_fun(offsets_2D(:,2));
-% calculate offset of centroid
-offset      = hypot(offset_azi, offset_ele);
+% convert gaze directions to unit vectors
+[gx, gy, gz] = Fick_to_vector(azi, ele);
 
+% compute central gaze direction in 3D (e.g. mean direction)
+g = [central_tendency_fun(gx), ...
+     central_tendency_fun(gy), ...
+     central_tendency_fun(gz)];
+
+% normalize to obtain a unit direction vector
+g = g / norm(g);
+
+% precompute trigonometric terms for target orientation
+ca = cosd(target_azi); sa = sind(target_azi);
+ce = cosd(target_ele); se = sind(target_ele);
+
+% express central gaze direction in a target-centered frame
+% (i.e., rotate such that the target lies straight ahead)
+x_rel =  ca*g(1) - sa*g(3);
+y_rel =  ce*g(2) - se*(sa*g(1) + ca*g(3));
+z_rel =  se*g(2) + ce*(sa*g(1) + ca*g(3));
+
+% decompose relative direction into Fick components
+[offset_azi, offset_ele] = vector_to_Fick(x_rel, y_rel, z_rel);
+
+% compute total angular offset (angle between gaze and target)
+offset = atan2d(hypot(x_rel, y_rel), z_rel);
