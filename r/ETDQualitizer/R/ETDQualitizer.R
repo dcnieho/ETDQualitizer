@@ -104,7 +104,7 @@ accuracy <- function(azi, ele, target_azi, target_ele, central_tendency_fun = me
 #' @examples
 #' rms_s2s(c(1, 2, 3), c(1, 2, 3))
 #' @export
-rms_s2s <- function(azi, ele, central_tendency_fun = mean) {
+rms_s2s <- function(azi, ele, central_tendency_fun = function(x) mean(x, na.rm = TRUE)) {
   a_diff  <- diff(azi)^2
   e_diff  <- diff(ele)^2
   rms_azi <- sqrt(central_tendency_fun(a_diff, na.rm = TRUE))
@@ -261,7 +261,7 @@ effective_frequency <- function(a, b, duration) {
 #' precision_using_moving_window(rnorm(100), rnorm(100), 10, "STD")
 #' @export
 #' @importFrom stats median
-precision_using_moving_window <- function(azi, ele, window_length, metric, aggregation_fun = median, ...) {
+precision_using_moving_window <- function(azi, ele, window_length, metric, aggregation_fun = function(x) median(x, na.rm = TRUE), ...) {
   # Select the appropriate precision metric function
   fun <- switch(metric,
     "RMS-S2S" = rms_s2s,
