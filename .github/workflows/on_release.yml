@@ -36,7 +36,7 @@ jobs:
         path: ./matlab.zip
 
     - name: Upload zip as release artifact
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       env:
         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       with:
@@ -77,7 +77,7 @@ jobs:
         path: ./dist/*.whl
 
     - name: Upload wheel as release artifact
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       env:
         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       with:
