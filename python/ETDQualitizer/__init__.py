@@ -811,7 +811,7 @@ def report_data_quality_table(dq_table: pd.DataFrame) -> tuple[str,dict[str,pd.D
     n_target = dq_table.index.get_level_values('target_id').nunique()
     n_subj   = measures['all'].shape[0]
     txt = (
-        f"For {n_subj} participants, the average inaccuracy in the data determined from a {n_target}-point validation procedure using ETDQualitizer v{__version__} (Niehorster et al., in prep) "
+        f"For {n_subj} participants, the average inaccuracy in the data determined from a {n_target}-point validation procedure using ETDQualitizer v{__version__} (Niehorster et al., 2026) "
         f"was {measures['summary'].loc['mean'].accuracy:.2f}° (SD={measures['summary'].loc['std'].accuracy:.2f}°, range={measures['summary'].loc['min'].accuracy:.2f}°--{measures['summary'].loc['max'].accuracy:.2f}°). "
         f"Average RMS-S2S precision was {measures['summary'].loc['mean'].rms_s2s:.3f}° (SD={measures['summary'].loc['std'].rms_s2s:.3f}°, range={measures['summary'].loc['min'].rms_s2s:.3f}°--{measures['summary'].loc['max'].rms_s2s:.3f}°) "
         f"and STD precision {measures['summary'].loc['mean']['std']:.3f}° (SD={measures['summary'].loc['std']['std']:.3f}°, range={measures['summary'].loc['min']['std']:.3f}°--{measures['summary'].loc['max']['std']:.3f}°)."

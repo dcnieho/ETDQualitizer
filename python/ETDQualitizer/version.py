@@ -10,4 +10,4 @@ __author__ = "Diederick Niehorster"
 __email__ = "diederick_c.niehorster@humlab.lu.se"
 
 __license__ = "MIT"
-__copyright__ = "Copyright (c) 2025 " + __author__
+__copyright__ = "Copyright (c) 2025-2026 " + __author__

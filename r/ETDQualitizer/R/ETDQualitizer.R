@@ -756,7 +756,7 @@ report_data_quality_table <- function(dq_table) {
   version  <- ETDQ_version()  # Assumes this function exists
 
   txt <- sprintf(
-    "For %d participants, the average inaccuracy in the data determined from a %d-point validation procedure using ETDQualitizer v%s (Niehorster et al., in prep) was %.2f\u00b0 (SD=%.2f\u00b0, range=%.2f\u00b0--%.2f\u00b0). Average RMS-S2S precision was %.3f\u00b0 (SD=%.3f\u00b0, range=%.3f\u00b0--%.3f\u00b0) and STD precision %.3f\u00b0 (SD=%.3f\u00b0, range=%.3f\u00b0--%.3f\u00b0).",
+    "For %d participants, the average inaccuracy in the data determined from a %d-point validation procedure using ETDQualitizer v%s (Niehorster et al., 2026) was %.2f\u00b0 (SD=%.2f\u00b0, range=%.2f\u00b0--%.2f\u00b0). Average RMS-S2S precision was %.3f\u00b0 (SD=%.3f\u00b0, range=%.3f\u00b0--%.3f\u00b0) and STD precision %.3f\u00b0 (SD=%.3f\u00b0, range=%.3f\u00b0--%.3f\u00b0).",
     n_subj, n_target, version,
     measures$mean["accuracy"], measures$std["accuracy"], measures$min["accuracy"], measures$max["accuracy"],
     measures$mean["rms_s2s"], measures$std["rms_s2s"], measures$min["rms_s2s"], measures$max["rms_s2s"],
