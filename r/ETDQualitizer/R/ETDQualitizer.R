@@ -58,6 +58,15 @@ vector_to_Fick <- function(x, y, z) {
   list(azi = azi, ele = ele)
 }
 
+call_summary_fun <- function(fun, x) {
+  fun_formals <- formals(fun)
+  if (!is.null(fun_formals) && ("na.rm" %in% names(fun_formals) || "..." %in% names(fun_formals))) {
+    return(fun(x, na.rm = TRUE))
+  }
+
+  fun(x[!is.na(x)])
+}
+
 
 #' Compute Gaze Accuracy
 #'
@@ -75,15 +84,15 @@ vector_to_Fick <- function(x, y, z) {
 #' @examples
 #' accuracy(c(1, 2), c(1, 2), 0, 0)
 #' @export
-accuracy <- function(azi, ele, target_azi, target_ele, central_tendency_fun = function(x) mean(x, na.rm = TRUE)) {
+accuracy <- function(azi, ele, target_azi, target_ele, central_tendency_fun = mean) {
   # convert gaze directions to unit vectors
   g <- Fick_to_vector(azi, ele)
 
   # compute central gaze direction in 3D
   g_vec <- c(
-    central_tendency_fun(g$x),
-    central_tendency_fun(g$y),
-    central_tendency_fun(g$z)
+    call_summary_fun(central_tendency_fun, g$x),
+    call_summary_fun(central_tendency_fun, g$y),
+    call_summary_fun(central_tendency_fun, g$z)
   )
 
   # normalize to unit vector
@@ -121,12 +130,12 @@ accuracy <- function(azi, ele, target_azi, target_ele, central_tendency_fun = fu
 #' @examples
 #' rms_s2s(c(1, 2, 3), c(1, 2, 3))
 #' @export
-rms_s2s <- function(azi, ele, central_tendency_fun = function(x) mean(x, na.rm = TRUE)) {
+rms_s2s <- function(azi, ele, central_tendency_fun = mean) {
   a_diff  <- diff(azi)^2
   e_diff  <- diff(ele)^2
-  rms_azi <- sqrt(central_tendency_fun(a_diff, na.rm = TRUE))
-  rms_ele <- sqrt(central_tendency_fun(e_diff, na.rm = TRUE))
-  rms     <- sqrt(central_tendency_fun(a_diff + e_diff, na.rm = TRUE))
+  rms_azi <- sqrt(call_summary_fun(central_tendency_fun, a_diff))
+  rms_ele <- sqrt(call_summary_fun(central_tendency_fun, e_diff))
+  rms     <- sqrt(call_summary_fun(central_tendency_fun, a_diff + e_diff))
   list(rms = rms, rms_azi = rms_azi, rms_ele = rms_ele)
 }
 
@@ -278,7 +287,7 @@ effective_frequency <- function(a, b, duration) {
 #' precision_using_moving_window(rnorm(100), rnorm(100), 10, "STD")
 #' @export
 #' @importFrom stats median
-precision_using_moving_window <- function(azi, ele, window_length, metric, aggregation_fun = function(x) median(x, na.rm = TRUE), ...) {
+precision_using_moving_window <- function(azi, ele, window_length, metric, aggregation_fun = median, ...) {
   # Select the appropriate precision metric function
   fun <- switch(metric,
     "RMS-S2S" = rms_s2s,
@@ -297,7 +306,7 @@ precision_using_moving_window <- function(azi, ele, window_length, metric, aggre
       result <- fun(azi[p:(p + window_length - 1)], ele[p:(p + window_length - 1)], ...)
       values[p] <- result[[1]]  # extract first element (e.g., rms, std, or area)
     }
-    precision <- aggregation_fun(values, na.rm = TRUE)
+    precision <- call_summary_fun(aggregation_fun, values)
   } else {
     # If too few samples in data
     precision <- NA_real_
@@ -563,7 +572,7 @@ DataQuality <- R6Class("DataQuality",
     #' @param ... Additional arguments passed to the precision metric function.
     #' @return Precision value.
     #' @examples
-    #' dq$precision_using_moving_window(0.2, "RMS-S2S")
+    #' dq$precision_using_moving_window(20, "RMS-S2S")
     precision_using_moving_window = function(window_length, metric, aggregation_fun = median, ...) {
       precision_using_moving_window(self$azi, self$ele, window_length, metric, aggregation_fun, ...)
     }
