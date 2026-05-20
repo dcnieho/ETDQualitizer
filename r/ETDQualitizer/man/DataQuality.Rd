@@ -75,7 +75,7 @@ dq$get_duration()
 ## Method `DataQuality$precision_using_moving_window`
 ## ------------------------------------------------
 
-dq$precision_using_moving_window(0.2, "RMS-S2S")
+dq$precision_using_moving_window(20, "RMS-S2S")
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -372,7 +372,7 @@ Precision value.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{dq$precision_using_moving_window(0.2, "RMS-S2S")
+\preformatted{dq$precision_using_moving_window(20, "RMS-S2S")
 }
 \if{html}{\out{</div>}}
 
