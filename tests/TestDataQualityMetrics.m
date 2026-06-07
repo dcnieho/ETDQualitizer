@@ -20,6 +20,38 @@ classdef TestDataQualityMetrics < matlab.unittest.TestCase
             testCase.verifyGreaterThanOrEqual(offset_y, 0);
         end
 
+        function testAccuracyMedianUsesFrechetMedian(testCase)
+            x = [7.42; 73.96; 53.70; -84.53];
+            y = [28.59; -37.31; 18.37; -25.95];
+            grid_azi = linspace(-85, 85, 121);
+            grid_ele = linspace(-40, 40, 101);
+            [sx, sy, sz] = Fick_to_vector(x, y);
+            sample_vectors = [sx, sy, sz];
+
+            best_value = inf;
+            best_target = [NaN, NaN];
+            for target_azi = grid_azi
+                for target_ele = grid_ele
+                    [tx, ty, tz] = Fick_to_vector(target_azi, target_ele);
+                    value = sum(acos(max(-1, min(1, sample_vectors * [tx; ty; tz]))));
+                    if value < best_value
+                        best_value = value;
+                        best_target = [target_azi, target_ele];
+                    end
+                end
+            end
+
+            [offset, offset_x, offset_y] = accuracy(x, y, best_target(1), best_target(2), @median);
+            testCase.verifyLessThan(offset, 1);
+            testCase.verifyLessThan(abs(offset_x), 1);
+            testCase.verifyLessThan(abs(offset_y), 1);
+
+            legacy_vector = [median(sample_vectors(:,1)), median(sample_vectors(:,2)), median(sample_vectors(:,3))];
+            legacy_vector = legacy_vector / norm(legacy_vector);
+            legacy_value = sum(acos(max(-1, min(1, sample_vectors * legacy_vector.'))));
+            testCase.verifyLessThan(best_value, legacy_value);
+        end
+
         function testStdFunction(testCase)
             x = [1; 2; 3];
             y = [4; 5; 6];

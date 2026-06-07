@@ -6,6 +6,79 @@ from .version import __version__, __url__, __author__, __email__, __description_
 
 N = typing.TypeVar("N", bound=int)
 
+
+def _normalize_central_tendency_name(central_tendency_fun: typing.Any) -> str:
+    if isinstance(central_tendency_fun, str):
+        name = central_tendency_fun
+    else:
+        name = getattr(central_tendency_fun, '__name__', '')
+    return name.casefold().replace('é', 'e').replace('-', '_').replace(' ', '_')
+
+
+def _uses_frechet_median(central_tendency_fun: typing.Any) -> bool:
+    if central_tendency_fun in (np.median, np.nanmedian):
+        return True
+    return _normalize_central_tendency_name(central_tendency_fun) in {
+        'median',
+        'nanmedian',
+        'frechet_median',
+        'frechetmedian',
+    }
+
+
+def _frechet_median_on_sphere(vectors: np.ndarray[tuple[N, typing.Literal[3]], np.dtype[np.float64]],
+                              tol: float = 1e-12,
+                              max_iter: int = 128) -> np.ndarray[tuple[typing.Literal[3]], np.dtype[np.float64]]:
+    valid = np.all(np.isfinite(vectors), axis=1)
+    vectors = vectors[valid]
+    if vectors.size == 0:
+        return np.full((3,), np.nan, dtype=float)
+
+    g = np.nanmean(vectors, axis=0)
+    g_norm = np.linalg.norm(g)
+    if g_norm < tol:
+        g = vectors[0].copy()
+    else:
+        g = g / g_norm
+
+    def objective(candidate: np.ndarray[tuple[typing.Literal[3]], np.dtype[np.float64]]) -> float:
+        dots = np.clip(vectors @ candidate, -1.0, 1.0)
+        return float(np.sum(np.arccos(dots)))
+
+    current_value = objective(g)
+
+    for _ in range(max_iter):
+        dots = np.clip(vectors @ g, -1.0, 1.0)
+        angles = np.arccos(dots)
+        is_differentiable = (angles > tol) & (angles < np.pi - tol)
+        if not np.any(is_differentiable):
+            break
+
+        tangent = vectors[is_differentiable] - dots[is_differentiable, None] * g
+        tangent = tangent / np.sin(angles[is_differentiable])[:, None]
+        direction = tangent.sum(axis=0)
+        direction_norm = np.linalg.norm(direction)
+        if direction_norm < tol:
+            break
+        direction = direction / direction_norm
+
+        step = np.pi / 4
+        while step > tol:
+            candidate = np.cos(step) * g + np.sin(step) * direction
+            candidate = candidate / np.linalg.norm(candidate)
+            candidate_value = objective(candidate)
+            if candidate_value + tol < current_value:
+                g = candidate
+                if current_value - candidate_value < tol:
+                    return g
+                current_value = candidate_value
+                break
+            step /= 2
+        else:
+            break
+
+    return g
+
 def accuracy(azi: np.ndarray[tuple[N], np.dtype[np.float64]],
              ele: np.ndarray[tuple[N], np.dtype[np.float64]],
              target_azi: float, target_ele: float,
@@ -29,7 +102,9 @@ def accuracy(azi: np.ndarray[tuple[N], np.dtype[np.float64]],
         Target elevation in degrees.
     central_tendency_fun : callable, optional
         Function to compute central tendency of the Cartesian gaze components
-        (default: np.nanmean).
+        (default: np.nanmean). When a median-like function is passed
+        (e.g. np.median or np.nanmedian), accuracy is computed using a
+        spherical Fréchet median instead of a component-wise Cartesian median.
 
     Returns
     -------
@@ -46,11 +121,14 @@ def accuracy(azi: np.ndarray[tuple[N], np.dtype[np.float64]],
     g_x, g_y, g_z = Fick_to_vector(azi, ele)
 
     # compute central gaze direction in 3D
-    g = np.array([
-        central_tendency_fun(g_x),
-        central_tendency_fun(g_y),
-        central_tendency_fun(g_z)
-    ], dtype=float)
+    if _uses_frechet_median(central_tendency_fun):
+        g = _frechet_median_on_sphere(np.column_stack((g_x, g_y, g_z)).astype(float, copy=False))
+    else:
+        g = np.array([
+            central_tendency_fun(g_x),
+            central_tendency_fun(g_y),
+            central_tendency_fun(g_z)
+        ], dtype=float)
 
     # normalize to unit vector
     g = g / np.linalg.norm(g)

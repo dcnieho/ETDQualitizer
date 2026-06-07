@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from ETDQualitizer import accuracy, std, bcea, rms_s2s, data_loss_from_invalid, data_loss_from_expected, effective_frequency
+from ETDQualitizer import accuracy, std, bcea, rms_s2s, data_loss_from_invalid, data_loss_from_expected, effective_frequency, Fick_to_vector
 
 class TestDataQualityMetrics(unittest.TestCase):
     def test_accuracy(self):
@@ -18,6 +18,42 @@ class TestDataQualityMetrics(unittest.TestCase):
         self.assertAlmostEqual(offset, 0)
         self.assertAlmostEqual(offset_x, 0)
         self.assertAlmostEqual(offset_y, 0)
+
+    def test_accuracy_nanmedian_uses_frechet_median(self):
+        x = np.array([7.42, 73.96, 53.70, -84.53])
+        y = np.array([28.59, -37.31, 18.37, -25.95])
+
+        grid_azi = np.linspace(-85, 85, 121)
+        grid_ele = np.linspace(-40, 40, 101)
+        sample_vectors = np.column_stack(Fick_to_vector(x, y))
+
+        def objective(target_azi, target_ele):
+            target_vector = np.array(Fick_to_vector(target_azi, target_ele), dtype=float)
+            dots = np.clip(sample_vectors @ target_vector, -1.0, 1.0)
+            return float(np.sum(np.arccos(dots)))
+
+        best_value = float('inf')
+        best_target = (np.nan, np.nan)
+        for target_azi in grid_azi:
+            for target_ele in grid_ele:
+                value = objective(target_azi, target_ele)
+                if value < best_value:
+                    best_value = value
+                    best_target = (target_azi, target_ele)
+
+        offset, offset_x, offset_y = accuracy(x, y, *best_target, np.nanmedian)
+        self.assertLess(offset, 1.0)
+        self.assertLess(abs(offset_x), 1.0)
+        self.assertLess(abs(offset_y), 1.0)
+
+        legacy_vector = np.array([
+            np.nanmedian(sample_vectors[:, 0]),
+            np.nanmedian(sample_vectors[:, 1]),
+            np.nanmedian(sample_vectors[:, 2]),
+        ], dtype=float)
+        legacy_vector = legacy_vector / np.linalg.norm(legacy_vector)
+        legacy_value = float(np.sum(np.arccos(np.clip(sample_vectors @ legacy_vector, -1.0, 1.0))))
+        self.assertLess(best_value, legacy_value)
 
     def test_std(self):
         x = np.array([1, 2, 3])

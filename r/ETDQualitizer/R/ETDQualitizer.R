@@ -67,6 +67,86 @@ call_summary_fun <- function(fun, x) {
   fun(x[!is.na(x)])
 }
 
+normalize_central_tendency_name <- function(name) {
+  name <- paste(name, collapse = "")
+  name <- gsub("é", "e", name, fixed = TRUE)
+  name <- gsub("[- ]+", "_", name)
+  tolower(name)
+}
+
+uses_frechet_median <- function(fun, name = "") {
+  normalized_name <- normalize_central_tendency_name(name)
+  identical(fun, median) ||
+    normalized_name %in% c("median", "stats::median", "frechet_median", "frechetmedian") ||
+    grepl("^function\\(.*\\)median\\(", normalized_name) ||
+    grepl("^function\\(.*\\)stats::median\\(", normalized_name)
+}
+
+frechet_median_on_sphere <- function(vectors, tol = 1e-12, max_iter = 128) {
+  valid <- apply(is.finite(vectors), 1, all)
+  vectors <- vectors[valid, , drop = FALSE]
+  if (!nrow(vectors)) {
+    return(c(NaN, NaN, NaN))
+  }
+
+  g <- colMeans(vectors, na.rm = TRUE)
+  g_norm <- sqrt(sum(g^2))
+  if (g_norm < tol) {
+    g <- vectors[1, ]
+  } else {
+    g <- g / g_norm
+  }
+
+  objective <- function(candidate) {
+    dots <- pmin(1, pmax(-1, as.vector(vectors %*% candidate)))
+    sum(acos(dots))
+  }
+
+  current_value <- objective(g)
+
+  for (iter in seq_len(max_iter)) {
+    dots <- pmin(1, pmax(-1, as.vector(vectors %*% g)))
+    angles <- acos(dots)
+    is_differentiable <- angles > tol & angles < pi - tol
+    if (!any(is_differentiable)) {
+      break
+    }
+
+    tangent <- vectors[is_differentiable, , drop = FALSE] - outer(dots[is_differentiable], g)
+    tangent <- sweep(tangent, 1, sin(angles[is_differentiable]), "/")
+    direction <- colSums(tangent)
+    direction_norm <- sqrt(sum(direction^2))
+    if (direction_norm < tol) {
+      break
+    }
+    direction <- direction / direction_norm
+
+    step <- pi / 4
+    improved <- FALSE
+    while (step > tol) {
+      candidate <- cos(step) * g + sin(step) * direction
+      candidate <- candidate / sqrt(sum(candidate^2))
+      candidate_value <- objective(candidate)
+      if (candidate_value + tol < current_value) {
+        g <- candidate
+        if (current_value - candidate_value < tol) {
+          return(g)
+        }
+        current_value <- candidate_value
+        improved <- TRUE
+        break
+      }
+      step <- step / 2
+    }
+
+    if (!improved) {
+      break
+    }
+  }
+
+  g
+}
+
 
 #' Compute Gaze Accuracy
 #'
@@ -79,6 +159,7 @@ call_summary_fun <- function(fun, x) {
 #' @param target_azi Target azimuth in degrees.
 #' @param target_ele Target elevation in degrees.
 #' @param central_tendency_fun Function to compute central tendency of the Cartesian gaze components (default: \code{mean}).
+#'   When a median-like function is passed, accuracy is computed using a spherical Fréchet median instead of a component-wise Cartesian median.
 #'
 #' @return A list with \code{offset}, \code{offset_azi}, and \code{offset_ele}, the total, horizontal and vertical offset of gaze from the target (in degrees).
 #' @examples
@@ -87,13 +168,18 @@ call_summary_fun <- function(fun, x) {
 accuracy <- function(azi, ele, target_azi, target_ele, central_tendency_fun = mean) {
   # convert gaze directions to unit vectors
   g <- Fick_to_vector(azi, ele)
+  central_tendency_name <- paste(deparse(substitute(central_tendency_fun)), collapse = "")
 
   # compute central gaze direction in 3D
-  g_vec <- c(
-    call_summary_fun(central_tendency_fun, g$x),
-    call_summary_fun(central_tendency_fun, g$y),
-    call_summary_fun(central_tendency_fun, g$z)
-  )
+  if (uses_frechet_median(central_tendency_fun, central_tendency_name)) {
+    g_vec <- frechet_median_on_sphere(cbind(g$x, g$y, g$z))
+  } else {
+    g_vec <- c(
+      call_summary_fun(central_tendency_fun, g$x),
+      call_summary_fun(central_tendency_fun, g$y),
+      call_summary_fun(central_tendency_fun, g$z)
+    )
+  }
 
   # normalize to unit vector
   g_vec <- g_vec / sqrt(sum(g_vec^2))
