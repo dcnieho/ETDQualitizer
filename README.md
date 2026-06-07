@@ -3,6 +3,7 @@
 [![File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://se.mathworks.com/matlabcentral/fileexchange/181899-etdqualitizer)
 [![CRAN](https://www.r-pkg.org/badges/version/ETDQualitizer?color=green)](https://cran.r-project.org/package=ETDQualitizer)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/ETDQualitizer?color=green)](https://cran.r-project.org/package=ETDQualitizer)
+[![DOI](https://img.shields.io/badge/DOI-10.3758%2Fs13428--026--03039--4-blue.svg)](https://doi.org/10.3758/s13428-026-03039-4)
 
 # ETDQualitizer v1.0.0
 ETDQualitizer is a toolbox for automated eye tracking data quality determination for screen-based eye trackers. This repository consists of two parts:
@@ -12,7 +13,7 @@ ETDQualitizer is a toolbox for automated eye tracking data quality determination
 Note that for determining data quality for recordings made with wearable eye trackers, the [glassesValidator](https://github.com/dcnieho/glassesValidator) tool is available (which is also integrated in [gazeMapper](https://github.com/dcnieho/gazeMapper)).
 
 Please cite:
-[Niehorster, D.C., Nyström, M., Hessels, R.S., Benjamins, J.S., Andersson, R. & Hooge, I.T.C. (2026). The fundamentals of eye tracking part 7: Determining data quality. Behavior Research Methods. doi: 10.3758/s13428-026-03039-4](https://doi.org/10.3758/s13428-026-03039-4)
+[Niehorster, D.C., Nyström, M., Hessels, R.S., Benjamins, J.S., Andersson, R. & Hooge, I.T.C. (2026). The fundamentals of eye tracking, Part 7: Determining data quality. Behavior Research Methods. doi: 10.3758/s13428-026-03039-4](https://doi.org/10.3758/s13428-026-03039-4)
 
 For questions, bug reports or to check for updates, please visit
 www.github.com/dcnieho/ETDQualitizer.
@@ -149,7 +150,7 @@ For this section of the walkthrough, we'll use the the [webpage version of the E
 
 # Citation
 If you use this tool or any of the code in this repository, please cite:<br>
-[Niehorster, D.C., Nyström, M., Hessels, R.S., Benjamins, J.S., Andersson, R. & Hooge, I.T.C. (2026). The fundamentals of eye tracking part 7: Determining data quality. Behavior Research Methods. doi: 10.3758/s13428-026-03039-4](https://doi.org/10.3758/s13428-026-03039-4)
+[Niehorster, D.C., Nyström, M., Hessels, R.S., Benjamins, J.S., Andersson, R. & Hooge, I.T.C. (2026). The fundamentals of eye tracking, Part 7: Determining data quality. Behavior Research Methods. doi: 10.3758/s13428-026-03039-4](https://doi.org/10.3758/s13428-026-03039-4)
 
 ## BibTeX
 ```latex
@@ -162,7 +163,7 @@ If you use this tool or any of the code in this repository, please cite:<br>
               Hooge, Ignace T. C.},
     Journal = {Behavior Research Methods},
     Number = {},
-    Title = {The fundamentals of eye tracking part 7: Determining data quality},
+    Title = {The fundamentals of eye tracking, Part 7: Determining data quality},
     Year = {2026},
     doi = {10.3758/s13428-026-03039-4}
 }
