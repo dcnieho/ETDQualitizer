@@ -69,7 +69,7 @@ call_summary_fun <- function(fun, x) {
 
 normalize_central_tendency_name <- function(name) {
   name <- paste(name, collapse = "")
-  name <- gsub("é", "e", name, fixed = TRUE)
+  name <- gsub("\u00e9", "e", name, fixed = TRUE)
   name <- gsub("[- ]+", "_", name)
   tolower(name)
 }
