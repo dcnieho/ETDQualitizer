@@ -1,8 +1,12 @@
 import unittest
 import numpy as np
-from ETDQualitizer import accuracy, std, bcea, rms_s2s, data_loss_from_invalid, data_loss_from_expected, effective_frequency, Fick_to_vector
+from ETDQualitizer import accuracy, std, bcea, rms_s2s, data_loss_from_invalid, data_loss_from_expected, effective_frequency, Fick_to_vector, frechet_median_on_sphere
 
 class TestDataQualityMetrics(unittest.TestCase):
+    def test_frechet_median_on_sphere(self):
+        vectors = np.array([[0., 0., 1.], [0., 0., 1.]])
+        np.testing.assert_allclose(frechet_median_on_sphere(vectors), [0., 0., 1.])
+
     def test_accuracy(self):
         x = np.array([0, 1, -1])
         y = np.array([0, 1, -1])

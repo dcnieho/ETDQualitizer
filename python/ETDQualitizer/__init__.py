@@ -26,9 +26,33 @@ def _uses_frechet_median(central_tendency_fun: typing.Any) -> bool:
     }
 
 
-def _frechet_median_on_sphere(vectors: np.ndarray[tuple[N, typing.Literal[3]], np.dtype[np.float64]],
-                              tol: float = 1e-12,
-                              max_iter: int = 128) -> np.ndarray[tuple[typing.Literal[3]], np.dtype[np.float64]]:
+def frechet_median_on_sphere(vectors: np.ndarray[tuple[N, typing.Literal[3]], np.dtype[np.float64]],
+                             tol: float = 1e-12,
+                             max_iter: int = 128) -> np.ndarray[tuple[typing.Literal[3]], np.dtype[np.float64]]:
+    """Compute the spherical Frechet median of 3D direction vectors.
+
+    The input vectors are treated as directions on the unit sphere. Non-finite
+    rows are ignored, and the returned median is a unit vector.
+
+    Parameters
+    ----------
+    vectors : np.ndarray
+        Array of shape (n, 3) containing 3D direction vectors.
+    tol : float, optional
+        Convergence tolerance (default: 1e-12).
+    max_iter : int, optional
+        Maximum number of optimization iterations (default: 128).
+
+    Returns
+    -------
+    np.ndarray
+        A 3-element unit vector, or three NaNs if no finite vectors are given.
+
+    Examples
+    --------
+    >>> frechet_median_on_sphere(np.array([[0., 0., 1.], [0., 0., 1.]]))
+    array([0., 0., 1.])
+    """
     valid = np.all(np.isfinite(vectors), axis=1)
     vectors = vectors[valid]
     if vectors.size == 0:
@@ -122,7 +146,7 @@ def accuracy(azi: np.ndarray[tuple[N], np.dtype[np.float64]],
 
     # compute central gaze direction in 3D
     if _uses_frechet_median(central_tendency_fun):
-        g = _frechet_median_on_sphere(np.column_stack((g_x, g_y, g_z)).astype(float, copy=False))
+        g = frechet_median_on_sphere(np.column_stack((g_x, g_y, g_z)).astype(float, copy=False))
     else:
         g = np.array([
             central_tendency_fun(g_x),

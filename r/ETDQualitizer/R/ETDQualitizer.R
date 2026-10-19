@@ -82,6 +82,22 @@ uses_frechet_median <- function(fun, name = "") {
     grepl("^function\\(.*\\)stats::median\\(", normalized_name)
 }
 
+#' Compute the Spherical Frechet Median
+#'
+#' Finds the unit direction that minimizes the sum of angular distances to a
+#' collection of 3D direction vectors. Non-finite rows are ignored.
+#'
+#' @param vectors Numeric matrix with three columns containing 3D direction vectors.
+#' @param tol Convergence tolerance (default: 1e-12).
+#' @param max_iter Maximum number of optimization iterations (default: 128).
+#'
+#' @return A numeric vector of length three containing the spherical Frechet
+#'   median, or three NaNs if no finite vectors are provided.
+#'
+#' @examples
+#' frechet_median_on_sphere(rbind(c(0, 0, 1), c(0, 0, 1)))
+#'
+#' @export
 frechet_median_on_sphere <- function(vectors, tol = 1e-12, max_iter = 128) {
   valid <- apply(is.finite(vectors), 1, all)
   vectors <- vectors[valid, , drop = FALSE]

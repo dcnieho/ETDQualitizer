@@ -1,3 +1,8 @@
+test_that("frechet_median_on_sphere is publicly callable", {
+  vectors <- rbind(c(0, 0, 1), c(0, 0, 1))
+  expect_equal(frechet_median_on_sphere(vectors), c(0, 0, 1))
+})
+
 test_that("accuracy returns zero offset for symmetric gaze around target", {
   x <- c(0, 1, -1)
   y <- c(0, 1, -1)

@@ -1,5 +1,11 @@
 classdef TestDataQualityMetrics < matlab.unittest.TestCase
     methods (Test)
+        function testFrechetMedianOnSphereIsPublic(testCase)
+            vectors = [0, 0, 1; 0, 0, 1];
+            result = frechet_median_on_sphere(vectors);
+            testCase.verifyEqual(result, [0, 0, 1], 'AbsTol', 1e-12);
+        end
+
         function testAccuracyBasic(testCase)
             x = [0; 1; -1];
             y = [0; 1; -1];
